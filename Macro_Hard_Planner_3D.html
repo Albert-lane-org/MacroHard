@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'unsafe-eval'">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>MacroHard — 3D Planner Workbook</title>
+<!--
+  MacroHard 3D Planner Workbook
+  Inventor / Architect : Albert Lane  ·  albertlane.net
+  Inspired by          : Thomas Walter Murphy VII (Tom7)  ·  tom7.org
+  AI Co-Architect      : Claude (Anthropic) — claude-sonnet-4-6
+  CORPORATE USE PROHIBITED without in-person written & verbal consent from Albert Lane.
+  Content-Security-Policy: zero outbound network calls enforced.
+  See LICENSE-MACROHARD.md
+-->
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0C10;--bg2:#0e0f18;--bg3:#12131e;
+  --border:#1a1c2a;--border2:#252838;
+  --accent:#FF9F1C;
+  --text:#e8eaf4;        /* near-white main text */
+  --text2:#aeb2cc;       /* secondary — was #5c6080 */
+  --text3:#6e7090;       /* tertiary — was #2e3048 */
+  --mono:'IBM Plex Mono','Courier New',monospace;
+  --ax:#e05a5a;--ay:#52b788;--az:#00F5D4;
+}
+html,body{width:100%;height:100%;background:var(--bg);font-family:var(--mono);color:var(--text);overflow:hidden}
+
+/* ── Chrome ─────────────────────────────────────────────────── */
+#chrome{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;flex-direction:column;user-select:none}
+#brand-bar{display:flex;align-items:center;gap:14px;padding:8px 16px;border-bottom:1px solid var(--border);height:52px}
+#brand-title{font-size:24px;font-weight:900;letter-spacing:6px;color:var(--accent)}
+#brand-sep{width:1px;height:16px;background:var(--border)}
+#brand-words{display:flex;flex-direction:column;gap:2px}
+#brand-name{font-size:14px;font-weight:700;letter-spacing:1.5px;color:var(--text)}
+#brand-tagline{font-size:12px;font-style:italic;color:var(--text2);letter-spacing:1px;padding-left:10px}
+#brand-inspo{font-size:10px;color:var(--text3);letter-spacing:.7px;padding-left:18px}
+#brand-right{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:4px}
+#brand-stats{display:flex;gap:14px;font-size:10px;color:var(--text2);letter-spacing:1px;justify-content:flex-end}
+#brand-stats em{color:var(--text);font-style:normal;font-weight:700}
+#brand-author{font-size:9px;color:var(--text3);letter-spacing:1.5px}
+
+/* ── Ribbon ──────────────────────────────────────────────────── */
+#ribbon{display:flex;align-items:center;height:38px;padding:0 8px;gap:0;background:var(--bg2);overflow-x:auto}
+#ribbon::-webkit-scrollbar{height:2px}
+#ribbon::-webkit-scrollbar-thumb{background:var(--border)}
+.rg{display:flex;align-items:center;gap:6px;padding:0 8px;flex-shrink:0}
+.rdiv{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.rlbl{font-size:10px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-right:1px;white-space:nowrap}
+.rbtn{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;padding:3px 9px;border-radius:2px;transition:border-color .12s,color .12s,background .12s;white-space:nowrap}
+.rbtn:hover{border-color:var(--accent);color:var(--accent)}
+.rbtn.on{border-color:var(--accent);color:var(--accent);background:rgba(255,159,28,.08)}
+.rinput{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:2px 6px;border-radius:2px;outline:none}
+.rinput:focus{border-color:var(--accent)}
+select.rinput{cursor:pointer;-webkit-appearance:none;appearance:none;padding-right:16px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23aeb2cc'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 5px center}
+input[type=color].rcol{width:24px;height:22px;padding:1px;border:1px solid var(--border);border-radius:2px;background:var(--bg3);cursor:pointer}
+input[type=range].rslide{-webkit-appearance:none;appearance:none;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range].rslide::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:11px;height:11px;border-radius:50%;background:var(--accent)}
+.rval{font-size:10px;color:var(--accent);min-width:24px;text-align:right}
+
+/* ── Layout ──────────────────────────────────────────────────── */
+#main{position:fixed;left:0;right:0;display:flex;overflow:hidden}
+#cvs-wrap{flex:1;position:relative;overflow:hidden}
+#planner{position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+
+/* ── Panel toggle tab ────────────────────────────────────────── */
+#rp-tog{
+  flex-shrink:0;width:18px;
+  background:var(--bg2);border-left:1px solid var(--border);
+  cursor:pointer;display:flex;align-items:flex-start;justify-content:center;
+  padding-top:14px;color:var(--text2);font-size:11px;
+  transition:background .12s;user-select:none;
+}
+#rp-tog:hover{background:var(--bg3);color:var(--accent)}
+
+/* ── Right panel ─────────────────────────────────────────────── */
+#rpanel{
+  background:var(--bg2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+  flex-shrink:0;transition:width .18s ease;
+  width:200px;
+}
+#rpanel.closed{width:0;overflow:hidden;border:none}
+#rpanel::-webkit-scrollbar{width:3px}
+#rpanel::-webkit-scrollbar-thumb{background:var(--border2)}
+.rps{border-bottom:1px solid var(--border);padding:10px 11px;flex-shrink:0}
+.rpslbl{font-size:9px;letter-spacing:2.5px;color:var(--text2);text-transform:uppercase;margin-bottom:8px;display:block}
+.crow{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.crow:last-child{margin-bottom:0}
+.ckey{font-size:12px;font-weight:700;width:13px;flex-shrink:0}
+.ceq{font-size:10px;color:var(--text3)}
+.cinput{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:3px 6px;border-radius:2px;outline:none;width:100%}
+.cinput:focus{border-color:var(--accent)}
+.cinput:disabled{color:var(--text3);cursor:not-allowed}
+.rapply{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;padding:5px;border-radius:2px;width:100%;margin-top:6px;transition:border-color .12s,color .12s}
+.rapply:hover{border-color:var(--accent);color:var(--accent)}
+.rapply.danger:hover{border-color:#e05a5a;color:#e05a5a}
+.rapply:disabled{opacity:.3;cursor:not-allowed}
+.prow{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.plbl{font-size:9px;color:var(--text2);width:42px;flex-shrink:0;letter-spacing:.3px}
+.pinput{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:2px 5px;border-radius:2px;outline:none;flex:1}
+.pinput:focus{border-color:var(--accent)}
+input[type=color].pcol{width:30px;height:20px;padding:1px;border:1px solid var(--border);border-radius:2px;background:var(--bg3);cursor:pointer}
+input[type=range].pslide{-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range].pslide::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--accent)}
+.fdisplay{font-family:var(--mono);font-size:10px;color:var(--az);background:var(--bg3);border:1px solid var(--border);padding:7px;border-radius:2px;min-height:30px;letter-spacing:.4px;word-break:break-all;line-height:1.6}
+.finput{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--accent);color:var(--text);padding:7px;border-radius:2px;outline:none;width:100%;resize:none;height:54px;letter-spacing:.4px;line-height:1.5}
+.feval{font-size:9px;margin-top:5px;padding:5px 7px;background:var(--bg3);border-radius:2px;border-left:2px solid var(--border);color:var(--text2);line-height:1.7;white-space:pre-line;letter-spacing:.3px}
+.feval.ok{border-left-color:var(--ay);color:var(--ay)}
+.feval.off{border-left-color:var(--ax);color:var(--ax)}
+.fhint{font-size:8px;color:var(--text3);letter-spacing:.4px;margin-top:5px;line-height:1.9}
+.fmode{font-size:8px;color:var(--az);letter-spacing:.5px;margin-bottom:5px;padding:3px 6px;background:rgba(0,245,212,.08);border-radius:2px;border:1px solid rgba(0,245,212,.15)}
+
+/* ── Status bar ──────────────────────────────────────────────── */
+#sbar{position:fixed;bottom:0;left:0;right:0;height:22px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:14px;z-index:50;transition:right .18s}
+.si{font-size:10px;color:var(--text2);letter-spacing:.8px}
+.si em{color:var(--accent);font-style:normal}
+</style>
+</head>
+<body>
+
+<!-- Chrome -->
+<div id="chrome">
+  <div id="brand-bar">
+    <div id="brand-title">MACROHARD</div>
+    <div id="brand-sep"></div>
+    <div id="brand-words">
+      <div id="brand-name">Thomas Walter Murphy VII</div>
+      <div id="brand-tagline">The Hardest Drives.</div>
+      <div id="brand-inspo">.. "A Tom7 inspired production..."</div>
+    </div>
+    <div id="brand-right">
+      <div id="brand-stats"><span>SPHERES <em id="stat-s">4</em></span><span>MODE <em id="stat-mode">SPHERE</em></span></div>
+      <div id="brand-author">Albert Lane · albertlane.net</div>
+    </div>
+  </div>
+
+  <div id="ribbon">
+    <div class="rg">
+      <span class="rlbl">Graph</span>
+      <select class="rinput" id="graph-type" style="width:138px">
+        <option value="sphere">◎ Sphere Planner</option>
+        <option value="parallel">⊟ Parallel Grid</option>
+        <option value="manifold">⊞ Z-Manifold</option>
+        <option value="zplane">⟁ Z-Plane</option>
+      </select>
+    </div>
+    <div class="rdiv"></div>
+    <!-- Sphere controls -->
+    <div class="rg" id="sphere-controls">
+      <span class="rlbl">New</span>
+      <input type="color" class="rcol" id="rib-col" value="#4EA8DE">
+      <input type="range" class="rslide" id="rib-sz" min="8" max="40" value="18" style="width:50px">
+      <input type="text" class="rinput" id="rib-lbl" placeholder="Label…" style="width:72px">
+      <button class="rbtn" id="rib-add">＋ Add</button>
+    </div>
+    <!-- Parallel controls -->
+    <div class="rg" id="parallel-controls" style="display:none">
+      <span class="rlbl" style="color:var(--az)">Sheet Z</span>
+      <input type="range" class="rslide" id="zs-slide" min="0" max="100" value="50" style="width:80px">
+      <span class="rval" id="zs-slide-val">5.0</span>
+      <span class="rlbl">α</span>
+      <input type="range" class="rslide" id="zs-opac" min="5" max="100" value="60" style="width:46px">
+      <span class="rval" id="zs-opac-val">60%</span>
+    </div>
+    <!-- Manifold controls -->
+    <div class="rg" id="manifold-controls" style="display:none">
+      <span class="rlbl">zFront</span>
+      <input type="number" class="rinput" id="man-zf" value="1" step="0.5" min="0" max="9" style="width:38px">
+      <span class="rlbl">Back</span>
+      <select class="rinput" id="man-back-type" style="width:72px">
+        <option value="zy">ZY plane</option>
+        <option value="xy">XY → Z</option>
+      </select>
+      <span class="rlbl" id="man-back-lbl">X=</span>
+      <input type="number" class="rinput" id="man-back-val" value="9" step="0.5" min="0" max="10" style="width:38px">
+      <span class="rlbl">α</span>
+      <input type="range" class="rslide" id="man-opac" min="5" max="100" value="52" style="width:46px">
+      <span class="rval" id="man-opac-val">52%</span>
+    </div>
+    <!-- VPlane (Charts 2+3) -->
+    <div class="rg" id="vplane-group" style="display:none">
+      <div class="rdiv" style="margin:0 2px"></div>
+      <button class="rbtn" id="btn-vplane">⊕ VPlane</button>
+      <span class="rlbl">X=</span>
+      <input type="number" class="rinput" id="vplane-x" value="5" step="0.5" min="0" max="10" style="width:38px">
+    </div>
+    <div class="rdiv"></div>
+    <!-- View -->
+    <div class="rg">
+      <span class="rlbl">View</span>
+      <button class="rbtn on" id="btn-grid">⊞ Grid</button>
+      <button class="rbtn on" id="btn-axes">⊹ Axes</button>
+      <button class="rbtn on" id="btn-lbl">Ａ Labels</button>
+      <button class="rbtn on" id="btn-drop">↕ Drop</button>
+      <button class="rbtn"    id="btn-coords">⊙ xyz</button>
+      <button class="rbtn on" id="btn-conn">⊟ Links</button>
+    </div>
+    <div class="rdiv"></div>
+    <div class="rg">
+      <span class="rlbl">Cam</span>
+      <button class="rbtn" id="btn-rc">↺ Reset</button>
+      <button class="rbtn" id="btn-top">⊤ Top</button>
+      <button class="rbtn" id="btn-iso">◈ Iso</button>
+    </div>
+    <div class="rdiv"></div>
+    <div class="rg">
+      <span class="rlbl" style="color:var(--ax)">X</span>
+      <input type="text" class="rinput" id="xl" value="X_relo" style="width:62px">
+      <span class="rlbl" style="color:var(--ay)">Y</span>
+      <input type="text" class="rinput" id="yl" value="Y_cap" style="width:58px">
+      <span class="rlbl" style="color:var(--az)">Z</span>
+      <input type="text" class="rinput" id="zl" value="Z_time" style="width:60px">
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <div id="cvs-wrap"><canvas id="planner"></canvas></div>
+  <div id="rp-tog" title="Toggle panel">◀</div>
+
+  <div id="rpanel">
+    <!-- Coordinates -->
+    <div class="rps">
+      <span class="rpslbl">Coordinates</span>
+      <div class="crow"><span class="ckey" style="color:var(--az)">Z</span><span class="ceq">=</span><input type="number" class="cinput" id="cz" placeholder="—" step="0.1" disabled></div>
+      <div class="crow"><span class="ckey" style="color:var(--ay)">Y</span><span class="ceq">=</span><input type="number" class="cinput" id="cy" placeholder="—" step="0.1" disabled></div>
+      <div class="crow"><span class="ckey" style="color:var(--ax)">X</span><span class="ceq">=</span><input type="number" class="cinput" id="cx" placeholder="—" step="0.1" disabled></div>
+      <button class="rapply" id="coord-apply" disabled>⊹ Bind Coordinates</button>
+    </div>
+    <!-- Selected sphere -->
+    <div class="rps" id="sel-props" style="display:none">
+      <span class="rpslbl">Selected</span>
+      <div class="prow"><span class="plbl">Label</span><input type="text" class="pinput" id="prop-lbl"></div>
+      <div class="prow"><span class="plbl">Color</span><input type="color" class="pcol" id="prop-col"><input type="range" class="pslide" id="prop-sz" min="8" max="40" value="18"></div>
+      <button class="rapply" id="prop-update">✓ Update</button>
+      <button class="rapply danger" id="prop-del" style="margin-top:4px">✕ Delete</button>
+    </div>
+    <!-- Z-Sheet config (Chart 2) -->
+    <div class="rps" id="zs-panel" style="display:none">
+      <span class="rpslbl">Z-Sheet Config</span>
+      <div class="prow"><span class="plbl">Z Front</span><input type="number" class="cinput" id="zs-front" value="1" step="0.5" style="flex:1"></div>
+      <div class="prow"><span class="plbl">Z Rear</span><input type="number" class="cinput" id="zs-rear" value="9" step="0.5" style="flex:1"></div>
+      <div class="prow" style="margin-top:4px"><span class="plbl">Upper</span><input type="color" class="pcol" id="zs-ucol" value="#FF9F1C"></div>
+      <div class="prow"><span class="plbl">Lower</span><input type="color" class="pcol" id="zs-lcol" value="#00F5D4"></div>
+      <div class="prow"><span class="plbl">Mid Y</span><input type="number" class="cinput" id="zs-ymid" value="5" step="0.5" style="flex:1"></div>
+    </div>
+    <!-- Manifold config (Chart 3) -->
+    <div class="rps" id="man-panel" style="display:none">
+      <span class="rpslbl">Section Config</span>
+      <div id="man-info" style="font-size:9px;color:var(--text2);line-height:1.7;margin-bottom:8px"></div>
+      <div class="prow"><span class="plbl">Y Floor</span><input type="number" class="cinput" id="man-y1" value="0" step="0.5" style="flex:1"></div>
+      <div class="prow"><span class="plbl">Fill</span><input type="color" class="pcol" id="man-col" value="#4EA8DE"></div>
+    </div>
+    <!-- Z-Plane config (Chart 4) -->
+    <div class="rps" id="c4-panel" style="display:none">
+      <span class="rpslbl">Z-Plane Config</span>
+      <div class="prow"><span class="plbl">Z Front</span><input type="number" class="cinput" id="c4-zf" value="0" step="0.5" style="flex:1"></div>
+      <div class="prow"><span class="plbl">Z Back</span><input type="number" class="cinput" id="c4-zb" value="8" step="0.5" style="flex:1"></div>
+      <div class="prow" style="margin-top:3px"><span class="plbl">X Front</span><input type="number" class="cinput" id="c4-xf" value="0" step="0.5" style="flex:1"></div>
+      <div class="prow"><span class="plbl">X Back</span><input type="number" class="cinput" id="c4-xb" value="10" step="0.5" style="flex:1"></div>
+      <div class="prow" style="margin-top:3px"><span class="plbl">Rate</span><input type="number" class="cinput" id="c4-rate" value="1.10" step="0.01" style="flex:1"></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:5px;line-height:1.8">Formula → y = f(z)</div>
+      <button class="rapply" id="c4-pin-exp" style="margin-top:5px">⟁ Exp: y=0.8·1.1^z</button>
+      <button class="rapply" id="c4-pin-sin" style="margin-top:4px">∿ Sine: y=1.2+0.6·sin(z)</button>
+      <button class="rapply" id="c4-pin-port" style="margin-top:4px">📌 Portland scenario</button>
+    </div>
+    <!-- Formula -->
+    <div class="rps" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;margin-bottom:7px">
+        <span class="rpslbl" style="margin-bottom:0;flex:1">Formula</span>
+        <button class="rbtn" id="btn-fedit" style="font-size:8px;padding:2px 7px">⇄ Edit</button>
+      </div>
+      <div class="fmode" id="fmode-note" style="display:none">Z-Plane: y = f(z)</div>
+      <div class="fdisplay" id="fdisplay">z = x / (y * 8000)</div>
+      <textarea class="finput" id="finput" style="display:none"></textarea>
+      <div class="feval" id="feval"></div>
+      <div class="fhint" id="fhint">vars: x · y · z<br>ops: + − * / ^ ( )</div>
+      <button class="rapply" id="btn-fplot" style="margin-top:6px">⊹ Plot Surface</button>
+      <button class="rapply danger" id="btn-fclear" style="margin-top:4px">✕ Clear Surface</button>
+    </div>
+  </div>
+</div>
+
+<div id="sbar">
+  <span class="si">DRAG BG to orbit · SCROLL to zoom · CLICK sphere · SHIFT+DRAG = Y-axis</span>
+  <span class="si" id="scoords" style="margin-left:auto">—</span>
+</div>
+
+<script>
+"use strict";
+const cvs=document.getElementById('planner');
+const ctx=cvs.getContext('2d');
+let dpr=window.devicePixelRatio||1;
+function resize(){const w=document.getElementById('cvs-wrap');dpr=window.devicePixelRatio||1;cvs.width=w.clientWidth*dpr;cvs.height=w.clientHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+let panelOpen=true;
+function updateTogPos(){const h=document.getElementById('chrome').offsetHeight;const tog=document.getElementById('rp-tog');tog.style.top='0';document.getElementById('sbar').style.right=panelOpen?'218px':'18px'}
+function setOffsets(){const h=document.getElementById('chrome').offsetHeight;document.getElementById('main').style.top=h+'px';document.getElementById('main').style.bottom='22px';resize();updateTogPos()}
+window.addEventListener('resize',setOffsets);setOffsets();
+document.getElementById('rp-tog').addEventListener('click',()=>{
+  panelOpen=!panelOpen;
+  document.getElementById('rpanel').classList.toggle('closed',!panelOpen);
+  document.getElementById('rp-tog').textContent=panelOpen?'◀':'▶';
+  updateTogPos();setTimeout(resize,200);
+});
+
+const G_MIN=0,G_MAX=10,G_DIV=10,WS=38;
+const cam={az:0.55,el:0.40,dist:260,tx:5,ty:2,tz:5};
+function project(wx,wy,wz){
+  const tx=wx-cam.tx,ty=wy-cam.ty,tz=wz-cam.tz;
+  const ca=Math.cos(-cam.az),sa=Math.sin(-cam.az);
+  const rx=tx*ca+tz*sa,ry=ty,rz=-tx*sa+tz*ca;
+  const ce=Math.cos(-cam.el),se=Math.sin(-cam.el);
+  const fy=ry*ce-rz*se,fz=ry*se+rz*ce;
+  const fov=480,sc=fov/(fov+fz+cam.dist);
+  return{sx:cvs.width/dpr/2+rx*sc*WS,sy:cvs.height/dpr/2-fy*sc*WS,scale:sc,depth:fz}
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let spheres=[],nid=1,selId=null;
+let showGrid=true,showAxes=true,showLbls=true,showDrop=true,showConn=true,showCoords=false;
+let showVPlane=false,vPlaneX=5;
+let graphType='sphere';
+let zSheetPos=5,zSheetOpac=.60,zFront=1,zRear=9,zYmid=5;
+let manZf=1,manBackType='zy',manBackVal=9,manY1=0,manOpac=.52;
+let ch4Zf=0,ch4Zb=8,ch4XFront=0,ch4XBack=10,ch4Rate=1.10;
+let formulaText='z = x / (y * 8000)',formulaEdit=false;
+
+// ── Color helpers ─────────────────────────────────────────────────────────────
+function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function lighten(h,a){const[r,g,b]=hexRgb(h);return`rgb(${Math.min(255,r+a)},${Math.min(255,g+a)},${Math.min(255,b+a)})`}
+function darken(h,a){const[r,g,b]=hexRgb(h);return`rgb(${Math.max(0,r-a)},${Math.max(0,g-a)},${Math.max(0,b-a)})`}
+function ha(h,a){const[r,g,b]=hexRgb(h);return`rgba(${r},${g},${b},${a})`}
+function blendHex(c1,c2,t){const[r1,g1,b1]=hexRgb(c1),[r2,g2,b2]=hexRgb(c2);return`rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`}
+function poly(pts,fill,stroke,sw){ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=sw||1;ctx.stroke()}}
+
+// ── Spheres ───────────────────────────────────────────────────────────────────
+function addSphere(x,y,z,label,color,size,isF=false){spheres.push({id:nid++,x,y,z,label,color,size,isF});document.getElementById('stat-s').textContent=spheres.length}
+function getSel(){return spheres.find(sp=>sp.id===selId)||null}
+addSphere(10,1,6.25,'Base Case','#4EA8DE',20);
+addSphere(10,4,1.56,'Accelerated','#52b788',20);
+addSphere(5,1,3.13,'Phase 1','#FFB703',16);
+addSphere(10,1,2.0,'Risky ⚠','#e05a5a',14);
+
+function drawSpheres(){
+  const mapped=spheres.map(sp=>({sp,p:project(sp.x,sp.y,sp.z)}));
+  mapped.sort((a,b)=>b.p.depth-a.p.depth);
+  mapped.forEach(({sp,p})=>{
+    const r=sp.size*p.scale,isSel=sp.id===selId;
+    if(showDrop&&sp.y>0.05){const gp=project(sp.x,0,sp.z);ctx.beginPath();ctx.setLineDash([2,4]);ctx.moveTo(p.sx,p.sy+r);ctx.lineTo(gp.sx,gp.sy);ctx.strokeStyle=`${sp.color}33`;ctx.lineWidth=0.8;ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(gp.sx,gp.sy,3*gp.scale,0,Math.PI*2);ctx.fillStyle=`${sp.color}22`;ctx.fill()}
+    if(isSel){const gd=ctx.createRadialGradient(p.sx,p.sy,r,p.sx,p.sy,r+14);gd.addColorStop(0,sp.color+'44');gd.addColorStop(1,'transparent');ctx.beginPath();ctx.arc(p.sx,p.sy,r+14,0,Math.PI*2);ctx.fillStyle=gd;ctx.fill();ctx.beginPath();ctx.arc(p.sx,p.sy,r+2,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1.5;ctx.stroke()}
+    const g=ctx.createRadialGradient(p.sx-r*.28,p.sy-r*.28,r*.04,p.sx,p.sy,r);g.addColorStop(0,lighten(sp.color,55));g.addColorStop(0.55,sp.color);g.addColorStop(1,darken(sp.color,45));
+    ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=isSel?'rgba(255,255,255,0.8)':`${sp.color}66`;ctx.lineWidth=isSel?2:1;ctx.stroke();
+    if(showLbls&&sp.label){ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(8,Math.round(9*p.scale))}px IBM Plex Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(sp.label,p.sx,p.sy)}
+    if(sp.isF){ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,Math.PI*2);ctx.strokeStyle='rgba(0,245,212,0.5)';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.stroke();ctx.setLineDash([])}
+    if(showCoords&&r>5){const ls=`${sp.z.toFixed(1)}·${sp.y.toFixed(1)}·${sp.x.toFixed(1)}`;const fs=Math.max(7,Math.floor(8*p.scale));ctx.save();ctx.font=`${fs}px IBM Plex Mono,monospace`;ctx.textAlign='left';ctx.textBaseline='top';const tw=ctx.measureText(ls).width;ctx.fillStyle='rgba(0,0,0,0.55)';ctx.fillRect(p.sx+r*.5,p.sy+r*.28,tw+3,fs+2);ctx.fillStyle=ha(sp.color,0.9);ctx.fillText(ls,p.sx+r*.52,p.sy+r*.30);ctx.restore()}
+  });
+}
+
+// ── Shared grid primitives ────────────────────────────────────────────────────
+function gridBorder(pts){poly(pts,null,'#4a4d66',1.2)}
+function drawXYGrid(z,alpha){
+  if(!showGrid)return;const step=(G_MAX-G_MIN)/G_DIV;ctx.save();ctx.globalAlpha=alpha;
+  for(let i=0;i<=G_DIV;i++){const v=G_MIN+i*step,edge=(i===0||i===G_DIV);ctx.lineWidth=edge?1.4:0.7;ctx.strokeStyle=edge?'#3a3d54':'#1e2030';const a=project(G_MIN,v,z),b=project(G_MAX,v,z);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();const c=project(v,G_MIN,z),d=project(v,G_MAX,z);ctx.beginPath();ctx.moveTo(c.sx,c.sy);ctx.lineTo(d.sx,d.sy);ctx.stroke()}
+  gridBorder([project(G_MIN,G_MIN,z),project(G_MAX,G_MIN,z),project(G_MAX,G_MAX,z),project(G_MIN,G_MAX,z)]);ctx.restore();
+}
+function drawXZGrid(y,alpha){
+  if(!showGrid)return;const step=(G_MAX-G_MIN)/G_DIV;ctx.save();ctx.globalAlpha=alpha;
+  for(let i=0;i<=G_DIV;i++){const v=G_MIN+i*step,edge=(i===0||i===G_DIV);ctx.lineWidth=edge?1.4:0.7;ctx.strokeStyle=edge?'#3a3d54':'#1e2030';const a=project(G_MIN,y,v),b=project(G_MAX,y,v);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();const c=project(v,y,G_MIN),d=project(v,y,G_MAX);ctx.beginPath();ctx.moveTo(c.sx,c.sy);ctx.lineTo(d.sx,d.sy);ctx.stroke()}
+  gridBorder([project(G_MIN,y,G_MIN),project(G_MAX,y,G_MIN),project(G_MAX,y,G_MAX),project(G_MIN,y,G_MAX)]);ctx.restore();
+}
+function drawZYGrid(x,alpha){
+  if(!showGrid)return;const step=(G_MAX-G_MIN)/G_DIV;ctx.save();ctx.globalAlpha=alpha;
+  for(let i=0;i<=G_DIV;i++){const v=G_MIN+i*step,edge=(i===0||i===G_DIV);ctx.lineWidth=edge?1.4:0.7;ctx.strokeStyle=edge?'#3a3d54':'#1e2030';const a=project(x,v,G_MIN),b=project(x,v,G_MAX);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();const c=project(x,G_MIN,v),d=project(x,G_MAX,v);ctx.beginPath();ctx.moveTo(c.sx,c.sy);ctx.lineTo(d.sx,d.sy);ctx.stroke()}
+  gridBorder([project(x,G_MIN,G_MIN),project(x,G_MIN,G_MAX),project(x,G_MAX,G_MAX),project(x,G_MAX,G_MIN)]);ctx.restore();
+}
+
+// ── Chart 1: Sphere Planner ───────────────────────────────────────────────────
+function drawGroundGrid(){if(!showGrid)return;const step=(G_MAX-G_MIN)/G_DIV;for(let i=0;i<=G_DIV;i++){const v=G_MIN+i*step,edge=(i===0||i===G_DIV);ctx.lineWidth=edge?1.2:0.6;ctx.strokeStyle=edge?'#252838':'#16171f';const a=project(G_MIN,0,v),b=project(G_MAX,0,v);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();const c=project(v,0,G_MIN),d=project(v,0,G_MAX);ctx.beginPath();ctx.moveTo(c.sx,c.sy);ctx.lineTo(d.sx,d.sy);ctx.stroke()}}
+function drawMainAxes(){if(!showAxes)return;const xl=document.getElementById('xl').value||'X',yl=document.getElementById('yl').value||'Y',zl=document.getElementById('zl').value||'Z',L=G_MAX,O=project(0,0,0);function ax(to,col,lbl,ta,tb,dx,dy){ctx.beginPath();ctx.moveTo(O.sx,O.sy);ctx.lineTo(to.sx,to.sy);ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.stroke();if(showLbls){ctx.fillStyle=col;ctx.font='bold 11px IBM Plex Mono,monospace';ctx.textAlign=ta;ctx.textBaseline=tb;ctx.fillText(lbl,to.sx+dx,to.sy+dy)}}ax(project(L,0,0),'#e05a5a',xl,'left','middle',5,0);ax(project(0,L,0),'#52b788',yl,'center','bottom',0,-6);ax(project(0,0,L),'#00F5D4',zl,'left','middle',5,0);if(showLbls){ctx.font='8px IBM Plex Mono,monospace';for(let i=0;i<=G_DIV;i+=2){const v=i*(G_MAX-G_MIN)/G_DIV;const xt=project(v,0,0);ctx.fillStyle='rgba(224,90,90,0.5)';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(v,xt.sx,xt.sy+5);const zt=project(0,0,v);ctx.fillStyle='rgba(0,245,212,0.5)';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(v,zt.sx-5,zt.sy)}}}
+
+// ── Chart 2: Parallel Grid ────────────────────────────────────────────────────
+function drawZConnectors(){if(!showConn)return;const pts=[[G_MIN,G_MIN],[G_MAX,G_MIN],[G_MIN,G_MAX],[G_MAX,G_MAX],[5,G_MIN],[5,G_MAX],[G_MIN,5],[G_MAX,5],[5,5]];ctx.save();ctx.globalAlpha=0.35;ctx.setLineDash([3,5]);pts.forEach(([x,y])=>{const f=project(x,y,zFront),r=project(x,y,zRear);ctx.beginPath();ctx.moveTo(f.sx,f.sy);ctx.lineTo(r.sx,r.sy);ctx.strokeStyle=y>zYmid?'rgba(255,159,28,0.6)':'rgba(0,245,212,0.6)';ctx.lineWidth=0.8;ctx.stroke()});ctx.setLineDash([]);ctx.restore()}
+function drawZSheet(){const z=Math.max(Math.min(zFront,zRear),Math.min(Math.max(zFront,zRear),zSheetPos)),yM=zYmid,op=zSheetOpac,uc=document.getElementById('zs-ucol').value,lc=document.getElementById('zs-lcol').value;const uBL=project(G_MIN,yM,z),uBR=project(G_MAX,yM,z),uTR=project(G_MAX,G_MAX,z),uTL=project(G_MIN,G_MAX,z);ctx.save();const ug=ctx.createLinearGradient((uBL.sx+uBR.sx)/2,(uBL.sy+uBR.sy)/2,(uTL.sx+uTR.sx)/2,(uTL.sy+uTR.sy)/2);ug.addColorStop(0,ha(uc,op*.55));ug.addColorStop(0.5,ha(uc,op*.22));ug.addColorStop(1,ha(uc,op*.08));poly([uBL,uBR,uTR,uTL],ug,null);const lBL=project(G_MIN,G_MIN,z),lBR=project(G_MAX,G_MIN,z),lTR=project(G_MAX,yM,z),lTL=project(G_MIN,yM,z);const lg=ctx.createLinearGradient((lTL.sx+lTR.sx)/2,(lTL.sy+lTR.sy)/2,(lBL.sx+lBR.sx)/2,(lBL.sy+lBR.sy)/2);lg.addColorStop(0,ha(lc,op*.55));lg.addColorStop(0.5,ha(lc,op*.22));lg.addColorStop(1,ha(lc,op*.08));poly([lBL,lBR,lTR,lTL],lg,null);poly([lBL,lBR,uTR,uTL],null,'rgba(255,255,255,0.18)',1);ctx.beginPath();ctx.moveTo(uBL.sx,uBL.sy);ctx.lineTo(uBR.sx,uBR.sy);ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.lineWidth=1.2;ctx.stroke();if(showLbls){const zl=document.getElementById('zl').value||'Z',ep=project(G_MAX,yM,z);ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 10px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`${zl}=${z.toFixed(2)}`,ep.sx+7,ep.sy)}ctx.restore()}
+function drawVPlaneParallel(){if(!showVPlane)return;const x=vPlaneX,pts=[project(x,G_MIN,zFront),project(x,G_MIN,zRear),project(x,G_MAX,zRear),project(x,G_MAX,zFront)];ctx.save();const g=ctx.createLinearGradient(0,Math.min(pts[0].sy,pts[2].sy),0,Math.max(pts[0].sy,pts[2].sy));g.addColorStop(0,'rgba(0,245,212,0.30)');g.addColorStop(0.5,'rgba(255,255,255,0.12)');g.addColorStop(1,'rgba(255,159,28,0.30)');poly(pts,g,'rgba(255,255,255,0.28)',1.2);if(showLbls){const xl=document.getElementById('xl').value||'X',lp=project(x,G_MAX,zFront);ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(`${xl}=${x.toFixed(1)}`,lp.sx,lp.sy-5)}ctx.restore()}
+function drawParallelAxes(){if(!showAxes)return;const xl=document.getElementById('xl').value||'X',yl=document.getElementById('yl').value||'Y',zl=document.getElementById('zl').value||'Z';function ax(O,E,col,lbl,ta,tb,dx,dy){ctx.beginPath();ctx.moveTo(O.sx,O.sy);ctx.lineTo(E.sx,E.sy);ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.stroke();if(showLbls){ctx.fillStyle=col;ctx.font='bold 11px IBM Plex Mono,monospace';ctx.textAlign=ta;ctx.textBaseline=tb;ctx.fillText(lbl,E.sx+dx,E.sy+dy)}}ax(project(G_MIN,G_MIN,zFront),project(G_MAX,G_MIN,zFront),'#e05a5a',xl,'left','middle',5,0);ax(project(G_MIN,G_MIN,zFront),project(G_MIN,G_MAX,zFront),'#52b788',yl,'right','middle',-5,0);ax(project(G_MIN,G_MIN,zFront),project(G_MIN,G_MIN,zRear),'#00F5D4',zl,'left','top',4,4)}
+function drawParallelMode(){const fd=project(5,5,zFront).depth,rd=project(5,5,zRear).depth;if(fd>rd){if(showGrid)drawXYGrid(zFront,0.28);drawZConnectors();drawZSheet();if(showGrid)drawXYGrid(zRear,0.68)}else{if(showGrid)drawXYGrid(zRear,0.28);drawZConnectors();drawZSheet();if(showGrid)drawXYGrid(zFront,0.68)}drawVPlaneParallel();drawParallelAxes();drawSpheres()}
+
+// ── Chart 3: Z-Manifold ───────────────────────────────────────────────────────
+function drawWall(pts,op){ctx.save();let miny=Infinity,maxy=-Infinity;pts.forEach(p=>{if(p.sy<miny)miny=p.sy;if(p.sy>maxy)maxy=p.sy});const g=ctx.createLinearGradient(0,miny,0,maxy);g.addColorStop(0,ha('#FF9F1C',op*.38));g.addColorStop(0.5,ha('#4EA8DE',op*.15));g.addColorStop(1,ha('#00F5D4',op*.38));poly(pts,g,ha('#8899bb',op*.3),.8);ctx.restore()}
+function drawCornerSection(){const zf=manZf,xb=manBackVal,yf=manY1;const faces=[{d:project(5,yf,5).depth,fn:()=>drawXZGrid(yf,.38)},{d:project(5,5,zf).depth,fn:()=>drawXYGrid(zf,.55)},{d:project(xb,5,5).depth,fn:()=>drawZYGrid(xb,.55)}];faces.sort((a,b)=>b.d-a.d);faces.forEach(f=>f.fn());ctx.save();const ce_b=project(xb,yf,zf),ce_t=project(xb,G_MAX,zf);ctx.beginPath();ctx.moveTo(ce_b.sx,ce_b.sy);ctx.lineTo(ce_t.sx,ce_t.sy);ctx.strokeStyle='rgba(255,255,255,0.65)';ctx.lineWidth=2;ctx.stroke();const flx1=project(G_MIN,yf,zf),flx2=project(xb,yf,zf);ctx.beginPath();ctx.moveTo(flx1.sx,flx1.sy);ctx.lineTo(flx2.sx,flx2.sy);ctx.strokeStyle=ha('#FF9F1C',.7);ctx.lineWidth=1.4;ctx.stroke();const flz1=project(xb,yf,zf),flz2=project(xb,yf,G_MAX);ctx.beginPath();ctx.moveTo(flz1.sx,flz1.sy);ctx.lineTo(flz2.sx,flz2.sy);ctx.strokeStyle=ha('#00F5D4',.7);ctx.lineWidth=1.4;ctx.stroke();ctx.restore();if(showConn){const cpts=[[G_MIN,zf],[G_MAX,zf],[xb,zf],[xb,G_MIN],[xb,G_MAX],[xb,5]];ctx.save();ctx.globalAlpha=.28;ctx.setLineDash([3,5]);cpts.forEach(([x,z])=>{const b=project(x,yf,z),t=project(x,G_MAX,z);ctx.beginPath();ctx.moveTo(b.sx,b.sy);ctx.lineTo(t.sx,t.sy);ctx.strokeStyle=ha('#52b788',.8);ctx.lineWidth=.8;ctx.stroke()});ctx.setLineDash([]);ctx.restore()}}
+function drawParallelSection(){const zf=manZf,zr=manBackVal,yf=manY1;const faces=[{d:project(5,yf,5).depth,fn:()=>drawXZGrid(yf,.35)},{d:project(5,5,zf).depth,fn:()=>drawXYGrid(zf,.45)},{d:project(5,5,zr).depth,fn:()=>drawXYGrid(zr,.62)}];faces.sort((a,b)=>b.d-a.d);faces.forEach(f=>f.fn());const op=manOpac,wp=[project(G_MIN,yf,zf),project(G_MAX,yf,zf),project(G_MAX,yf,zr),project(G_MIN,yf,zr)];ctx.save();const wg=ctx.createLinearGradient(wp[0].sx,0,wp[2].sx,0);wg.addColorStop(0,ha('#FF9F1C',op*.4));wg.addColorStop(.5,ha('#fff',op*.12));wg.addColorStop(1,ha('#00F5D4',op*.4));poly(wp,wg,ha('#8899bb',op*.35),.8);ctx.restore();if(showConn){const cp=[[G_MIN,G_MIN],[G_MAX,G_MIN],[G_MIN,G_MAX],[G_MAX,G_MAX],[5,G_MIN],[5,G_MAX],[G_MIN,5],[G_MAX,5]];ctx.save();ctx.globalAlpha=.28;ctx.setLineDash([3,5]);cp.forEach(([x,y])=>{const f=project(x,y,zf),r=project(x,y,zr);ctx.beginPath();ctx.moveTo(f.sx,f.sy);ctx.lineTo(r.sx,r.sy);ctx.strokeStyle=y>5?'rgba(255,159,28,.5)':'rgba(0,245,212,.5)';ctx.lineWidth=.7;ctx.stroke()});ctx.setLineDash([]);ctx.restore()}}
+function drawVPlane3(){if(!showVPlane)return;const x=vPlaneX,yf=manY1,zf=manZf,zr=manBackType==='zy'?G_MAX:manBackVal;const pts=[project(x,yf,zf),project(x,yf,zr),project(x,G_MAX,zr),project(x,G_MAX,zf)];ctx.save();const g=ctx.createLinearGradient(0,Math.min(...pts.map(p=>p.sy)),0,Math.max(...pts.map(p=>p.sy)));g.addColorStop(0,'rgba(0,245,212,.38)');g.addColorStop(.5,'rgba(255,255,255,.15)');g.addColorStop(1,'rgba(255,159,28,.38)');poly(pts,g,'rgba(255,255,255,.38)',1.4);ctx.restore()}
+function drawManAxes(){if(!showAxes)return;const xl=document.getElementById('xl').value||'X',yl=document.getElementById('yl').value||'Y',zl=document.getElementById('zl').value||'Z',zf=manZf,yf=manY1,xb=manBackVal;function ax(O,E,col,lbl,ta,tb,dx,dy){ctx.beginPath();ctx.moveTo(O.sx,O.sy);ctx.lineTo(E.sx,E.sy);ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.stroke();if(showLbls){ctx.fillStyle=col;ctx.font='bold 11px IBM Plex Mono,monospace';ctx.textAlign=ta;ctx.textBaseline=tb;ctx.fillText(lbl,E.sx+dx,E.sy+dy)}}ax(project(G_MIN,yf,zf),project(G_MAX,yf,zf),'#e05a5a',xl,'left','middle',5,0);ax(project(G_MIN,yf,zf),project(G_MIN,G_MAX,zf),'#52b788',yl,'right','middle',-5,0);const zTo=manBackType==='zy'?project(G_MIN,yf,G_MAX):project(G_MIN,yf,xb);ax(project(G_MIN,yf,zf),zTo,'#00F5D4',zl,'left','top',4,4)}
+function drawManifoldMode(){if(manBackType==='zy'){drawCornerSection()}else{drawParallelSection()}drawVPlane3();drawManAxes();drawSpheres()}
+
+// ── Chart 4: Z-Plane (parametric surface) ─────────────────────────────────────
+function evalZ4(z){
+  const pf=parseFormula(formulaText);
+  if(pf&&pf.dep==='y'){const r=safeEval(pf.expr,0,0,z);if(!isNaN(r))return Math.max(0,Math.min(G_MAX,r))}
+  // default linear fallback
+  const t=Math.max(0,Math.min(1,(z-ch4Zf)/Math.max(.001,ch4Zb-ch4Zf)));
+  return .8+.8*t;
+}
+function drawZPlaneMode(){
+  const zf=ch4Zf,zb=ch4Zb,xf=ch4XFront,xb=ch4XBack;
+  // Reference planes depth sorted
+  const refs=[
+    {d:project(5,0,5).depth,fn:()=>drawXZGrid(0,.32)},
+    {d:project(5,5,zf).depth,fn:()=>drawXYGrid(zf,.40)},
+    {d:project(5,5,zb).depth,fn:()=>drawXYGrid(zb,.55)},
+  ];
+  refs.sort((a,b)=>b.d-a.d);refs.forEach(r=>r.fn());
+  // Parametric surface strips
+  const N=50;
+  const strips=[];
+  for(let i=0;i<N;i++){
+    const t0=i/N,t1=(i+1)/N;
+    const z0=zf+t0*(zb-zf),z1=zf+t1*(zb-zf);
+    const y0=evalZ4(z0),y1=evalZ4(z1);
+    const xMax0=xf+(xb-xf)*t0,xMax1=xf+(xb-xf)*t1;
+    const cd=project((xMax0+xMax1)/2,(y0+y1)/2,(z0+z1)/2);
+    strips.push({z0,z1,y0,y1,xMax0,xMax1,d:cd.depth});
+  }
+  strips.sort((a,b)=>b.d-a.d);
+  strips.forEach(({z0,z1,y0,y1,xMax0,xMax1})=>{
+    const t=(y0+y1)/2/G_MAX;
+    const col=blendHex('#00F5D4','#FF9F1C',t);
+    // Base shadow strip (ground)
+    const bpts=[project(0,0,z0),project(xMax0,0,z0),project(xMax1,0,z1),project(0,0,z1)];
+    poly(bpts,ha(col,.10),null);
+    // Main parametric surface (the "plane of Z")
+    const tpts=[project(0,y0,z0),project(xMax0,y0,z0),project(xMax1,y1,z1),project(0,y1,z1)];
+    poly(tpts,ha(col,.28),ha(col,.55),.8);
+    // Right edge wall (x=xMax, showing the wedge profile)
+    if(xMax0>0.05||xMax1>0.05){const epts=[project(xMax0,0,z0),project(xMax0,y0,z0),project(xMax1,y1,z1),project(xMax1,0,z1)];poly(epts,ha(col,.16),ha(col,.28),.5)}
+    // Left edge wall (x=0)
+    const lpts=[project(0,0,z0),project(0,y0,z0),project(0,y1,z1),project(0,0,z1)];poly(lpts,ha(col,.10),ha(col,.20),.4);
+  });
+  // Draw the top edge curve (the y=f(z) profile line at x=xMax)
+  ctx.save();ctx.beginPath();
+  for(let i=0;i<=N;i++){const t=i/N;const z=zf+t*(zb-zf);const y=evalZ4(z);const xMax=xf+(xb-xf)*t;const p=project(xMax,y,z);i===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)}
+  ctx.strokeStyle='rgba(255,255,255,0.75)';ctx.lineWidth=2.2;ctx.stroke();
+  // Also at x=0
+  ctx.beginPath();
+  for(let i=0;i<=N;i++){const t=i/N;const z=zf+t*(zb-zf);const y=evalZ4(z);const p=project(0,y,z);i===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)}
+  ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+  // Axes
+  if(showAxes){
+    const xl=document.getElementById('xl').value||'X',yl=document.getElementById('yl').value||'Y',zl=document.getElementById('zl').value||'Z';
+    function axZ(O,E,col,lbl,ta,tb,dx,dy){ctx.beginPath();ctx.moveTo(O.sx,O.sy);ctx.lineTo(E.sx,E.sy);ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.stroke();if(showLbls){ctx.fillStyle=col;ctx.font='bold 11px IBM Plex Mono,monospace';ctx.textAlign=ta;ctx.textBaseline=tb;ctx.fillText(lbl,E.sx+dx,E.sy+dy)}}
+    axZ(project(0,0,zf),project(G_MAX,0,zf),'#e05a5a',xl,'left','middle',5,0);
+    axZ(project(0,0,zf),project(0,G_MAX,zf),'#52b788',yl,'right','middle',-5,0);
+    axZ(project(0,0,zf),project(0,0,zb),'#00F5D4',zl,'left','top',4,4);
+    if(showLbls){ctx.font='8px IBM Plex Mono,monospace';const nz=4;for(let i=0;i<=nz;i++){const zv=zf+i*(zb-zf)/nz;const p=project(0,0,zv);ctx.fillStyle='rgba(0,245,212,.55)';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(zv.toFixed(1),p.sx-5,p.sy)}}
+    // f(zb) label on back edge
+    if(showLbls){const yb=evalZ4(zb);const lb=project(0,yb,zb);ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`y(${zb.toFixed(1)})=${yb.toFixed(2)}`,lb.sx+6,lb.sy)}
+  }
+  drawSpheres();
+}
+
+// ── Main dispatch ─────────────────────────────────────────────────────────────
+function draw(){
+  ctx.clearRect(0,0,cvs.width/dpr,cvs.height/dpr);
+  if(graphType==='sphere'){drawGroundGrid();drawMainAxes();drawSpheres()}
+  else if(graphType==='parallel'){drawParallelMode()}
+  else if(graphType==='manifold'){drawManifoldMode()}
+  else{drawZPlaneMode()}
+}
+function loop(){draw();requestAnimationFrame(loop)}
+loop();
+
+// ── Interaction (hitTest fixed: outer var renamed 'mapped') ───────────────────
+let mdown=false,mx=0,my=0,moved=false,orbiting=false,dragging=false,dragId=null;
+function hitTest(px,py){const mapped=spheres.map(sp=>({sp,p:project(sp.x,sp.y,sp.z)})).sort((a,b)=>a.p.depth-b.p.depth);for(const{sp,p}of mapped){if(Math.hypot(px-p.sx,py-p.sy)<=sp.size*p.scale+2)return sp}return null}
+function moveSphere(id,dx,dy,shift){const sp=spheres.find(s=>s.id===id);if(!sp)return;const p=project(sp.x,sp.y,sp.z),ms=1/(p.scale*WS);if(shift){sp.y=Math.max(0,sp.y-dy*ms)}else{const ca=Math.cos(cam.az),sa=Math.sin(cam.az);sp.x+=(dx*ca+dy*sa)*ms;sp.z+=(-dx*sa+dy*ca)*ms}updateCoordPanel(sp);evalFormulaAtSphere(sp)}
+cvs.addEventListener('pointerdown',e=>{cvs.setPointerCapture(e.pointerId);const r=cvs.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;mdown=true;mx=px;my=py;moved=false;const hit=hitTest(px,py);if(hit){dragId=hit.id;dragging=true;orbiting=false;selId=hit.id;updatePanelSel();cvs.style.cursor='grabbing'}else{dragId=null;dragging=false;orbiting=true;cvs.style.cursor='grabbing'}e.preventDefault()});
+window.addEventListener('pointermove',e=>{const r=cvs.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;const dx=px-mx,dy=py-my;mx=px;my=py;if(Math.abs(dx)+Math.abs(dy)>1)moved=true;if(!mdown)return;if(dragging&&dragId!=null){moveSphere(dragId,dx,dy,e.shiftKey)}else if(orbiting){cam.az+=dx*.007;cam.el=Math.max(.04,Math.min(Math.PI/2-.04,cam.el-dy*.006))}});
+window.addEventListener('pointerup',()=>{if(mdown&&!moved&&!dragging){selId=null;updatePanelSel()}mdown=false;dragging=false;orbiting=false;cvs.style.cursor='crosshair'});
+cvs.addEventListener('wheel',e=>{cam.dist=Math.max(60,Math.min(900,cam.dist+e.deltaY*.4));e.preventDefault()},{passive:false});
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+function updateCoordPanel(sp){if(!sp){['cx','cy','cz'].forEach(id=>{const el=document.getElementById(id);el.value='';el.disabled=true});document.getElementById('coord-apply').disabled=true;return}document.getElementById('cx').value=+sp.x.toFixed(3);document.getElementById('cx').disabled=false;document.getElementById('cy').value=+sp.y.toFixed(3);document.getElementById('cy').disabled=false;document.getElementById('cz').value=+sp.z.toFixed(3);document.getElementById('cz').disabled=false;document.getElementById('coord-apply').disabled=false;document.getElementById('scoords').textContent=`X:${sp.x.toFixed(2)} · Y:${sp.y.toFixed(2)} · Z:${sp.z.toFixed(2)}`}
+function updatePanelSel(){const sp=getSel(),el=document.getElementById('sel-props');if(!sp){el.style.display='none';updateCoordPanel(null);document.getElementById('feval').textContent='';document.getElementById('feval').className='feval';return}el.style.display='block';document.getElementById('prop-lbl').value=sp.label;document.getElementById('prop-col').value=sp.color;document.getElementById('prop-sz').value=sp.size;updateCoordPanel(sp);evalFormulaAtSphere(sp)}
+function updateManInfo(){const el=document.getElementById('man-info');if(!el)return;el.textContent=manBackType==='zy'?`Front: XY @ Z=${manZf}\nBack: ZY @ X=${manBackVal}\n(corner)`:`Front: XY @ Z=${manZf}\nBack: XY @ Z=${manBackVal}\n(parallel)`}
+function setGraphType(t){
+  graphType=t;
+  document.getElementById('stat-mode').textContent=t==='sphere'?'SPHERE':t==='parallel'?'PARALLEL':t==='manifold'?'MANIFOLD':'Z-PLANE';
+  document.getElementById('sphere-controls').style.display=t==='sphere'?'flex':'none';
+  document.getElementById('parallel-controls').style.display=t==='parallel'?'flex':'none';
+  document.getElementById('manifold-controls').style.display=t==='manifold'?'flex':'none';
+  document.getElementById('vplane-group').style.display=(t==='parallel'||t==='manifold')?'flex':'none';
+  document.getElementById('zs-panel').style.display=t==='parallel'?'block':'none';
+  document.getElementById('man-panel').style.display=t==='manifold'?'block':'none';
+  document.getElementById('c4-panel').style.display=t==='zplane'?'block':'none';
+  document.getElementById('fmode-note').style.display=t==='zplane'?'block':'none';
+  document.getElementById('fhint').textContent=t==='zplane'?'y = f(z)  e.g. 0.8*1.1^z':'vars: x · y · z\nops: + − * / ^ ( )';
+  if(t==='manifold')updateManInfo();
+}
+document.getElementById('graph-type').addEventListener('change',function(){setGraphType(this.value)});
+
+// ── Ribbon handlers ───────────────────────────────────────────────────────────
+document.getElementById('rib-add').addEventListener('click',()=>{const col=document.getElementById('rib-col').value,sz=+document.getElementById('rib-sz').value,lbl=document.getElementById('rib-lbl').value.trim()||`S${nid}`;addSphere(5,2,5,lbl,col,sz);document.getElementById('rib-lbl').value=''});
+function togBtn(id,get,set){const b=document.getElementById(id);if(!b)return;b.addEventListener('click',function(){set(!get());this.classList.toggle('on',get())})}
+togBtn('btn-grid',()=>showGrid,v=>showGrid=v);togBtn('btn-axes',()=>showAxes,v=>showAxes=v);togBtn('btn-lbl',()=>showLbls,v=>showLbls=v);togBtn('btn-drop',()=>showDrop,v=>showDrop=v);togBtn('btn-coords',()=>showCoords,v=>showCoords=v);togBtn('btn-conn',()=>showConn,v=>showConn=v);togBtn('btn-vplane',()=>showVPlane,v=>showVPlane=v);
+document.getElementById('btn-rc').addEventListener('click',()=>{cam.az=0.55;cam.el=0.40;cam.dist=260;cam.tx=5;cam.ty=2;cam.tz=5});
+document.getElementById('btn-top').addEventListener('click',()=>{cam.az=0;cam.el=Math.PI/2-.05;cam.dist=240});
+document.getElementById('btn-iso').addEventListener('click',()=>{cam.az=0.785;cam.el=0.615;cam.dist=260});
+document.getElementById('zs-slide').addEventListener('input',function(){zSheetPos=+this.value/10;document.getElementById('zs-slide-val').textContent=zSheetPos.toFixed(1)});
+document.getElementById('zs-opac').addEventListener('input',function(){zSheetOpac=+this.value/100;document.getElementById('zs-opac-val').textContent=this.value+'%'});
+document.getElementById('zs-front').addEventListener('change',function(){zFront=parseFloat(this.value)||1});
+document.getElementById('zs-rear').addEventListener('change',function(){zRear=parseFloat(this.value)||9});
+document.getElementById('zs-ymid').addEventListener('change',function(){zYmid=parseFloat(this.value)||5});
+document.getElementById('man-zf').addEventListener('change',function(){manZf=parseFloat(this.value)||1;updateManInfo()});
+document.getElementById('man-opac').addEventListener('input',function(){manOpac=+this.value/100;document.getElementById('man-opac-val').textContent=this.value+'%'});
+document.getElementById('man-back-type').addEventListener('change',function(){manBackType=this.value;document.getElementById('man-back-lbl').textContent=this.value==='zy'?'X=':'Z=';updateManInfo()});
+document.getElementById('man-back-val').addEventListener('change',function(){manBackVal=parseFloat(this.value)||9;updateManInfo()});
+document.getElementById('man-y1').addEventListener('change',function(){manY1=parseFloat(this.value)||0});
+document.getElementById('vplane-x').addEventListener('change',function(){vPlaneX=parseFloat(this.value)||5});
+// Chart 4
+document.getElementById('c4-zf').addEventListener('change',function(){ch4Zf=parseFloat(this.value)||0});
+document.getElementById('c4-zb').addEventListener('change',function(){ch4Zb=parseFloat(this.value)||8});
+document.getElementById('c4-xf').addEventListener('change',function(){ch4XFront=parseFloat(this.value)||0});
+document.getElementById('c4-xb').addEventListener('change',function(){ch4XBack=parseFloat(this.value)||10});
+document.getElementById('c4-rate').addEventListener('change',function(){ch4Rate=parseFloat(this.value)||1.10});
+function setFormula(f){formulaText=f;document.getElementById('fdisplay').textContent=f;document.getElementById('fdisplay').style.display='block';document.getElementById('finput').style.display='none';document.getElementById('btn-fedit').textContent='⇄ Edit';formulaEdit=false}
+document.getElementById('c4-pin-exp').addEventListener('click',()=>{const r=document.getElementById('c4-rate').value||'1.10';setFormula(`y = 0.8 * ${r}^z`)});
+document.getElementById('c4-pin-sin').addEventListener('click',()=>setFormula('y = 1.2 + 0.6 * sin(z)'));
+document.getElementById('c4-pin-port').addEventListener('click',()=>{
+  ch4Zf=0;ch4Zb=8;ch4XFront=0;ch4XBack=10;ch4Rate=1.10;
+  document.getElementById('c4-zf').value=0;document.getElementById('c4-zb').value=8;
+  document.getElementById('c4-xf').value=0;document.getElementById('c4-xb').value=10;document.getElementById('c4-rate').value=1.10;
+  setFormula('y = 0.8 * 1.1^z');
+});
+// Coord bind
+document.getElementById('coord-apply').addEventListener('click',()=>{const sp=getSel();if(!sp)return;sp.x=parseFloat(document.getElementById('cx').value)||sp.x;sp.y=parseFloat(document.getElementById('cy').value)||sp.y;sp.z=parseFloat(document.getElementById('cz').value)||sp.z;updateCoordPanel(sp);evalFormulaAtSphere(sp)});
+document.getElementById('prop-update').addEventListener('click',()=>{const sp=getSel();if(!sp)return;sp.label=document.getElementById('prop-lbl').value;sp.color=document.getElementById('prop-col').value;sp.size=+document.getElementById('prop-sz').value});
+document.getElementById('prop-del').addEventListener('click',()=>{if(!selId)return;spheres=spheres.filter(s=>s.id!==selId);selId=null;updatePanelSel();document.getElementById('stat-s').textContent=spheres.length});
+
+// ── Formula ───────────────────────────────────────────────────────────────────
+document.getElementById('fdisplay').textContent=formulaText;
+document.getElementById('btn-fedit').addEventListener('click',()=>{
+  formulaEdit=!formulaEdit;const di=document.getElementById('fdisplay'),inp=document.getElementById('finput'),btn=document.getElementById('btn-fedit');
+  if(formulaEdit){inp.value=formulaText;inp.style.display='block';di.style.display='none';btn.textContent='✓ Save'}
+  else{formulaText=inp.value.trim()||formulaText;di.textContent=formulaText;di.style.display='block';inp.style.display='none';btn.textContent='⇄ Edit';evalFormulaAtSphere(getSel())}
+});
+function safeEval(expr,x,y,z){const c=expr.replace(/[^0-9xyz \+\-\*\/\^\.\(\)]/gi,'').replace(/\^/g,'**').replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos').replace(/\bexp\b/g,'Math.exp').replace(/\bsqrt\b/g,'Math.sqrt');try{return new Function('x','y','z',`"use strict";return(${c})`)(x,y,z)}catch{return NaN}}
+function parseFormula(f){const m=f.match(/^\s*([xyz])\s*=\s*(.+)$/i);return m?{dep:m[1].toLowerCase(),expr:m[2].trim()}:null}
+function evalFormulaAtSphere(sp){const ev=document.getElementById('feval');if(!sp||graphType==='zplane'){ev.textContent='';ev.className='feval';return}const pf=parseFormula(formulaText);if(!pf){ev.textContent='Invalid formula';ev.className='feval';return}const result=safeEval(pf.expr,sp.x,sp.y,sp.z);if(isNaN(result)){ev.textContent='Eval error';ev.className='feval';return}const actual=pf.dep==='z'?sp.z:pf.dep==='y'?sp.y:sp.x;const delta=actual-result,ad=Math.abs(delta);const status=ad<.05?'✓ On surface':delta>0?`▲ +${ad.toFixed(3)} above`:`▼ ${ad.toFixed(3)} below`;ev.textContent=`${pf.dep.toUpperCase()} expected: ${result.toFixed(3)}\nActual: ${actual.toFixed(3)}\n${status}`;ev.className='feval '+(ad<.05?'ok':'off')}
+document.getElementById('btn-fplot').addEventListener('click',()=>{spheres=spheres.filter(sp=>!sp.isF);const pf=parseFormula(formulaText);if(!pf){alert('Use: z = x / (y * 8000)');return}const vals=[1,3,5,7,9],cols=['#00F5D4','#4EA8DE','#7B2CBF','#FFB703','#52b788'];vals.forEach((a,ai)=>{vals.forEach(b=>{let x,y,z;if(pf.dep==='z'){x=a;y=b;z=safeEval(pf.expr,x,y,0)}else if(pf.dep==='y'){x=a;z=b;y=safeEval(pf.expr,x,0,z)}else{y=a;z=b;x=safeEval(pf.expr,0,y,z)};if(!isFinite(z)||!isFinite(y)||!isFinite(x))return;if(x<G_MIN||x>G_MAX*2||y<G_MIN||y>G_MAX*2||z<G_MIN||z>G_MAX*2)return;addSphere(x,y,z,'',cols[ai],8,true)})});document.getElementById('stat-s').textContent=spheres.length});
+document.getElementById('btn-fclear').addEventListener('click',()=>{spheres=spheres.filter(sp=>!sp.isF);document.getElementById('stat-s').textContent=spheres.length});
+</script>
+</body>
+</html>
