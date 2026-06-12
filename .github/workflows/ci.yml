@@ -21,16 +21,7 @@ jobs:
           python-version: '3.11'
       - name: Validate design-tokens.json
         run: |
-          python3 -c "
-import json, sys
-tokens = json.load(open('design-tokens.json'))
-required = ['colors', 'typography', 'spacing']
-missing = [k for k in required if k not in tokens]
-if missing:
-    print('[FAIL] Missing token categories:', missing)
-    sys.exit(1)
-print('[OK] design-tokens.json:', list(tokens.keys()))
-"
+          python3 -c "import json,sys; t=json.load(open('design-tokens.json')); m=[k for k in ['colors','typography','spacing'] if k not in t]; (print('[FAIL] Missing token categories:',m) or sys.exit(1)) if m else print('[OK] design-tokens.json:',list(t.keys()))"
       - name: Audit score smoke test
         run: python3 -c "import scripts.audit_score as a; print('[OK] audit_score importable')"
 
