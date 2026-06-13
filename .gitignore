@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node
+node_modules/
+dist/
+
+# Build artifacts
+target/
+*.db
+*.sqlite
+
+# Secrets
+.env
+*.key
+*.pem
