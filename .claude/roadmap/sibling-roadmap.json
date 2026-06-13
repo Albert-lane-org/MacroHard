@@ -1,0 +1,27 @@
+{
+  "repo": "albert-lane-org/macrohard",
+  "phase": 5,
+  "phase_label": "Bootstrap",
+  "status": "in_progress",
+  "last_updated": "2026-06-12",
+  "phases": {
+    "5": { "label": "Bootstrap", "status": "in_progress", "notes": "design-tokens.json, audit_score.py, CI wired" },
+    "6": { "label": "Tauri App Shell", "status": "not_started", "notes": "src-tauri/ + sqlxml-engine dependency + TypeScript frontend" },
+    "7": { "label": "Production Build", "status": "not_started", "notes": "Windows MSI + Linux AppImage installers" }
+  },
+  "tasks": [
+    { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
+    { "id": "MH-P5-02", "description": "design-tokens.json initial token set", "status": "completed" },
+    { "id": "MH-P5-03", "description": "scripts/audit_score.py stub", "status": "completed" },
+    { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init", "status": "not_started" },
+    { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency", "status": "not_started" },
+    { "id": "MH-P6-03", "description": "TypeScript design token inspector UI", "status": "not_started" },
+    { "id": "MH-P7-01", "description": "Windows MSI build workflow", "status": "not_started" },
+    { "id": "MH-P7-02", "description": "Linux AppImage build workflow", "status": "not_started" }
+  ],
+  "compliance": {
+    "status": "clean",
+    "gemini_references": 0,
+    "unauthenticated_endpoints": 0
+  }
+}
