@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
+# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-14
+# MacroHard design audit scoring -- validates design-tokens.json against the 3D standard.
 """
-audit_score.py — MacroHard Design Studio audit scoring system.
+MacroHard Audit Score Calculator
 
-Phase 5 stub: validates design-tokens.json against the 3D standard,
-computes a weighted compliance score.
+Scores the design token set against the MacroHard 3D standard:
+  - Colors: sovereign palette + 3D depth/light refs
+  - Typography: font family, size, weight, line-height
+  - Spacing: numeric scale keys
+  - 3D-standard: isometric angle, elevation, shadow
 
-Phase 6: full implementation with visual inspection, component audit,
-and cross-repo design consistency checking.
-
-Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-12
+Weighted total produces a score 0.0-1.0. Gate: >=0.8 PASS, >=0.6 WARN, <0.6 FAIL.
+Phase 6: full implementation with visual inspection and component audit.
 """
 
 from __future__ import annotations
@@ -19,11 +22,10 @@ from pathlib import Path
 
 TOKEN_PATH = Path("design-tokens.json")
 
-# Scoring weights (must sum to 1.0)
 WEIGHTS = {
-    "colors":     0.30,
-    "typography": 0.25,
-    "spacing":    0.20,
+    "colors":      0.30,
+    "typography":  0.25,
+    "spacing":     0.20,
     "3d-standard": 0.25,
 }
 
