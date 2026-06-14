@@ -1,13 +1,16 @@
 {
   "repo": "albert-lane-org/macrohard",
-  "phase": 5,
-  "phase_label": "Bootstrap",
-  "status": "in_progress",
-  "last_updated": "2026-06-12",
+  "layer": "B",
+  "role": "Design authority -- MacroHard Design Studio (Tauri shell + SQLXML engine)",
+  "current_phase": 5,
   "phases": {
-    "5": { "label": "Bootstrap", "status": "in_progress", "notes": "design-tokens.json, audit_score.py, CI wired" },
-    "6": { "label": "Tauri App Shell", "status": "not_started", "notes": "src-tauri/ + sqlxml-engine dependency + TypeScript frontend" },
-    "7": { "label": "Production Build", "status": "not_started", "notes": "Windows MSI + Linux AppImage installers" }
+    "1": { "status": "completed", "label": "Foundation" },
+    "2": { "status": "completed", "label": "Core Services" },
+    "3": { "status": "completed", "label": "Integration" },
+    "4": { "status": "completed", "label": "Purge and Harden" },
+    "5": { "status": "in_progress", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
+    "6": { "status": "not_started", "label": "Tauri App Shell + sqlxml-engine dependency" },
+    "7": { "status": "not_started", "label": "Production Build -- Windows MSI + Linux AppImage" }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
@@ -19,9 +22,11 @@
     { "id": "MH-P7-01", "description": "Windows MSI build workflow", "status": "not_started" },
     { "id": "MH-P7-02", "description": "Linux AppImage build workflow", "status": "not_started" }
   ],
+  "open_absences": [],
   "compliance": {
     "status": "clean",
     "gemini_references": 0,
     "unauthenticated_endpoints": 0
-  }
+  },
+  "updated": "2026-06-14"
 }
