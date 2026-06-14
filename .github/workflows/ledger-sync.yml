@@ -1,0 +1,100 @@
+# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-14
+# MacroHard Ledger Sync — dual-fire timed ledger update with redundancy guard.
+name: MacroHard Ledger Sync
+
+on:
+  schedule:
+    - cron: '0 0,2,4,6,8,10,12,14,16,18,20,22 * * *'   # first fire
+    - cron: '10 0,2,4,6,8,10,12,14,16,18,20,22 * * *'  # redundancy fire
+  workflow_dispatch:
+    inputs:
+      run_type:
+        description: '"first" = full query | "redundancy" = guard check'
+        required: false
+        default: 'first'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Ledger Sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runner health check
+        run: echo "Runner alive on $RUNNER_OS"
+
+      - name: Classify run + emit compression instruction
+        id: classify
+        run: |
+          echo "[ledger-sync] COMPRESSION_INSTRUCTION emitted"
+          MINUTE=$(date -u +%M)
+          RUN_TYPE="${{ github.event.inputs.run_type }}"
+          IS_REDUNDANT=false
+          if [ "$MINUTE" = "10" ] || echo "$RUN_TYPE" | grep -qi "redundancy"; then
+            IS_REDUNDANT=true
+          fi
+          RUN_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "is_redundant=$IS_REDUNDANT" >> "$GITHUB_OUTPUT"
+          echo "run_ts=$RUN_TS"             >> "$GITHUB_OUTPUT"
+          echo "[ledger-sync] run_ts=$RUN_TS  is_redundant=$IS_REDUNDANT"
+
+      - name: Checkout (action-free)
+        env:
+          ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
+        run: |
+          echo "::add-mask::$ROADMAPS_TOKEN"
+          git init -q .
+          git remote add origin "https://x-access-token:${ROADMAPS_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=10 origin HEAD
+          git checkout -q FETCH_HEAD
+
+      - name: Redundancy guard
+        id: guard
+        if: steps.classify.outputs.is_redundant == 'true'
+        run: |
+          RECENT=$(git log --since="15 minutes ago" --oneline -- ledger/ | wc -l | tr -d ' ')
+          if [ "$RECENT" -gt "0" ]; then
+            LATEST=$(ls -t ledger/macrohard-ledger-2*.md 2>/dev/null | head -1)
+            if [ -n "$LATEST" ] && [ -s "$LATEST" ]; then
+              echo "first_wrote=true" >> "$GITHUB_OUTPUT"
+              echo "[ledger-sync] first fire OK — skipping redundancy"
+            else
+              echo "first_wrote=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "first_wrote=false" >> "$GITHUB_OUTPUT"
+            echo "[ledger-sync] first fire missed — running redundancy"
+          fi
+
+      - name: Run ledger query
+        if: >
+          steps.classify.outputs.is_redundant != 'true' ||
+          steps.guard.outputs.first_wrote == 'false'
+        env:
+          GH_TOKEN: ${{ secrets._ROADMAPS }}
+          ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
+        run: python3 scripts/ledger_query.py
+
+      - name: Commit ledger output
+        if: >
+          steps.classify.outputs.is_redundant != 'true' ||
+          steps.guard.outputs.first_wrote == 'false'
+        env:
+          ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
+        run: |
+          echo "::add-mask::$ROADMAPS_TOKEN"
+          git config user.name  "AlbertLane+Anthropic"
+          git config user.email "noreply@anthropic.com"
+          git add ledger/ state/last_query.json 2>/dev/null || true
+          git diff --cached --quiet && echo "[ledger-sync] nothing to commit" && exit 0
+          SUFFIX=""
+          [ "${{ steps.classify.outputs.is_redundant }}" = "true" ] && SUFFIX=" [redundancy]"
+          git commit \
+            -m "chore(ledger): sync ${{ steps.classify.outputs.run_ts }}${SUFFIX}" \
+            -m "Co-authored-by: Claude Sonnet 4.6 <claude@anthropic.com>"
+          git pull --rebase \
+            "https://x-access-token:${ROADMAPS_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD || true
+          git push \
+            "https://x-access-token:${ROADMAPS_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            HEAD:main || echo "[ledger-sync] push failed — queued for next cycle"
