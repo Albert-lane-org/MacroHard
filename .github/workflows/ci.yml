@@ -5,7 +5,7 @@ on:
   push:
     branches: [main, 'claude/**']
   pull_request:
-    branches: [main]
+    branches: [main, 'claude/laughing-wozniak-zte1vy']
 
 permissions:
   contents: read
@@ -20,17 +20,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate design-tokens.json
-        run: |
-          python3 -c "
-import json, sys
-tokens = json.load(open('design-tokens.json'))
-required = ['colors', 'typography', 'spacing']
-missing = [k for k in required if k not in tokens]
-if missing:
-    print('[FAIL] Missing token categories:', missing)
-    sys.exit(1)
-print('[OK] design-tokens.json:', list(tokens.keys()))
-"
+        run: python3 scripts/ci_validate_tokens.py
       - name: Audit score smoke test
         run: python3 -c "import scripts.audit_score as a; print('[OK] audit_score importable')"
 
@@ -40,7 +30,4 @@ print('[OK] design-tokens.json:', list(tokens.keys()))
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       - name: Validate all JSON
-        run: |
-          find . -name '*.json' -not -path './.git/*' | while read f; do
-            python3 -c "import json; json.load(open('$f'))" && echo "[OK] $f" || { echo "[FAIL] $f"; exit 1; }
-          done
+        run: python3 scripts/ci_json_health.py
