@@ -44,7 +44,7 @@ GROUPS = {
 ALL_REPOS = [r for repos in GROUPS.values() for r in repos]
 
 
-# ── Utilities ──────────────────────────────────────────────────────────────────────────────
+# ── Utilities ──────────────────────────────────────────────────────────────────
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -97,7 +97,7 @@ def _sha256(s: str) -> str:
     return hashlib.sha256(s.encode()).hexdigest()
 
 
-# ── State ────────────────────────────────────────────────────────────────────────────────
+# ── State ──────────────────────────────────────────────────────────────────────
 
 def load_state() -> dict:
     if STATE.exists():
@@ -114,7 +114,7 @@ def save_state(state: dict) -> None:
     STATE.write_text(json.dumps(state, indent=2) + "\n")
 
 
-# ── GitHub API fetch ───────────────────────────────────────────────────────────────────
+# ── GitHub API fetch ────────────────────────────────────────────────────────────
 
 def fetch_runs(repo: str, since: str) -> list[dict]:
     """Return completed workflow runs for repo since `since` (ISO8601)."""
@@ -155,9 +155,174 @@ def fetch_runs(repo: str, since: str) -> list[dict]:
     return sorted(runs, key=lambda r: r["start"])
 
 
+# ── Co-location: write run-log.jsonl back to each repo ────────────────────────
+
+def write_run_log_to_repo(repo: str, new_runs: list[dict]) -> None:
+    """Append new_runs to .github/workflows/run-log.jsonl in `repo` via GitHub API."""
+    path = ".github/workflows/run-log.jsonl"
+    api_path = f"/repos/{ORG}/{repo}/contents/{path}"
+
+    # Fetch existing file (to get SHA for update)
+    existing = _gh(api_path)
+    existing_sha = None
+    existing_content = ""
+    if isinstance(existing, dict) and "content" in existing:
+        existing_sha = existing.get("sha")
+        existing_content = base64.b64decode(existing["content"].replace("\n", "")).decode("utf-8")
+
+    # Append new lines
+    new_lines = "\n".join(json.dumps(r, separators=(",", ":")) for r in new_runs) + "\n"
+    merged = existing_content + new_lines
+
+    body = {
+        "message": (
+            f"chore(run-log): append {len(new_runs)} run(s) — ledger_query {_now()}\n\n"
+            "Co-authored-by: Claude Sonnet 4.6 <claude@anthropic.com>"
+        ),
+        "content": base64.b64encode(merged.encode()).decode(),
+        "branch": "main",
+    }
+    if existing_sha:
+        body["sha"] = existing_sha
+
+    result = _gh(api_path, method="PUT", body=body)
+    if isinstance(result, dict) and result.get("content"):
+        print(f"  [run-log] {repo}: wrote {len(new_runs)} entries to .github/workflows/run-log.jsonl")
+    else:
+        print(f"  [run-log] {repo}: write failed (may need _ROADMAPS token with write access)", file=sys.stderr)
+
+
+# ── Render: markdown table ─────────────────────────────────────────────────────
+
+def render_markdown(groups_data: dict[str, list], query_ts: str, since_ts: str) -> str:
+    COL = {"repo": 18, "wf": 32, "start": 22, "end": 22, "total": 9}
+    SEP = f"{'─'*COL['repo']}  {'─'*COL['wf']}  {'─'*COL['start']}  {'─'*COL['end']}  {'─'*COL['total']}"
+    HDR = (f"{'Repo':<{COL['repo']}}  {'Workflow':<{COL['wf']}}  "
+           f"{'Run (start)':<{COL['start']}}  {'End':<{COL['end']}}  {'Total':>{COL['total']}}")
+    BAR = "━" * (sum(COL.values()) + 8)
+
+    lines = [
+        "# MacroHard Workflow Ledger",
+        f"Query: {query_ts}   Period: {since_ts} → {query_ts}",
+        "",
+    ]
+
+    grand_runs = grand_secs = 0
+
+    for group_name, group_runs in groups_data.items():
+        if not group_runs:
+            continue  # skip groups with zero new runs
+
+        lines += ["", BAR, group_name, BAR, "", HDR, SEP]
+
+        g_secs = g_count = 0
+        for run in group_runs:  # already sorted by start time
+            repo    = run["repo"][:COL["repo"]]
+            wf      = run["wf_name"][:COL["wf"]]
+            start   = run["start"][:19].replace("T", " ")
+            end     = run["end"][:19].replace("T", " ")
+            dur     = _fmt_dur(run["duration_s"])
+            badge   = f"[{run['conclusion'][:4]}]" if run["conclusion"] else ""
+            lines.append(
+                f"{repo:<{COL['repo']}}  {wf:<{COL['wf']}}  "
+                f"{start:<{COL['start']}}  {end:<{COL['end']}}  {dur:>{COL['total']}}  {badge}"
+            )
+            if run["duration_s"] >= 0:
+                g_secs += run["duration_s"]
+            g_count += 1
+
+        lines += [
+            SEP,
+            f"{'Group Total':<{COL['repo']}}  {g_count} runs"
+            f"{'':>{COL['wf'] + COL['start'] + COL['end'] + 4}}  {_fmt_dur(g_secs):>{COL['total']}}",
+            "",
+            f"  Summary: {g_count} workflow{'s' if g_count != 1 else ''} "
+            f"| Total time: {_fmt_dur(g_secs)}",
+        ]
+
+        grand_runs += g_count
+        grand_secs += g_secs
+
+    digest_src = "\n".join(lines)
+    lines += [
+        "", BAR, "GRAND TOTAL", BAR,
+        f"  Total workflows: {grand_runs}   Total time: {_fmt_dur(grand_secs)}",
+        f"  Ledger SHA256: {_sha256(digest_src)}",
+        f"  Generated: {query_ts}",
+    ]
+    return "\n".join(lines)
+
+
+# ── Render: SQLXML ─────────────────────────────────────────────────────────────
+
+def render_sqlxml(groups_data: dict[str, list], query_ts: str, since_ts: str) -> str:
+    def x(s) -> str:
+        return (str(s)
+                .replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;").replace('"', "&quot;"))
+
+    total_runs = sum(len(v) for v in groups_data.values())
+    total_secs = sum(r["duration_s"] for v in groups_data.values()
+                     for r in v if r["duration_s"] >= 0)
+
+    out = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<!-- MacroHard Workflow Ledger | queried={query_ts} | '
+        f'SEC No. 17684-273-411-436 -->',
+        '<macrohard_ledger',
+        f'    version="1.1"',
+        f'    queried="{query_ts}"',
+        f'    period_start="{since_ts}"',
+        f'    period_end="{query_ts}"',
+        f'    total_runs="{total_runs}"',
+        f'    total_duration_s="{total_secs}"',
+        f'    ledger_sha256="{_sha256(query_ts + since_ts + str(total_runs))}">',
+    ]
+
+    for g_idx, (g_name, g_runs) in enumerate(groups_data.items(), 1):
+        if not g_runs:
+            continue
+        g_secs = sum(r["duration_s"] for r in g_runs if r["duration_s"] >= 0)
+        out += [
+            f'  <group id="{g_idx}" name="{x(g_name)}"',
+            f'         total_runs="{len(g_runs)}" total_duration_s="{g_secs}"',
+            f'         total_duration_fmt="{x(_fmt_dur(g_secs))}">',
+        ]
+        for run in g_runs:
+            out.append(
+                f'    <run repo="{x(run["repo"])}" workflow="{x(run["wf_name"])}"'
+                f' file="{x(run["wf_file"])}" run_id="{run["run_id"]}"'
+                f' start="{x(run["start"])}" end="{x(run["end"])}"'
+                f' duration_s="{run["duration_s"]}"'
+                f' duration_fmt="{x(_fmt_dur(run["duration_s"]))}"'
+                f' conclusion="{x(run["conclusion"])}"'
+                f' branch="{x(run["branch"])}" sha="{x(run["sha"])}"'
+                f' record_sha256="{x(run["record_sha256"])}"/>'
+            )
+        out += [
+            f'    <group_total duration_s="{g_secs}"'
+            f' formatted="{x(_fmt_dur(g_secs))}" runs="{len(g_runs)}"/>',
+            '  </group>',
+        ]
+
+    out += [
+        '  <summary>',
+        f'    <total_workflows>{total_runs}</total_workflows>',
+        f'    <total_duration_s>{total_secs}</total_duration_s>',
+        f'    <total_duration_fmt>{x(_fmt_dur(total_secs))}</total_duration_fmt>',
+        f'    <query_ts>{query_ts}</query_ts>',
+        f'    <since_ts>{since_ts}</since_ts>',
+        '  </summary>',
+        '</macrohard_ledger>',
+    ]
+    return "\n".join(out)
+
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
 def main() -> int:
     args = sys.argv[1:]
-    dry_run        = "--dry-run"        in args
+    dry_run       = "--dry-run"       in args
     write_to_repos = "--write-to-repos" in args
 
     since_override = None
@@ -170,7 +335,9 @@ def main() -> int:
     query_ts = _now()
 
     print(f"[ledger] query={query_ts}  since={since_ts}  dry_run={dry_run}")
+    print(f"[ledger] COMPRESSION: compress context before reading ledger entries")
 
+    # Fetch runs, grouped
     groups_data: dict[str, list] = {g: [] for g in GROUPS}
     total_new = 0
 
@@ -184,6 +351,8 @@ def main() -> int:
             groups_data[g_name].extend(runs)
             total_new += len(runs)
             print(f"{len(runs)}")
+            if write_to_repos and not dry_run:
+                write_run_log_to_repo(repo, runs)
 
     print(f"[ledger] total new runs: {total_new}")
 
@@ -194,23 +363,28 @@ def main() -> int:
             save_state(state)
         return 0
 
+    md  = render_markdown(groups_data, query_ts, since_ts)
+    xml = render_sqlxml(groups_data, query_ts, since_ts)
+
     if dry_run:
-        print("[ledger] dry-run: no files written")
+        print("\n" + md[:3000])
+        print("\n[ledger] dry-run: no files written")
         return 0
 
-    OUT.mkdir(parents=True, exist_ok=True)
     ts_file = query_ts.replace(":", "").replace("-", "")[:15]
-    (OUT / f"macrohard-ledger-{ts_file}.md").write_text(
-        f"# MacroHard Workflow Ledger\nQuery: {query_ts}\n", encoding="utf-8")
-    (OUT / "macrohard-ledger-latest.md").write_text(
-        f"# MacroHard Workflow Ledger\nQuery: {query_ts}\n", encoding="utf-8")
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / f"macrohard-ledger-{ts_file}.md" ).write_text(md,  encoding="utf-8")
+    (OUT / f"macrohard-ledger-{ts_file}.xml").write_text(xml, encoding="utf-8")
+    (OUT / "macrohard-ledger-latest.md"     ).write_text(md,  encoding="utf-8")
+    (OUT / "macrohard-ledger-latest.xml"    ).write_text(xml, encoding="utf-8")
 
     state["last_query_ts"]   = query_ts
     state["last_write_ts"]   = query_ts
     state["total_runs_seen"] = state.get("total_runs_seen", 0) + total_new
     save_state(state)
 
-    print(f"[ledger] wrote ledger output, total_seen={state['total_runs_seen']}")
+    print(f"[ledger] wrote ledger/macrohard-ledger-{ts_file}.{{md,xml}}")
+    print(f"[ledger] state → last_query_ts={query_ts} total_seen={state['total_runs_seen']}")
     return 0
 
 
