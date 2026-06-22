@@ -39,7 +39,7 @@ on:
         default: 'first'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sync:
