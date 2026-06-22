@@ -1,7 +1,10 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *.pyo
+*.pyd
+.Python
 .pytest_cache/
 *.egg-info/
 .venv/
@@ -13,14 +16,18 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Rust
+# Rust / Build
 target/
 Cargo.lock
+*.db
+*.sqlite
 
 # Env / secrets
 .env
 .env.*
 *.env.local
+*.key
+*.pem
 
 # OS
 .DS_Store
