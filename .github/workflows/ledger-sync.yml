@@ -10,11 +10,6 @@
 #   If found and data looks sane (file size > 0), the redundancy run skips.
 #   If not found, the redundancy run executes a full query (same as first).
 #
-# COMPRESSION TRIGGER:
-#   Step 1 emits a compression_instruction so any Claude agent reading this run
-#   log applies context compression before processing — avoids burning tokens on
-#   stale context from prior runs.
-#
 # MANUAL TRIGGER (workflow_dispatch):
 #   run_type = "first"      → forced full query (default)
 #   run_type = "redundancy" → redundancy-check mode (only runs if first missed)
@@ -47,16 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # ── Step 1: Compression trigger + run classification ──────────────────────
-      - name: Classify run + emit compression instruction
+      # ── Step 1: Run classification ────────────────────────────────────────────
+      - name: Classify run
         id: classify
         run: |
-          # COMPRESSION_INSTRUCTION: any Claude agent reading this log must apply
-          # context compression before processing ledger entries. Do not ingest
-          # raw JSONL without compressing first. Timing delta must align with
-          # 2-hour cron cadence before first-read SHA256 is written.
-          echo "[ledger-sync] COMPRESSION_INSTRUCTION emitted — agents compress before reading"
-
           MINUTE=$(date -u +%M)
           RUN_TYPE="${{ github.event.inputs.run_type }}"
           IS_REDUNDANT=false
