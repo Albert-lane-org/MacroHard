@@ -1,0 +1,35 @@
+# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27
+# MacroHard Design Studio — Cloudflare Worker configuration
+
+name = "macrohard"
+main = "src/worker.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+account_id = ""  # Set via CLOUDFLARE_ACCOUNT_ID env var or wrangler login
+
+[vars]
+# API_KEY set via: wrangler secret put API_KEY
+
+[[d1_databases]]
+binding = "DB"
+database_name = "macrohard-db"
+database_id = "c3faadf7-2934-4db9-9e15-e3204aceb57e"
+
+[[r2_buckets]]
+binding = "DESIGN_ASSETS"
+bucket_name = "design-assets"
+
+[build]
+command = "npm run build"
+
+[[routes]]
+pattern = "macrohard.albertlane.org/*"
+zone_name = "albertlane.org"
+
+[triggers]
+crons = []
+
+[observability]
+enabled = true
+head_sampling_rate = 1
