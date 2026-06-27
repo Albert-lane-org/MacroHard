@@ -13,7 +13,7 @@ Output:
   ledger/macrohard-ledger-latest.md   symlinked latest (overwritten each run)
   ledger/macrohard-ledger-latest.xml
   state/last_query.json               incremental state (updated after run)
-  .github/workflows/run-log.jsonl     appended per-repo if --write-to-repos
+  ledger/run-log.jsonl                 appended per-repo if --write-to-repos
 
 Usage:
   GH_TOKEN=<tok> python3 scripts/ledger_query.py
@@ -158,8 +158,8 @@ def fetch_runs(repo: str, since: str) -> list[dict]:
 # ── Co-location: write run-log.jsonl back to each repo ────────────────────────
 
 def write_run_log_to_repo(repo: str, new_runs: list[dict]) -> None:
-    """Append new_runs to .github/workflows/run-log.jsonl in `repo` via GitHub API."""
-    path = ".github/workflows/run-log.jsonl"
+    """Append new_runs to ledger/run-log.jsonl in `repo` via GitHub API."""
+    path = "ledger/run-log.jsonl"
     api_path = f"/repos/{ORG}/{repo}/contents/{path}"
 
     # Fetch existing file (to get SHA for update)
@@ -187,7 +187,7 @@ def write_run_log_to_repo(repo: str, new_runs: list[dict]) -> None:
 
     result = _gh(api_path, method="PUT", body=body)
     if isinstance(result, dict) and result.get("content"):
-        print(f"  [run-log] {repo}: wrote {len(new_runs)} entries to .github/workflows/run-log.jsonl")
+        print(f"  [run-log] {repo}: wrote {len(new_runs)} entries to ledger/run-log.jsonl")
     else:
         print(f"  [run-log] {repo}: write failed (may need _ROADMAPS token with write access)", file=sys.stderr)
 
@@ -335,7 +335,6 @@ def main() -> int:
     query_ts = _now()
 
     print(f"[ledger] query={query_ts}  since={since_ts}  dry_run={dry_run}")
-    print(f"[ledger] COMPRESSION: compress context before reading ledger entries")
 
     # Fetch runs, grouped
     groups_data: dict[str, list] = {g: [] for g in GROUPS}
