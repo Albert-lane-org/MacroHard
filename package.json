@@ -1,0 +1,18 @@
+{
+  "name": "macrohard",
+  "version": "1.0.0",
+  "description": "MacroHard Design Studio — Sovereign Design Authority",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc",
+    "deploy": "wrangler deploy",
+    "type-check": "tsc --noEmit",
+    "migrate": "wrangler d1 execute macrohard-db --file=schema/001-macrohard.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.5.4",
+    "wrangler": "^3.78.0"
+  }
+}
