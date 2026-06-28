@@ -19,7 +19,7 @@ jobs:
       - name: Node.js version check
         run: node --version && npm --version
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-save
       - name: Type-check
         run: npm run type-check
 
