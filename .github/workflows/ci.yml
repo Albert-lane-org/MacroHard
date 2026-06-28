@@ -1,4 +1,4 @@
-# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27
+# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
 name: CI
 
 on:
@@ -16,12 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Node.js version check
+        run: node --version && npm --version
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-save
       - name: Type-check
         run: npm run type-check
 

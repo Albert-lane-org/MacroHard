@@ -1,32 +1,38 @@
 {
   "repo": "albert-lane-org/macrohard",
   "layer": "B",
-  "role": "Design authority -- MacroHard Design Studio (Tauri shell + SQLXML engine)",
-  "current_phase": 5,
+  "role": "Design authority -- MacroHard Design Studio (Tauri 2.0 shell + SQLXML engine)",
+  "current_phase": 6,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
     "2": { "status": "completed", "label": "Core Services" },
     "3": { "status": "completed", "label": "Integration" },
     "4": { "status": "completed", "label": "Purge and Harden" },
-    "5": { "status": "in_progress", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
-    "6": { "status": "not_started", "label": "Tauri App Shell + sqlxml-engine dependency" },
+    "5": { "status": "completed", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
+    "6": { "status": "in_progress", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency" },
     "7": { "status": "not_started", "label": "Production Build -- Windows MSI + Linux AppImage" }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
-    { "id": "MH-P5-02", "description": "design-tokens.json initial token set", "status": "completed" },
-    { "id": "MH-P5-03", "description": "scripts/audit_score.py stub", "status": "completed" },
-    { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init", "status": "not_started" },
-    { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency", "status": "not_started" },
-    { "id": "MH-P6-03", "description": "TypeScript design token inspector UI", "status": "not_started" },
+    { "id": "MH-P5-02", "description": "design-tokens.json initial token set (sovereign palette + 3D-standard)", "status": "completed" },
+    { "id": "MH-P5-03", "description": "scripts/audit_score.py -- 3D standard weighted scoring (PASS/WARN/FAIL gate)", "status": "completed" },
+    { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init -- Cargo.toml, build.rs, main.rs, tauri.conf.json, capabilities/", "status": "completed" },
+    { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "in_progress" },
+    { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
     { "id": "MH-P7-01", "description": "Windows MSI build workflow", "status": "not_started" },
     { "id": "MH-P7-02", "description": "Linux AppImage build workflow", "status": "not_started" }
   ],
-  "open_absences": [],
+  "open_absences": [
+    {
+      "id": "MH-AB-001",
+      "description": "sqlxml-engine Cargo dependency: deferred to Phase 7 -- albert-lane-org/sqlxml backend-agent must be restructured as a Cargo library crate before the git dependency can be activated in src-tauri/Cargo.toml",
+      "phase": 7
+    }
+  ],
   "compliance": {
     "status": "clean",
     "gemini_references": 0,
     "unauthenticated_endpoints": 0
   },
-  "updated": "2026-06-14"
+  "updated": "2026-06-28"
 }
