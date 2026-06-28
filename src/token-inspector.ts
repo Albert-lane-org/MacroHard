@@ -37,11 +37,11 @@ function swatch(hex: string): string {
 }
 
 function tokenTable(
-  rows: Array<[string, string]>,
+  rows: Array<[string, string | number]>,
   renderVal: (v: string) => string = (v) => v
 ): string {
   return `<table class="token-table"><tbody>${rows
-    .map(([k, v]) => `<tr><td class="key">${k}</td><td>${renderVal(v)}</td></tr>`)
+    .map(([k, v]) => `<tr><td class="key">${k}</td><td>${renderVal(String(v))}</td></tr>`)
     .join("")}</tbody></table>`;
 }
 
@@ -54,9 +54,9 @@ function renderTokens(t: DesignTokens): string {
     section("Sovereign Colors", tokenTable(Object.entries(t.colors.sovereign ?? {}), swatch)),
     section("3D-Standard Colors", tokenTable(Object.entries(t.colors["3d-standard"] ?? {}), swatch)),
     section("Typography — Font Sizes", tokenTable(Object.entries(t.typography["font-size"] ?? {}))),
-    section("Font Weights", tokenTable(Object.entries(t.typography["font-weight"] ?? {}).map(([k, v]) => [k, String(v)]))),
+    section("Font Weights", tokenTable(Object.entries(t.typography["font-weight"] ?? {}))),
     section("Spacing Scale", tokenTable(Object.entries(t.spacing ?? {}))),
-    section("3D Standard", tokenTable(Object.entries(t["3d-standard"] ?? {}).map(([k, v]) => [k, String(v)]))),
+    section("3D Standard", tokenTable(Object.entries(t["3d-standard"] ?? {}))),
     section("Shadows", tokenTable(Object.entries(t.shadows ?? {}))),
   ].join("");
 }
