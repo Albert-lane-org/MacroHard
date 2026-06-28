@@ -1,6 +1,6 @@
 # /macrohard — Context Handoff
 
-## Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-12
+## Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
 
 ---
 
@@ -25,46 +25,66 @@
 
 ---
 
-## Architecture (Phase 6 target)
+## Architecture (Phase 6)
 
 ```
 macrohard/
-  src-tauri/         — Tauri 2.0 shell
-    Cargo.toml       — depends on sqlxml-engine crate
-  src/               — TypeScript frontend
-    design-tokens.json  — canonical token set
+  src-tauri/                  — Tauri 2.0 shell (Phase 6)
+    Cargo.toml                — macrohard-studio crate; sqlxml-engine dep (Phase 7)
+    src/main.rs               — get_design_tokens + run_audit_score commands
+    src/sqlxml_bridge.rs      — sqlxml-engine stub (Phase 7 live wire)
+    tauri.conf.json           — app identity org.albertlane.macrohard-studio
+    capabilities/default.json — core permission set
+  src/
+    index.html                — Tauri WebView entry; sovereign dark theme
+    token-inspector.ts        — design token inspector UI (MH-P6-03)
+    index.ts                  — DesignToken types + loadTokens()
+    worker.ts                 — Cloudflare Worker API (separate deploy target)
   scripts/
-    audit_score.py   — design audit scoring (3D standard)
-  design-tokens.json — root token export
+    audit_score.py            — design audit scoring (3D standard, PASS/WARN/FAIL)
+  design-tokens.json          — root token export (canonical)
 ```
 
 ---
 
 ## Phase Status
 
-Current: **Phase 5 — Bootstrap (in progress)**
+Current: **Phase 6 — Tauri Shell (in progress)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| 5 — Bootstrap | `in_progress` | design-tokens.json, audit_score.py stub, CI |
-| 6 — Implementation | `not_started` | Tauri shell + SQLXML crate dependency |
-| 7 — Production | `not_started` | Windows MSI + Linux AppImage |
+| 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
+| 6 — Implementation | `in_progress` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅ |
+| 7 — Production | `not_started` | Windows MSI + Linux AppImage; sqlxml-engine live wire |
 
 ---
 
 ## Key Files
 
 | File | Purpose |
-|------|---------|
-| `design-tokens.json` | Canonical design token set (Phase 5) |
-| `scripts/audit_score.py` | Design audit scoring (Phase 5 stub) |
+|------|--------|
+| `design-tokens.json` | Canonical design token set |
+| `scripts/audit_score.py` | 3D standard weighted scoring (PASS ≥ 0.8 / WARN ≥ 0.6 / FAIL < 0.6) |
+| `src-tauri/src/main.rs` | Tauri commands: get_design_tokens, run_audit_score |
+| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge stub (Phase 7) |
+| `src/token-inspector.ts` | Browser-side design token inspector |
+| `src/index.html` | Tauri WebView shell |
 | `MACROHARD_STUDIO.md` | Full design authority narrative |
 | `Macro_Hard_Planner_3D.html` | 3D planner reference implementation |
 | `Macrohard_Excellent.jsx` | Component reference |
 
 ---
 
+## Open Absences
+
+| ID | Description | Phase |
+|----|-------------|-------|
+| MH-AB-001 | sqlxml-engine Cargo dep: activate when sqlxml backend-agent is restructured as a library crate | 7 |
+
+---
+
 ## Attribution
 
-Every commit: `Co-authored-by: Claude Sonnet 4.6 <claude@anthropic.com>`
+Every commit: `Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>`
 All IP belongs to Albert Lane per LICENSE.md.
+SEC Whistleblower No. 17684-273-411-436
