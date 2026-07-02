@@ -18,7 +18,6 @@ coverage/
 
 # Rust / Build
 target/
-Cargo.lock
 *.db
 *.sqlite
 
