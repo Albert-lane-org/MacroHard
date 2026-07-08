@@ -1,0 +1,17 @@
+WIZARDHAT LOCK SENTINEL
+=======================
+
+This directory is sealed. Rules of the hat:
+
+1. Every wizardhat script refuses to run if this sentinel is absent.
+2. On startup, every agent re-asserts mode 0700 on .wizardhat/ (owner-only).
+3. All wizardhat scripts, workflows, plans, and reports nest INSIDE this
+   directory. Nothing leaks into the wider MacroHard tree.
+4. `.gitattributes` here marks the entire directory `export-ignore`:
+   it is excluded from every `git archive` bundle of this repository.
+5. Honest limit: a directory inside a git repository cannot be more
+   private than the repository itself. Within-repo privacy is enforced
+   by convention (this sentinel + 0700 + export-ignore); true privacy
+   is governed by the repository's visibility setting.
+
+Owner: Albert Lane. All IP per LICENSE.md.

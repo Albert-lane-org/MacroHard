@@ -1,0 +1,19 @@
+{
+  "scope": "skills",
+  "files": 16,
+  "lines": 7094,
+  "bytes": 278279,
+  "todos": 0,
+  "open_checklist_items": 13,
+  "phase_markers": [
+    "SKILL-macrohard.md: Skill ID:     SKILL-MACROHARD",
+    "SKILL-macrohard.md: \"last_run_by\": \"SKILL-MACROHARD\",",
+    "SKILL-macrohard.md: \"source_skill\": \"SKILL-MACROHARD\",",
+    "SKILL-macrohard.md: \"skill\": \"SKILL-MACROHARD\",",
+    "SKILL-macrohard.md: *SKILL-MACROHARD v1.0.0 \u2014 Albert Lane Digital Infrastructure*",
+    "SKILL-opencollective.md: Group:        1 \u2014 child of SKILL-MASTER, lateral to lane-mcp, macrohard",
+    "SKILL-opencollective.md: SKILL-MACROHARD design authority (721 lines)"
+  ],
+  "elapsed_s": 0.006,
+  "scanned_at": "07:11:31.386Z"
+}

@@ -1,0 +1,24 @@
+{
+  "scope": "webview",
+  "files": 13,
+  "lines": 957,
+  "bytes": 32727,
+  "todos": 0,
+  "open_checklist_items": 0,
+  "phase_markers": [
+    "tokens.ts: // Canonical design token set \u2014 MacroHard 3D Standard v1",
+    "tokens.ts: standard: 'MacroHard 3D Design Standard v1',",
+    "index.html: <title>MacroHard Design Studio</title>",
+    "index.html: <div id=\"app\"><div class=\"loading\">Starting MacroHard Design Studio&#8230;</div></div>",
+    "index.ts: // MacroHard Design Token System -- Phase 5 scaffold; full implementation in Phase 6.",
+    "audit_engine.ts: // TypeScript port of scripts/audit_score.py \u2014 MacroHard 3D Standard audit engine",
+    "utils.ts: const msg = enc.encode('macrohard-auth');",
+    "mcp.ts: // JSON-RPC 2.0 dispatcher \u2014 lane_macrohard_* MCP tools",
+    "mcp.ts: case 'lane_macrohard_audit': {",
+    "mcp.ts: case 'lane_macrohard_token': {",
+    "mcp.ts: case 'lane_macrohard_audit_history': {",
+    "mcp.ts: case 'lane_macrohard_audit_get': {"
+  ],
+  "elapsed_s": 0.002,
+  "scanned_at": "07:11:23.216Z"
+}

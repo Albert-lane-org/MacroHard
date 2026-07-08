@@ -1,0 +1,22 @@
+{
+  "scope": "roadmap",
+  "files": 2,
+  "lines": 128,
+  "bytes": 5445,
+  "todos": 0,
+  "open_checklist_items": 0,
+  "phase_markers": [
+    "sibling-roadmap.json: \"repo\": \"albert-lane-org/macrohard\",",
+    "sibling-roadmap.json: \"role\": \"Design authority -- MacroHard Design Studio (Tauri 2.0 shell + SQLXML engine)\",",
+    "CLAUDE.md: # /macrohard \u2014 Context Handoff",
+    "CLAUDE.md: **MacroHard Design Studio** \u2014 sovereign design authority and audit scoring system.",
+    "CLAUDE.md: - Audit scoring system (3D standard, weighted scoring per MACROHARD_STUDIO.md)",
+    "CLAUDE.md: macrohard/",
+    "CLAUDE.md: Cargo.toml                \u2014 macrohard-studio crate; sqlxml-engine dep (Phase 7)",
+    "CLAUDE.md: tauri.conf.json           \u2014 app identity org.albertlane.macrohard-studio",
+    "CLAUDE.md: | `MACROHARD_STUDIO.md` | Full design authority narrative |",
+    "CLAUDE.md: | `Macrohard_Excellent.jsx` | Component reference |"
+  ],
+  "elapsed_s": 0.0,
+  "scanned_at": "07:11:27.849Z"
+}

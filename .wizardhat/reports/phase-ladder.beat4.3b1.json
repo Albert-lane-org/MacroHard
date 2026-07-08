@@ -1,0 +1,24 @@
+{
+  "scope": "phase-ladder",
+  "files": 10,
+  "lines": 1518,
+  "bytes": 64845,
+  "todos": 0,
+  "open_checklist_items": 285,
+  "phase_markers": [
+    "phase-4-8-plan.md: SQLXML (SQLite device / Cloudflare D1 cloud), and MacroHard\u2019s design system.",
+    "phase-4-8-plan.md: | `MacroHard` | Design authority, 3D standard | Phase 5 |",
+    "phase-4-8-plan.md: ### MacroHard",
+    "phase-4-8-plan.md: - MacroHard browser integration spec: how Tauri WebView renders MacroHard design system",
+    "phase-4-8-plan.md: - lane-mcp endpoint: `lane_macrohard_score` (design compliance API)",
+    "phase-4-8-plan.md: ### MacroHard \u2192 lane-mcp",
+    "phase-4-8-plan.md: - `lane_macrohard_score` endpoint wired and testable",
+    "phase-4-8-plan.md: \u2502    \u251c\u2500 lane_macrohard_score (design audit)               \u2502",
+    "phase-4-8-plan.md: | MHARD-001 | MacroHard | Design standard document | 5 |",
+    "phase-4-8-plan.md: | MHARD-002 | MacroHard | Audit scoring engine | 5 |",
+    "phase-4-8-plan.md: | MHARD-003 | MacroHard | lane_macrohard_score endpoint | 6 |",
+    "phase-9-16-sovereign-expansion.md: ## Phase 12 \u2014 Silicon Whisperer OS: Firestick HD Deployment (Jan 2027)"
+  ],
+  "elapsed_s": 0.002,
+  "scanned_at": "07:11:31.382Z"
+}

@@ -1,0 +1,3 @@
+# The hat does not travel: exclude the entire wizardhat from git archive
+# exports (tarballs, GitHub "Download ZIP" of archives, release bundles).
+* export-ignore
