@@ -1,0 +1,24 @@
+{
+  "scope": "audit",
+  "files": 6,
+  "lines": 535,
+  "bytes": 20245,
+  "todos": 0,
+  "open_checklist_items": 0,
+  "phase_markers": [
+    "audit_score.py: # MacroHard design audit scoring -- validates design-tokens.json against the 3D standard.",
+    "audit_score.py: MacroHard Audit Score Calculator",
+    "audit_score.py: Scores the design token set against the MacroHard 3D standard:",
+    "ci_validate_tokens.py: \"\"\"CI: validate design-tokens.json against the MacroHard 3D token schema.\"\"\"",
+    "ledger_query.py: ledger_query.py \u2014 Ad-hoc MacroHard workflow run ledger.",
+    "ledger_query.py: ledger/macrohard-ledger-<ts>.md     human-readable grouped table",
+    "ledger_query.py: ledger/macrohard-ledger-<ts>.xml    SQLXML dataset for MacroHard engine",
+    "ledger_query.py: ledger/macrohard-ledger-latest.md   symlinked latest (overwritten each run)",
+    "ledger_query.py: ledger/macrohard-ledger-latest.xml",
+    "ledger_query.py: \"Group 4 \u2014 Front-End\":      [\"sovereign-canary\", \"macrohard\", \"procurement\", \"maps\"],",
+    "ledger_query.py: \"User-Agent\": \"macrohard-ledger/1.1\",",
+    "ledger_query.py: \"# MacroHard Workflow Ledger\","
+  ],
+  "elapsed_s": 0.001,
+  "scanned_at": "07:11:17.102Z"
+}

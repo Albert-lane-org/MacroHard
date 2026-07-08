@@ -1,0 +1,14 @@
+{
+  "scope": "tokens",
+  "files": 3,
+  "lines": 133,
+  "bytes": 3689,
+  "todos": 0,
+  "open_checklist_items": 0,
+  "phase_markers": [
+    "design-tokens.json: \"standard\": \"MacroHard 3D Design Standard v1\",",
+    "001-macrohard.sql: -- MacroHard Design Studio \u2014 D1 Schema"
+  ],
+  "elapsed_s": 0.0,
+  "scanned_at": "07:11:17.096Z"
+}

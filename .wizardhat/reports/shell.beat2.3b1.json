@@ -1,0 +1,22 @@
+{
+  "scope": "shell",
+  "files": 7,
+  "lines": 202,
+  "bytes": 6556,
+  "todos": 0,
+  "open_checklist_items": 0,
+  "phase_markers": [
+    "Cargo.toml: # MacroHard Design Studio \u2014 Tauri 2.0 shell (MH-P6-01)",
+    "Cargo.toml: name    = \"macrohard-studio\"",
+    "Cargo.toml: name       = \"macrohard_lib\"",
+    "default.json: \"description\": \"MacroHard Design Studio default capability set\",",
+    "main.rs: // MacroHard Design Studio \u2014 Tauri 2.0 shell entry point (MH-P6-01)",
+    "main.rs: .expect(\"MacroHard Design Studio failed to start\");",
+    "sqlxml_bridge.rs: // Interface mirrors lane_sqlxml_* MCP tools so the MacroHard UI can query",
+    "tauri.conf.json: \"productName\": \"MacroHard Design Studio\",",
+    "tauri.conf.json: \"identifier\": \"org.albertlane.macrohard-studio\",",
+    "tauri.conf.json: \"title\": \"MacroHard Design Studio\","
+  ],
+  "elapsed_s": 0.001,
+  "scanned_at": "07:11:23.247Z"
+}
