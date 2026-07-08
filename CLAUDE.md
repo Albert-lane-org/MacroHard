@@ -13,15 +13,30 @@
 
 ## What This Repo Is
 
-**MacroHard Design Studio** — sovereign design authority and audit scoring system.
+**MacroHarder™ — the excellent workbook.** (Renamed from MacroHard,
+2026-07-08: the MacroHard mark is taken by an xAI filing. GitHub repo
+rename to `macroharder` pending — admin action; lane-mcp's estate roster
+is config-only and ready for it.)
 
-- Standalone Tauri 2.0 app (Windows MSI + Linux AppImage)
-- Design token system (colors, typography, spacing, 3D standard references)
-- SQLXML engine embedded as a Cargo workspace crate for live data inspection
-- Audit scoring system (3D standard, weighted scoring per MACROHARD_STUDIO.md)
-- Used by: sovereign browser (tauri-rustxml) as embedded UI layer
+The one-stop-shop configurable analytics workbook: standard Excel taken
+to a third-dimensional level (cells are (col, row, layer); sheets are
+volumes), with **every single UI detail user-configurable** and a fully
+customizable analytics dashboard.
 
-**This is the design authority for the entire sovereign stack.**
+- Standalone Tauri 2.0 app — **Windows first** (NSIS self-extracting
+  .exe installer), then Android, then macOS
+- Rust core + C/C++ compute kernels (FFI) + SQLXML for data manipulation
+- **Modules via MCP:** a module is an MCP server; procurement and maps
+  are the first two dashboard modules (Phase 8). lane-mcp remains a
+  standalone gateway MacroHarder can consume as an ordinary MCP client
+- Filesystem integrity: BLAKE3 content-hash manifest, verified on boot
+- Design token system + audit scoring carry over as the adjustable-UI
+  substrate and preset quality gate
+- Still the design authority for the sovereign stack (tauri-rustxml)
+
+**Master plan: `.wizardhat/plans/plan-macroharder.md`** — product spec,
+full dependency tree, re-scored Phase 6→12 ladder (Firestick is out;
+Phase 12 is the Windows ship).
 
 ---
 
@@ -49,13 +64,20 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 6 — Tauri Shell (in progress)**
+Current: **Phase 6 — Tauri Shell + MacroHarder identity swap (in progress)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
 | 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
-| 6 — Implementation | `in_progress` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅ |
-| 7 — Production | `not_started` | Windows MSI + Linux AppImage; sqlxml-engine live wire |
+| 6 — Shell + rename prep | `in_progress` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅; MacroHarder identity swap open |
+| 7 — sqlxml live wire | `not_started` | MH-AB-001 unblock; persistence real |
+| 8 — Workbook core + first modules | `not_started` | 3D cell model, grid engine; procurement + maps MCP modules feed the dashboard |
+| 9 — Fully adjustable UI | `not_started` | layout schema, token-driven chrome, dashboard composer |
+| 10 — MCP module host GA | `not_started` | registry, capability gating, module install UX |
+| 11 — AER integration | `not_started` | unchanged from RoadMaps Phase 11 |
+| 12 — Windows ship | `not_started` | NSIS self-extracting .exe + integrity manifest (replaces Firestick HD — cancelled) |
+
+Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
 ---
 
@@ -69,9 +91,11 @@ Current: **Phase 6 — Tauri Shell (in progress)**
 | `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge stub (Phase 7) |
 | `src/token-inspector.ts` | Browser-side design token inspector |
 | `src/index.html` | Tauri WebView shell |
-| `MACROHARD_STUDIO.md` | Full design authority narrative |
+| `MACROHARD_STUDIO.md` | Full design authority narrative (heritage doc; product name is now MacroHarder™) |
 | `Macro_Hard_Planner_3D.html` | 3D planner reference implementation |
-| `Macrohard_Excellent.jsx` | Component reference |
+| `Macrohard_Excellent.jsx` | Component reference — "excellent workbook" heritage |
+| `.wizardhat/plans/plan-macroharder.md` | **MacroHarder master plan** — spec, dependency tree, re-scored ladder |
+| `.wizardhat/README.md` | Recursive coalescent orchestration (cadence framework) |
 
 ---
 
