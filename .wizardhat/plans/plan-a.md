@@ -6,7 +6,18 @@ conductor to read back. Tier 2 references this plan to derive plan-b.
 
 ---
 
-## The MacroHard Build Ladder — Phase 6 → Phase 12
+## The MacroHarder Build Ladder — Phase 6 → Phase 12
+
+> **REVISED 2026-07-08 — the MacroHarder pivot.** The product is now
+> **MacroHarder™** (MacroHard mark taken by xAI filing) and the Phase 12
+> Firestick HD deployment is **out**, replaced by the Windows ship
+> (NSIS self-extracting .exe). The authoritative score is now
+> **`plan-macroharder.md`** — master plan, full dependency tree, and the
+> re-scored Phase 6→12 ladder. The ladder below is kept as the original
+> record; where it conflicts with plan-macroharder.md, the latter wins.
+> Also revised: MHARD-003 (`lane_macrohard_score` in lane-mcp) is
+> relocated to MacroHarder's own MCP module surface — lane-mcp stays
+> standalone.
 
 Distilled from `RoadMaps/phases/phase-4-8-plan.md`,
 `phase-9-16-sovereign-stack.md`, `phase-9-16-sovereign-expansion.md`,
@@ -40,10 +51,12 @@ rehearse against. No sprinting: cadence first, quality always.
 - [ ] Design tokens + inspector affordances for the one-read-two-writes (primary + escape locale) visualization
 - [ ] UI surfaces for `WriteMode::AerEscape` (sibling dependency: AER-004 in sqlxml)
 
-### Phase 12 — Silicon Whisperer OS → Firestick HD (Jan–Feb 2027)
-- [ ] MacroHard GUI rendered for the 10-foot TV form factor (Firestick HD deployment target)
-- [ ] Groundwork for Phase 13 portal builder (PORTL-001): block palette + canvas + preview panel
-- [ ] Design audit gate ≥ 8.0 required before any portal deploy is enabled
+### ~~Phase 12 — Silicon Whisperer OS → Firestick HD (Jan–Feb 2027)~~ SUPERSEDED
+- **OUT (2026-07-08):** Firestick HD deployment cancelled. Phase 12 is now
+  the **MacroHarder Windows ship** — NSIS self-extracting .exe installer,
+  filesystem integrity manifest on boot, signed release. See
+  `plan-macroharder.md` §5 for the full re-scored ladder (Android and
+  macOS follow at 13+).
 
 **Lateral scaffolding:** once the cadence below is captured on this one
 repository, the same score (tiers, plans, alternating current) is reusable

@@ -1,7 +1,10 @@
 {
   "repo": "albert-lane-org/macrohard",
+  "rename_pending": "albert-lane-org/macroharder",
+  "product": "MacroHarder (tm) -- the excellent workbook; renamed from MacroHard 2026-07-08 (mark taken by xAI filing)",
   "layer": "B",
-  "role": "Design authority -- MacroHard Design Studio (Tauri 2.0 shell + SQLXML engine)",
+  "role": "One-stop-shop configurable 3D analytics workbook -- Rust/C/C++ core, SQLXML data manipulation, MCP module system, fully adjustable UI",
+  "master_plan": ".wizardhat/plans/plan-macroharder.md",
   "current_phase": 6,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
@@ -9,8 +12,13 @@
     "3": { "status": "completed", "label": "Integration" },
     "4": { "status": "completed", "label": "Purge and Harden" },
     "5": { "status": "completed", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
-    "6": { "status": "in_progress", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency" },
-    "7": { "status": "not_started", "label": "Production Build -- Windows MSI + Linux AppImage" }
+    "6": { "status": "in_progress", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency + MacroHarder identity swap" },
+    "7": { "status": "not_started", "label": "sqlxml-engine live wire (MH-AB-001 unblock)" },
+    "8": { "status": "not_started", "label": "Workbook core (3D cell model, grid engine) + first MCP modules: procurement + maps" },
+    "9": { "status": "not_started", "label": "Fully adjustable UI -- layout schema, token-driven chrome, dashboard composer" },
+    "10": { "status": "not_started", "label": "MCP module host GA -- registry, capability gating, module install UX" },
+    "11": { "status": "not_started", "label": "AER integration (unchanged from RoadMaps Phase 11)" },
+    "12": { "status": "not_started", "label": "Windows ship -- NSIS self-extracting .exe + BLAKE3 integrity manifest (replaces cancelled Firestick HD)" }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
@@ -19,20 +27,39 @@
     { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init -- Cargo.toml, build.rs, main.rs, tauri.conf.json, capabilities/", "status": "completed" },
     { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "in_progress" },
     { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
-    { "id": "MH-P7-01", "description": "Windows MSI build workflow", "status": "not_started" },
-    { "id": "MH-P7-02", "description": "Linux AppImage build workflow", "status": "not_started" }
+    { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers", "status": "not_started" },
+    { "id": "MH-P7-01", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary)", "status": "not_started" },
+    { "id": "MH-P8-01", "description": "Workbook core -- 3D cell model (col,row,layer), grid engine, SQLXML persistence", "status": "not_started" },
+    { "id": "MH-P8-02", "description": "Wire procurement MCP module as dashboard data source #1", "status": "not_started" },
+    { "id": "MH-P8-03", "description": "Wire maps MCP module as dashboard data source #2 (3D terrain showcase)", "status": "not_started" },
+    { "id": "MH-P10-01", "description": "MCP module host -- Rust MCP SDK client, module registry JSON, capability gating", "status": "not_started" },
+    { "id": "MH-P12-01", "description": "Filesystem integrity -- BLAKE3 content-hash manifest verified on boot", "status": "not_started" }
   ],
   "open_absences": [
     {
       "id": "MH-AB-001",
       "description": "sqlxml-engine Cargo dependency: deferred to Phase 7 -- albert-lane-org/sqlxml backend-agent must be restructured as a Cargo library crate before the git dependency can be activated in src-tauri/Cargo.toml",
       "phase": 7
+    },
+    {
+      "id": "MH-AB-002",
+      "description": "GitHub repo rename macrohard -> macroharder (admin action; lane-mcp estate roster is config-only and ready)",
+      "phase": 6
+    },
+    {
+      "id": "MH-AB-003",
+      "description": "ledger-sync.yml hardening: workflow pushes directly to main with the _ROADMAPS PAT embedded in the git remote URL -- replace with deploy key or fine-grained token + PR-based sync",
+      "phase": 7
     }
   ],
+  "superseded": {
+    "firestick_hd_phase_12": "Cancelled 2026-07-08 -- replaced by Windows ship (NSIS self-extracting .exe). See .wizardhat/plans/plan-macroharder.md section 5.",
+    "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary)."
+  },
   "compliance": {
     "status": "clean",
     "gemini_references": 0,
     "unauthenticated_endpoints": 0
   },
-  "updated": "2026-06-28"
+  "updated": "2026-07-08"
 }
