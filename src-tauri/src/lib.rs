@@ -7,11 +7,13 @@
 
 pub mod layout;
 pub mod mcp_client;
+pub mod registry;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
 use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
+use registry::{ModuleManifest, ModuleRegistry};
 use serde_json::Value;
 use std::sync::Mutex;
 use workbook::{CellAddress, CellValue, Workbook};
@@ -232,31 +234,46 @@ fn layout_bring_to_front(state: tauri::State<LayoutState>, id: String) -> Result
 }
 
 // ---------------------------------------------------------------------------
-// MH-P8-02/03: module registry + MCP client passthrough. MacroHarder is an
-// ordinary MCP client of each module's Worker — no lane-mcp gateway here.
+// MH-P10-01: MCP module host — registry, capability gating, install UX.
+// MacroHarder is an ordinary MCP client of each module's Worker — no
+// lane-mcp gateway here. Every tool call is gated through
+// registry::authorize_tool_call() so a module can only be dispatched calls
+// it actually declares, and a read_only module can't be used for anything
+// that looks like a write.
 // ---------------------------------------------------------------------------
 
-/// Read config/modules.json (the module registry: procurement, maps, ...).
-#[tauri::command]
-fn module_list() -> Result<Value, String> {
+fn module_registry_path() -> std::path::PathBuf {
     let candidates = [
         std::path::PathBuf::from("config/modules.json"),
         std::path::PathBuf::from("../../src-tauri/config/modules.json"),
     ];
-    for p in &candidates {
-        if p.exists() {
-            let raw = std::fs::read_to_string(p)
-                .map_err(|e| format!("Read error ({p:?}): {e}"))?;
-            return serde_json::from_str(&raw)
-                .map_err(|e| format!("Parse error: {e}"));
-        }
-    }
-    Err("config/modules.json not found".into())
+    candidates
+        .into_iter()
+        .find(|p| p.exists())
+        .unwrap_or_else(|| std::path::PathBuf::from("config/modules.json"))
+}
+
+fn load_registry() -> Result<ModuleRegistry, String> {
+    ModuleRegistry::load_from_path(&module_registry_path()).map_err(|e| e.to_string())
+}
+
+fn persist_registry(registry: &ModuleRegistry) -> Result<(), String> {
+    registry
+        .save_to_path(&module_registry_path())
+        .map_err(|e| e.to_string())
+}
+
+/// Read config/modules.json (the module registry: procurement, maps, ...).
+#[tauri::command]
+fn module_list() -> Result<ModuleRegistry, String> {
+    load_registry()
 }
 
 /// Call a tool on a registered module by name, using its dev endpoint if
 /// use_dev is true (module Workers aren't deployed yet — MAP-P7-01,
 /// PRO-P7-01 — so dev is the only live option pre-Phase-7 for those repos).
+/// Gated through ModuleRegistry::authorize_tool_call: the tool must be
+/// declared by the module, and read_only modules reject write-shaped tools.
 #[tauri::command]
 async fn module_call_tool(
     module: String,
@@ -264,28 +281,41 @@ async fn module_call_tool(
     arguments: Value,
     use_dev: bool,
 ) -> Result<Value, String> {
-    let registry = module_list()?;
-    let modules = registry
-        .get("modules")
-        .and_then(|m| m.as_array())
-        .ok_or_else(|| "modules.json missing 'modules' array".to_string())?;
+    let registry = load_registry()?;
+    let entry = registry
+        .authorize_tool_call(&module, &tool)
+        .map_err(|e| e.to_string())?;
 
-    let entry = modules
-        .iter()
-        .find(|m| m.get("name").and_then(|n| n.as_str()) == Some(module.as_str()))
-        .ok_or_else(|| format!("module '{module}' not found in registry"))?;
+    let endpoint = if use_dev { &entry.endpoint_dev } else { &entry.endpoint };
+    if endpoint.is_empty() {
+        return Err(format!(
+            "module '{module}' has no {} endpoint",
+            if use_dev { "dev" } else { "production" }
+        ));
+    }
 
-    let endpoint_key = if use_dev { "endpoint_dev" } else { "endpoint" };
-    let endpoint = entry
-        .get(endpoint_key)
-        .and_then(|e| e.as_str())
-        .ok_or_else(|| format!("module '{module}' has no '{endpoint_key}'"))?;
-
-    let client = McpClient::new(endpoint);
+    let client = McpClient::new(endpoint.as_str());
     client
         .call_tool(&tool, arguments)
         .await
         .map_err(|e| e.to_string())
+}
+
+/// Install a new module manifest into the registry — the "module install
+/// UX" backend. Validates the manifest (non-empty name/endpoint/tools,
+/// no duplicate name) before persisting.
+#[tauri::command]
+fn module_install(manifest: ModuleManifest) -> Result<(), String> {
+    let mut registry = load_registry()?;
+    registry.install(manifest).map_err(|e| e.to_string())?;
+    persist_registry(&registry)
+}
+
+#[tauri::command]
+fn module_uninstall(name: String) -> Result<(), String> {
+    let mut registry = load_registry()?;
+    registry.uninstall(&name).map_err(|e| e.to_string())?;
+    persist_registry(&registry)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -307,6 +337,8 @@ pub fn run() {
             workbook_non_empty_cells,
             module_list,
             module_call_tool,
+            module_install,
+            module_uninstall,
             layout_get,
             layout_add_panel,
             layout_remove_panel,

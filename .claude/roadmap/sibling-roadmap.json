@@ -5,7 +5,7 @@
   "layer": "B",
   "role": "One-stop-shop configurable 3D analytics workbook -- Rust/C/C++ core, SQLXML data manipulation, MCP module system, fully adjustable UI",
   "master_plan": ".wizardhat/plans/plan-macroharder.md",
-  "current_phase": 9,
+  "current_phase": 10,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
     "2": { "status": "completed", "label": "Core Services" },
@@ -15,8 +15,8 @@
     "6": { "status": "completed", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency + MacroHarder identity swap" },
     "7": { "status": "completed", "label": "sqlxml-engine live wire (MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned to main)" },
     "8": { "status": "completed", "label": "Workbook core (3D cell model, grid engine) done; procurement + maps MCP client wiring code-complete; D1/R2 provisioned for both modules 2026-07-09; live data blocked only on those repos' own wrangler deploy (CLOUDFLARE_API_TOKEN)" },
-    "9": { "status": "in_progress", "label": "Fully adjustable UI -- layout.rs schema (14 tests) + layout_* Tauri commands + chrome.ts (token-driven CSS custom properties) + dashboard-composer.ts (grid render, add/remove/move/resize/hide) done; not runtime-tested (no GTK/WebKit in this sandbox)" },
-    "10": { "status": "not_started", "label": "MCP module host GA -- registry, capability gating, module install UX" },
+    "9": { "status": "completed", "label": "Fully adjustable UI -- layout.rs schema (14 tests) + layout_* Tauri commands + chrome.ts (token-driven CSS custom properties) + dashboard-composer.ts (grid render, add/remove/move/resize/hide) done; not runtime-tested (no GTK/WebKit in this sandbox)" },
+    "10": { "status": "in_progress", "label": "MCP module host GA -- registry.rs (ModuleRegistry, 12 tests) replaces ad-hoc modules.json reads; authorize_tool_call() capability gating (declared-tools check + read_only write-shape rejection); module_install/module_uninstall commands + validation; composer install-module UX; not runtime-tested" },
     "11": { "status": "not_started", "label": "AER integration (unchanged from RoadMaps Phase 11)" },
     "12": { "status": "not_started", "label": "Windows ship -- NSIS self-extracting .exe + BLAKE3 integrity manifest (replaces cancelled Firestick HD)" }
   },
@@ -36,7 +36,8 @@
     { "id": "MH-P9-01", "description": "src-tauri/src/layout.rs -- DashboardLayout/PanelPlacement grid schema: add/remove/move/resize/visibility/z-order, JSON persistence (load_or_default/save_to_path), 14 unit tests passing in isolation (GTK/WebKit unavailable in this sandbox so the full Tauri crate can't link, but the layout logic has zero Tauri dependencies and was verified standalone)", "status": "completed" },
     { "id": "MH-P9-02", "description": "src/chrome.ts -- applies design-tokens.json onto chrome CSS custom properties (--bg/--surface/--accent/etc. + spacing + font-size scales) at runtime instead of the values being hardcoded literals in index.html's :root block (which now serves only as pre-token-load fallback)", "status": "completed" },
     { "id": "MH-P9-03", "description": "src/dashboard-composer.ts -- renders DashboardLayout as a CSS grid of module panels; add-panel control (module + panel-type pickers from the registry), pointer-event drag-to-move, resize/hide/remove/bring-to-front controls, all wired to the 7 layout_* Tauri commands. New tsconfig.frontend.json (DOM lib) split from the Worker-side tsconfig.json so this actually typechecks in CI. Not runtime-tested -- no GTK/WebKit in this sandbox to launch the Tauri WebView", "status": "completed" },
-    { "id": "MH-P10-01", "description": "MCP module host -- Rust MCP SDK client, module registry JSON, capability gating", "status": "not_started" },
+    { "id": "MH-P10-01", "description": "MCP module host -- src-tauri/src/registry.rs: ModuleRegistry (install/uninstall + validation), authorize_tool_call() capability gate (rejects undeclared tools; rejects write-shaped tool names on read_only modules), 12 unit tests passing. module_list/module_call_tool rewritten on top of it (was ad-hoc file reads with zero tool-name validation before). module_install/module_uninstall Tauri commands + composer 'Install module...' UX. config/modules.json gained capability/source fields on both built-in modules", "status": "completed" },
+    { "id": "MH-P10-02", "description": "Module install UX: signature/provenance verification for user-installed manifests, sandboxed capability review before first tool call, module marketplace/discovery surface", "status": "not_started" },
     { "id": "MH-P12-01", "description": "Filesystem integrity -- BLAKE3 content-hash manifest verified on boot", "status": "not_started" }
   ],
   "open_absences": [

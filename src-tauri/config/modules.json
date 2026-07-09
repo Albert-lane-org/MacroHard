@@ -1,5 +1,5 @@
 {
-  "_comment": "MH-P8-02/03 module registry. Each module is an ordinary MCP server MacroHarder connects to as a client -- no lane-mcp gateway in this path. Worker URLs are dev placeholders until MAP-P7-01/PRO-P7-01 (D1/R2 provisioning + wrangler deploy) land; run `wrangler dev` locally in the module repo and override the endpoint for local testing.",
+  "_comment": "MH-P10-01 module registry. Each module is an ordinary MCP server MacroHarder connects to as a client -- no lane-mcp gateway in this path. Worker URLs are dev placeholders until MAP-P7-01/PRO-P7-01 (D1/R2 provisioning + wrangler deploy) land; run `wrangler dev` locally in the module repo and override the endpoint for local testing. `capability` is enforced by registry::authorize_tool_call -- a read_only module cannot be dispatched a write-shaped tool call even if one were (incorrectly) added to its `tools` list.",
   "modules": [
     {
       "name": "procurement",
@@ -7,6 +7,8 @@
       "endpoint": "https://procurement-worker.albertlane.workers.dev",
       "endpoint_dev": "http://127.0.0.1:8787",
       "status": "code_ready_deploy_blocked",
+      "capability": "read_only",
+      "source": "built_in",
       "tools": ["procurement_query", "procurement_permit_status", "procurement_ev_ledger"],
       "resources": ["procurement://state", "procurement://framework"],
       "panels": ["permit_pipeline_board", "ev_ledger_table", "vendor_reliability_panel"]
@@ -17,6 +19,8 @@
       "endpoint": "https://maps-worker.albertlane.workers.dev",
       "endpoint_dev": "http://127.0.0.1:8788",
       "status": "code_ready_deploy_blocked",
+      "capability": "read_only",
+      "source": "built_in",
       "tools": ["maps_query", "maps_tile", "maps_elevation_grid"],
       "resources": ["maps://models"],
       "panels": ["terrain_volume_layer", "derived_properties_inspector", "svg_tile_gallery"]

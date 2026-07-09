@@ -3653,7 +3653,7 @@ dependencies = [
 [[package]]
 name = "sqlxml-engine"
 version = "0.1.0"
-source = "git+https://github.com/albert-lane-org/sqlxml?branch=main#4679c477dcd5e8e9f9df486050b636b8f140b484"
+source = "git+https://github.com/albert-lane-org/sqlxml?branch=main#df837b404155a31a900b34c278883ccfbf882f55"
 dependencies = [
  "chrono",
  "quick-xml",

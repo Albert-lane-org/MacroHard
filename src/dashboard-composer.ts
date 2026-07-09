@@ -41,12 +41,17 @@ interface DashboardLayout {
   panels: PanelPlacement[];
 }
 
+type ModuleCapability = "read_only" | "read_write";
+type ModuleSource = "built_in" | "user_installed";
+
 interface ModuleEntry {
   name: string;
   dashboard_order: number;
   endpoint: string;
   endpoint_dev: string;
   status: string;
+  capability: ModuleCapability;
+  source: ModuleSource;
   tools: string[];
   resources: string[];
   panels: string[];
@@ -104,6 +109,7 @@ export class DashboardComposer {
 
     const toolbar = el("div", "composer-toolbar");
     toolbar.appendChild(this.renderAddPanelControl());
+    toolbar.appendChild(this.renderInstallModuleControl());
     this.root.appendChild(toolbar);
 
     const grid = el("div", "composer-grid");
@@ -148,6 +154,44 @@ export class DashboardComposer {
 
     wrap.append(moduleSelect, panelSelect, addButton);
     return wrap;
+  }
+
+  /**
+   * MH-P10-01 install UX: paste a module manifest JSON (name, endpoint,
+   * capability, tools, ...) and register it. Validation (non-empty name/
+   * endpoint/tools, no duplicate name) happens Rust-side in
+   * registry::ModuleRegistry::install — this is just the entry point.
+   */
+  private renderInstallModuleControl(): HTMLElement {
+    const wrap = el("div", "install-module");
+    const button = el("button", "install-module-button", "Install module…");
+    button.addEventListener("click", () => {
+      const raw = window.prompt(
+        'Paste a module manifest JSON, e.g.\n{"name":"civic","endpoint":"https://civic-worker.example.workers.dev","endpoint_dev":"http://127.0.0.1:8789","status":"code_ready_deploy_blocked","capability":"read_only","tools":["civic_sos_query"],"resources":[],"panels":[]}'
+      );
+      if (!raw) return;
+      void this.installModule(raw);
+    });
+    wrap.appendChild(button);
+    return wrap;
+  }
+
+  private async installModule(rawManifest: string): Promise<void> {
+    let manifest: ModuleEntry;
+    try {
+      manifest = JSON.parse(rawManifest) as ModuleEntry;
+    } catch (err) {
+      window.alert(`Invalid JSON: ${String(err)}`);
+      return;
+    }
+    manifest.source = "user_installed";
+    try {
+      await invoke("module_install", { manifest });
+      this.registry.modules.push(manifest);
+      this.render();
+    } catch (err) {
+      window.alert(`Install failed: ${String(err)}`);
+    }
   }
 
   private async addPanel(module: string, panelType: string): Promise<void> {
