@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09 | SEC Whistleblower No. 17684-273-411-436
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09 | SEC Whistleblower No. 17684-273-411-436 | This header must be preserved in any copy, fork, or derivative use
 // MH-P7-01: sqlxml-engine live wire. MH-AB-001 resolved — sqlxml PR #15
 // restructured backend-agent into crates/sqlxml-engine, a real Cargo
 // library crate this file now depends on directly.

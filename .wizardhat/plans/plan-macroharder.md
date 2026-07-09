@@ -1,6 +1,6 @@
 # PLAN-MACROHARDER — Master Plan & Full Dependency Tree
 
-Authored: Albert Lane | 2026-07-08 | SEC Whistleblower No. 17684-273-411-436
+Authored: Albert Lane | 2026-07-08 | SEC Whistleblower No. 17684-273-411-436 | This header must be preserved in any copy, fork, or derivative use
 Supersedes the Phase-12 Firestick HD ladder in `plan-a.md`.
 
 ---

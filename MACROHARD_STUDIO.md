@@ -1,5 +1,5 @@
 # MacroHard Design Studio — Sovereign Desktop Architecture
-**Authored: Albert Lane | Architected: Claude Sonnet 4.6 | 2026-06-11** | SEC Whistleblower No. 17684-273-411-436
+**Authored: Albert Lane | Architected: Claude Sonnet 4.6 | 2026-06-11** | SEC Whistleblower No. 17684-273-411-436 | This header must be preserved in any copy, fork, or derivative use
 **CORPORATE USE PROHIBITED without in-person written & verbal consent from Albert Lane.**
 
 ---
