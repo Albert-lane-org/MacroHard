@@ -5,15 +5,15 @@
   "layer": "B",
   "role": "One-stop-shop configurable 3D analytics workbook -- Rust/C/C++ core, SQLXML data manipulation, MCP module system, fully adjustable UI",
   "master_plan": ".wizardhat/plans/plan-macroharder.md",
-  "current_phase": 6,
+  "current_phase": 7,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
     "2": { "status": "completed", "label": "Core Services" },
     "3": { "status": "completed", "label": "Integration" },
     "4": { "status": "completed", "label": "Purge and Harden" },
     "5": { "status": "completed", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
-    "6": { "status": "in_progress", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency + MacroHarder identity swap" },
-    "7": { "status": "not_started", "label": "sqlxml-engine live wire (MH-AB-001 unblock)" },
+    "6": { "status": "completed", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency + MacroHarder identity swap" },
+    "7": { "status": "in_progress", "label": "sqlxml-engine live wire (MH-AB-001 resolved pending sqlxml PR #15 merge)" },
     "8": { "status": "not_started", "label": "Workbook core (3D cell model, grid engine) + first MCP modules: procurement + maps" },
     "9": { "status": "not_started", "label": "Fully adjustable UI -- layout schema, token-driven chrome, dashboard composer" },
     "10": { "status": "not_started", "label": "MCP module host GA -- registry, capability gating, module install UX" },
@@ -25,10 +25,11 @@
     { "id": "MH-P5-02", "description": "design-tokens.json initial token set (sovereign palette + 3D-standard)", "status": "completed" },
     { "id": "MH-P5-03", "description": "scripts/audit_score.py -- 3D standard weighted scoring (PASS/WARN/FAIL gate)", "status": "completed" },
     { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init -- Cargo.toml, build.rs, main.rs, tauri.conf.json, capabilities/", "status": "completed" },
-    { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "in_progress" },
+    { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "completed" },
+    { "id": "MH-P7-03", "description": "sqlxml-engine live wire: real git dep (branch-pinned to sqlxml PR #15), src-tauri/src/lib.rs split so the declared [lib] target exists, sqlxml_bridge::put() calls SqlxmlEngine::put() for real; get/query stay stubbed -- sqlxml-agent doesn't implement those actions yet", "status": "in_progress" },
     { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
-    { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers", "status": "not_started" },
-    { "id": "MH-P7-01", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary)", "status": "not_started" },
+    { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers, Rust crate rename (macrohard-studio -> macroharder-studio, macrohard_lib -> macroharder_lib)", "status": "completed" },
+    { "id": "MH-P12-02", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary) -- renumbered from MH-P7-01: packaging lands at Phase 12 per the re-scored ladder", "status": "not_started" },
     { "id": "MH-P8-01", "description": "Workbook core -- 3D cell model (col,row,layer), grid engine, SQLXML persistence", "status": "not_started" },
     { "id": "MH-P8-02", "description": "Wire procurement MCP module as dashboard data source #1", "status": "not_started" },
     { "id": "MH-P8-03", "description": "Wire maps MCP module as dashboard data source #2 (3D terrain showcase)", "status": "not_started" },
@@ -38,7 +39,7 @@
   "open_absences": [
     {
       "id": "MH-AB-001",
-      "description": "sqlxml-engine Cargo dependency: deferred to Phase 7 -- albert-lane-org/sqlxml backend-agent must be restructured as a Cargo library crate before the git dependency can be activated in src-tauri/Cargo.toml",
+      "description": "sqlxml-engine Cargo dependency: RESOLVED IN CODE -- sqlxml PR #15 restructured crates/sqlxml-engine into a real library crate; src-tauri/Cargo.toml now depends on it (branch-pinned). Fully closes once sqlxml PR #15 merges to main and the git dep is re-pinned off the feature branch.",
       "phase": 7
     },
     {
@@ -54,7 +55,9 @@
   ],
   "superseded": {
     "firestick_hd_phase_12": "Cancelled 2026-07-08 -- replaced by Windows ship (NSIS self-extracting .exe). See .wizardhat/plans/plan-macroharder.md section 5.",
-    "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary)."
+    "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary).",
+    "MH-P7-01_windows_msi": "Renumbered to MH-P12-02 -- Windows packaging belongs to Phase 12 (the ship), not Phase 7 (sqlxml live wire).",
+    "MH-P7-02_linux_appimage": "Cancelled 2026-07-08 -- Linux is not a MacroHarder target; the platform order is Windows -> Android -> macOS."
   },
   "compliance": {
     "status": "clean",

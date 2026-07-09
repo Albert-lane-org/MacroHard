@@ -1,5 +1,5 @@
 // Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
-// MacroHard Design Studio — design token inspector UI (MH-P6-03)
+// MacroHarder Design Studio — design token inspector UI (MH-P6-03)
 // Calls get_design_tokens + run_audit_score via Tauri IPC and renders
 // the sovereign color palette, typography scale, spacing, 3D-standard
 // values, and the 3D audit score badge.
@@ -88,7 +88,7 @@ export async function mountInspector(root: HTMLElement): Promise<void> {
     ]);
     root.innerHTML = `
       <header class="studio-header">
-        <h1>MacroHard Design Studio</h1>
+        <h1>MacroHarder Design Studio</h1>
         <span class="version">v${tokens._meta.version} · ${tokens._meta.standard}</span>
       </header>
       <div class="studio-body">
