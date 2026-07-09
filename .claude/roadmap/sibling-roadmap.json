@@ -28,7 +28,7 @@
     { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "in_progress" },
     { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
     { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers", "status": "not_started" },
-    { "id": "MH-P7-01", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary)", "status": "not_started" },
+    { "id": "MH-P12-02", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary) -- renumbered from MH-P7-01: packaging lands at Phase 12 per the re-scored ladder", "status": "not_started" },
     { "id": "MH-P8-01", "description": "Workbook core -- 3D cell model (col,row,layer), grid engine, SQLXML persistence", "status": "not_started" },
     { "id": "MH-P8-02", "description": "Wire procurement MCP module as dashboard data source #1", "status": "not_started" },
     { "id": "MH-P8-03", "description": "Wire maps MCP module as dashboard data source #2 (3D terrain showcase)", "status": "not_started" },
@@ -54,7 +54,9 @@
   ],
   "superseded": {
     "firestick_hd_phase_12": "Cancelled 2026-07-08 -- replaced by Windows ship (NSIS self-extracting .exe). See .wizardhat/plans/plan-macroharder.md section 5.",
-    "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary)."
+    "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary).",
+    "MH-P7-01_windows_msi": "Renumbered to MH-P12-02 -- Windows packaging belongs to Phase 12 (the ship), not Phase 7 (sqlxml live wire).",
+    "MH-P7-02_linux_appimage": "Cancelled 2026-07-08 -- Linux is not a MacroHarder target; the platform order is Windows -> Android -> macOS."
   },
   "compliance": {
     "status": "clean",
