@@ -3570,7 +3570,7 @@ dependencies = [
 [[package]]
 name = "sqlxml-engine"
 version = "0.1.0"
-source = "git+https://github.com/albert-lane-org/sqlxml?branch=claude%2Fdistributed-recursive-agents-x0qm89#f02c0cc87f2bdcb357c0bf0f82649ded26f272cc"
+source = "git+https://github.com/albert-lane-org/sqlxml?branch=main#6126ee846d6d03a1fb505e10abe4dbb06828e24c"
 dependencies = [
  "chrono",
  "quick-xml 0.36.2",

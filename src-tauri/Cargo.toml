@@ -15,11 +15,10 @@ serde      = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror  = "1"
 
-# MH-P7-01: sqlxml-engine live wire. MH-AB-001 resolved by sqlxml PR #15
-# (crates/sqlxml-engine restructured into a real library crate). Pinned to
-# the source branch until that PR merges to main; re-pin to `branch = "main"`
-# (or a tag) post-merge — see MH-AB-001 note in sibling-roadmap.json.
-sqlxml-engine = { git = "https://github.com/albert-lane-org/sqlxml", branch = "claude/distributed-recursive-agents-x0qm89", package = "sqlxml-engine", optional = true }
+# MH-P7-03: sqlxml-engine live wire. MH-AB-001 fully resolved -- sqlxml
+# PR #15 (crates/sqlxml-engine restructured into a real library crate)
+# merged to main 2026-07-09. Re-pinned off the feature branch.
+sqlxml-engine = { git = "https://github.com/albert-lane-org/sqlxml", branch = "main", package = "sqlxml-engine", optional = true }
 
 [features]
 sqlxml = ["dep:sqlxml-engine"]

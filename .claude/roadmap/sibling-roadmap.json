@@ -13,7 +13,7 @@
     "4": { "status": "completed", "label": "Purge and Harden" },
     "5": { "status": "completed", "label": "Bootstrap -- design-tokens.json, audit_score.py, CI" },
     "6": { "status": "completed", "label": "Tauri 2.0 App Shell + sqlxml-engine dependency + MacroHarder identity swap" },
-    "7": { "status": "in_progress", "label": "sqlxml-engine live wire (MH-AB-001 resolved pending sqlxml PR #15 merge)" },
+    "7": { "status": "in_progress", "label": "sqlxml-engine live wire (MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned to main)" },
     "8": { "status": "not_started", "label": "Workbook core (3D cell model, grid engine) + first MCP modules: procurement + maps" },
     "9": { "status": "not_started", "label": "Fully adjustable UI -- layout schema, token-driven chrome, dashboard composer" },
     "10": { "status": "not_started", "label": "MCP module host GA -- registry, capability gating, module install UX" },
@@ -26,7 +26,7 @@
     { "id": "MH-P5-03", "description": "scripts/audit_score.py -- 3D standard weighted scoring (PASS/WARN/FAIL gate)", "status": "completed" },
     { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init -- Cargo.toml, build.rs, main.rs, tauri.conf.json, capabilities/", "status": "completed" },
     { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "completed" },
-    { "id": "MH-P7-03", "description": "sqlxml-engine live wire: real git dep (branch-pinned to sqlxml PR #15), src-tauri/src/lib.rs split so the declared [lib] target exists, sqlxml_bridge::put() calls SqlxmlEngine::put() for real; get/query stay stubbed -- sqlxml-agent doesn't implement those actions yet", "status": "in_progress" },
+    { "id": "MH-P7-03", "description": "sqlxml-engine live wire: real git dep (re-pinned to sqlxml main post-merge of PR #15), src-tauri/src/lib.rs split so the declared [lib] target exists, sqlxml_bridge::put() calls SqlxmlEngine::put() for real; get/query stay stubbed -- sqlxml-agent doesn't implement those actions yet", "status": "completed" },
     { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
     { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers, Rust crate rename (macrohard-studio -> macroharder-studio, macrohard_lib -> macroharder_lib)", "status": "completed" },
     { "id": "MH-P12-02", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary) -- renumbered from MH-P7-01: packaging lands at Phase 12 per the re-scored ladder", "status": "not_started" },
@@ -37,11 +37,6 @@
     { "id": "MH-P12-01", "description": "Filesystem integrity -- BLAKE3 content-hash manifest verified on boot", "status": "not_started" }
   ],
   "open_absences": [
-    {
-      "id": "MH-AB-001",
-      "description": "sqlxml-engine Cargo dependency: RESOLVED IN CODE -- sqlxml PR #15 restructured crates/sqlxml-engine into a real library crate; src-tauri/Cargo.toml now depends on it (branch-pinned). Fully closes once sqlxml PR #15 merges to main and the git dep is re-pinned off the feature branch.",
-      "phase": 7
-    },
     {
       "id": "MH-AB-002",
       "description": "GitHub repo rename macrohard -> macroharder (admin action; lane-mcp estate roster is config-only and ready)",
@@ -57,7 +52,8 @@
     "firestick_hd_phase_12": "Cancelled 2026-07-08 -- replaced by Windows ship (NSIS self-extracting .exe). See .wizardhat/plans/plan-macroharder.md section 5.",
     "MHARD-003_lane_macrohard_score": "Relocated -- design/audit scoring is exposed by MacroHarder's own MCP module surface, not lane-mcp (standalone boundary).",
     "MH-P7-01_windows_msi": "Renumbered to MH-P12-02 -- Windows packaging belongs to Phase 12 (the ship), not Phase 7 (sqlxml live wire).",
-    "MH-P7-02_linux_appimage": "Cancelled 2026-07-08 -- Linux is not a MacroHarder target; the platform order is Windows -> Android -> macOS."
+    "MH-P7-02_linux_appimage": "Cancelled 2026-07-08 -- Linux is not a MacroHarder target; the platform order is Windows -> Android -> macOS.",
+    "MH-AB-001_sqlxml_engine_dep": "Resolved 2026-07-09 -- sqlxml PR #15 merged to main, restructuring crates/sqlxml-engine into a real library crate. src-tauri/Cargo.toml git dep re-pinned from the feature branch to main. See MH-P7-03."
   },
   "compliance": {
     "status": "clean",
