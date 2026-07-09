@@ -71,7 +71,7 @@ Current: **Phase 7 — sqlxml live wire (in progress)**
 |-------|--------|-------|
 | 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
 | 6 — Shell + rename prep | `completed` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅; MacroHarder identity swap ✅ (Cargo package/lib renamed, tauri.conf.json, package.json, UI strings) |
-| 7 — sqlxml live wire | `in_progress` | MH-AB-001 resolved in code (git dep + lib.rs split + real put()); pending sqlxml PR #15 merge to re-pin off the feature branch |
+| 7 — sqlxml live wire | `in_progress` | MH-AB-001 resolved in code (git dep + lib.rs split + real put()); sqlxml PR #15 merged 2026-07-09, dep re-pinned off the feature branch to main |
 | 8 — Workbook core + first modules | `not_started` | 3D cell model, grid engine; procurement + maps MCP modules feed the dashboard |
 | 9 — Fully adjustable UI | `not_started` | layout schema, token-driven chrome, dashboard composer |
 | 10 — MCP module host GA | `not_started` | registry, capability gating, module install UX |
@@ -103,9 +103,9 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
 ## Open Absences
 
-| ID | Description | Phase |
-|----|-------------|-------|
-| MH-AB-001 | sqlxml-engine Cargo dep: resolved in code (git dep + real put() wire); fully closes when sqlxml PR #15 merges and the dep is re-pinned off the feature branch | 7 |
+None currently open. MH-AB-001 (sqlxml-engine Cargo dep) resolved
+2026-07-09 -- see `superseded.MH-AB-001_sqlxml_engine_dep` in
+`sibling-roadmap.json`.
 
 ---
 
