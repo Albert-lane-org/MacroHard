@@ -1,6 +1,6 @@
 # PLAN-B — Tier 2 Agenda & Cadence Sheet (a.k.a. plan-2)
 
-**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09 | This header must be preserved in any copy, fork, or derivative use
 
 The middle chain's document. Tier 1 writes INSTRUCTION-TO-SCOPE and AGENDA
 lines here (always outside the scopes already burned into plan-c). Tier 3

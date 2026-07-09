@@ -1,4 +1,4 @@
-# Authored: Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+# Authored: Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09 | This header must be preserved in any copy, fork, or derivative use
 """Tier 3 — the working triads. Agents 3a1/3a2/3a3 and 3b1/3b2/3b3.
 
 Score, as performed:

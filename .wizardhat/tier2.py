@@ -1,4 +1,4 @@
-# Authored: Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+# Authored: Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09 | This header must be preserved in any copy, fork, or derivative use
 """Tier 2 — managers 2a and 2b. The alternating current.
 
 One executes while the other sleeps; the handoff is performed by each

@@ -1,6 +1,6 @@
 # .wizardhat — Recursive Coalescent Orchestration
 
-**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09 | This header must be preserved in any copy, fork, or derivative use
 
 A distributed-agent performance mapped into MacroHard for future utility.
 Tier 1 conducts, Tier 2 alternates, Tier 3 works. Python agents managing
