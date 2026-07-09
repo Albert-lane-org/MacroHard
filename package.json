@@ -9,6 +9,7 @@
     "build": "tsc",
     "deploy": "wrangler deploy",
     "type-check": "tsc --noEmit",
+    "type-check:frontend": "tsc -p tsconfig.frontend.json --noEmit",
     "migrate": "wrangler d1 execute macrohard-db --file=schema/001-macrohard.sql"
   },
   "devDependencies": {

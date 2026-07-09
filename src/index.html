@@ -106,13 +106,70 @@
     .audit-status.fail { background: var(--danger);  color: #fff; }
     .loading, .error { padding: 48px; text-align: center; color: var(--dim); font-family: var(--mono); }
     .error { color: var(--danger); }
+
+    /* MH-P9-03: dashboard composer */
+    .view-tabs { display: flex; gap: 4px; padding: 8px 24px 0; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .view-tab {
+      background: none; border: none; color: var(--dim); font-family: var(--sans); font-size: 12px;
+      padding: 8px 14px; cursor: pointer; border-bottom: 2px solid transparent;
+    }
+    .view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .composer-toolbar { display: flex; gap: 8px; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border); }
+    .composer-toolbar select, .composer-toolbar button {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border);
+      border-radius: 4px; padding: 5px 8px; font-family: var(--sans); font-size: 12px;
+    }
+    .add-panel-button { color: var(--accent); cursor: pointer; }
+    .composer-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--grid-cols, 12), var(--cell-px, 64px));
+      grid-auto-rows: var(--cell-px, 64px);
+      gap: 8px;
+      padding: 20px 24px;
+      overflow: auto;
+      height: calc(100vh - 106px);
+    }
+    .composer-panel {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .composer-panel--hidden { opacity: 0.35; }
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 10px; background: rgba(255,255,255,0.03); cursor: grab; touch-action: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-title { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+    .panel-controls { display: flex; gap: 4px; }
+    .panel-btn {
+      background: none; border: 1px solid var(--border); color: var(--dim); border-radius: 3px;
+      width: 20px; height: 20px; font-size: 11px; cursor: pointer; line-height: 1;
+    }
+    .panel-btn--danger:hover { color: var(--danger); border-color: var(--danger); }
+    .panel-body { flex: 1; padding: 10px; font-size: 12px; color: var(--dim); overflow: auto; }
   </style>
 </head>
 <body>
+  <div class="view-tabs">
+    <button class="view-tab active" data-view="dashboard">Dashboard</button>
+    <button class="view-tab" data-view="tokens">Design Tokens</button>
+  </div>
   <div id="app"><div class="loading">Starting MacroHarder Design Studio&#8230;</div></div>
   <script type="module">
     import { mountInspector } from './token-inspector.js';
-    mountInspector(document.getElementById('app'));
+    import { mountComposer } from './dashboard-composer.js';
+
+    const app = document.getElementById('app');
+    const tabs = document.querySelectorAll('.view-tab');
+    const views = { dashboard: mountComposer, tokens: mountInspector };
+
+    function activate(view) {
+      tabs.forEach((t) => t.classList.toggle('active', t.dataset.view === view));
+      views[view](app);
+    }
+
+    tabs.forEach((tab) => tab.addEventListener('click', () => activate(tab.dataset.view)));
+    activate('dashboard');
   </script>
 </body>
 </html>

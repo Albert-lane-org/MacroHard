@@ -56,10 +56,14 @@ macrohard/
     tauri.conf.json           — app identity org.albertlane.macroharder-studio
     capabilities/default.json — core permission set
   src/
-    index.html                — Tauri WebView entry; sovereign dark theme
+    index.html                — Tauri WebView entry; sovereign dark theme; Dashboard/Tokens tabs
+    chrome.ts                 — MH-P9-02: applies design-tokens.json onto chrome CSS custom properties
+    dashboard-composer.ts     — MH-P9-03: layout-driven panel grid (add/remove/move/resize/hide)
     token-inspector.ts        — design token inspector UI (MH-P6-03)
     index.ts                  — DesignToken types + loadTokens()
     worker.ts                 — Cloudflare Worker API (separate deploy target)
+  tsconfig.json                — Worker-side TS (no DOM lib)
+  tsconfig.frontend.json       — WebView-side TS (chrome.ts, dashboard-composer.ts, token-inspector.ts; DOM lib)
   scripts/
     audit_score.py            — design audit scoring (3D standard, PASS/WARN/FAIL)
   design-tokens.json          — root token export (canonical)
@@ -69,15 +73,15 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 8 — Workbook core + first modules (in progress)**
+Current: **Phase 9 — Fully adjustable UI (in progress)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
 | 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
 | 6 — Shell + rename prep | `completed` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅; MacroHarder identity swap ✅ (Cargo package/lib renamed, tauri.conf.json, package.json, UI strings) |
 | 7 — sqlxml live wire | `completed` | MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned off the feature branch to main |
-| 8 — Workbook core + first modules | `in_progress` | Workbook core (workbook.rs, 9 tests passing) ✅; MCP client + module registry ✅; live procurement/maps calls blocked on those repos' own Phase 7 Worker deploys |
-| 9 — Fully adjustable UI | `not_started` | layout schema, token-driven chrome, dashboard composer |
+| 8 — Workbook core + first modules | `completed` | Workbook core (workbook.rs, 9 tests passing) ✅; MCP client + module registry ✅; code-complete `module_call_tool` path for procurement/maps ✅. procurement-db/maps-cache D1 + document-archive/map-tiles R2 provisioned and migrated 2026-07-09 -- `modules.json` still correctly reports `code_ready_deploy_blocked` since `wrangler deploy` itself needs a CLOUDFLARE_API_TOKEN this session doesn't have; calls will start returning real data the moment those two Workers go live, no MacroHarder-side code changes needed |
+| 9 — Fully adjustable UI | `in_progress` | `layout.rs`: DashboardLayout/PanelPlacement grid schema + add/remove/move/resize/visibility/z-order, JSON-persisted, 14/14 unit tests passing ✅. 7 new `layout_*` Tauri commands wired into `lib.rs` ✅. `chrome.ts`: chrome CSS custom properties now read live from design-tokens.json instead of being hardcoded in index.html ✅. `dashboard-composer.ts`: renders the layout as a CSS grid, add-panel control, drag-to-move (pointer events), resize/hide/remove/bring-to-front controls, all wired to the layout_* commands ✅. Split `tsconfig.json` (Worker, no DOM) from new `tsconfig.frontend.json` (WebView, DOM lib) so the frontend actually typechecks in CI instead of being silently excluded -- both pass clean. **Not runtime-tested**: this sandbox has no GTK/WebKit system libs (documented earlier this session), so the Tauri app cannot actually launch here; the composer's drag/resize interaction is implemented and typechecked against the Tauri IPC contract but has not been exercised in a live WebView |
 | 10 — MCP module host GA | `not_started` | registry, capability gating, module install UX |
 | 11 — AER integration | `not_started` | unchanged from RoadMaps Phase 11 |
 | 12 — Windows ship | `not_started` | NSIS self-extracting .exe + integrity manifest (replaces Firestick HD — cancelled) |

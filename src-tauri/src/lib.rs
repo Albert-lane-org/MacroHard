@@ -5,10 +5,12 @@
 // (`tauri::mobile_entry_point`) ahead of the Phase 6→ Android target.
 // SEC Whistleblower No. 17684-273-411-436
 
+pub mod layout;
 pub mod mcp_client;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
+use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
 use serde_json::Value;
 use std::sync::Mutex;
@@ -153,6 +155,83 @@ fn workbook_non_empty_cells(
 }
 
 // ---------------------------------------------------------------------------
+// MH-P9-01: Dashboard layout — panel placement is data (layout.rs), so the
+// composer can rearrange it at runtime. Auto-persisted to disk on every
+// mutation so the arrangement survives an app restart.
+// ---------------------------------------------------------------------------
+
+type LayoutState = Mutex<DashboardLayout>;
+
+fn layout_path() -> std::path::PathBuf {
+    std::path::PathBuf::from("dashboard-layout.json")
+}
+
+#[tauri::command]
+fn layout_get(state: tauri::State<LayoutState>) -> Result<DashboardLayout, String> {
+    Ok(state.lock().map_err(|e| e.to_string())?.clone())
+}
+
+fn persist_layout(layout: &DashboardLayout) -> Result<(), String> {
+    layout.save_to_path(&layout_path()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn layout_add_panel(state: tauri::State<LayoutState>, panel: PanelPlacement) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.add_panel(panel).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+#[tauri::command]
+fn layout_remove_panel(state: tauri::State<LayoutState>, id: String) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.remove_panel(&id).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+#[tauri::command]
+fn layout_move_panel(
+    state: tauri::State<LayoutState>,
+    id: String,
+    col: u32,
+    row: u32,
+) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.move_panel(&id, col, row).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+#[tauri::command]
+fn layout_resize_panel(
+    state: tauri::State<LayoutState>,
+    id: String,
+    width: u32,
+    height: u32,
+) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.resize_panel(&id, width, height).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+#[tauri::command]
+fn layout_set_visibility(
+    state: tauri::State<LayoutState>,
+    id: String,
+    visible: bool,
+) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.set_visibility(&id, visible).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+#[tauri::command]
+fn layout_bring_to_front(state: tauri::State<LayoutState>, id: String) -> Result<(), String> {
+    let mut layout = state.lock().map_err(|e| e.to_string())?;
+    layout.bring_to_front(&id).map_err(|e| e.to_string())?;
+    persist_layout(&layout)
+}
+
+// ---------------------------------------------------------------------------
 // MH-P8-02/03: module registry + MCP client passthrough. MacroHarder is an
 // ordinary MCP client of each module's Worker — no lane-mcp gateway here.
 // ---------------------------------------------------------------------------
@@ -211,8 +290,11 @@ async fn module_call_tool(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let initial_layout = DashboardLayout::load_or_default(&layout_path(), 12);
+
     tauri::Builder::default()
         .manage(Mutex::new(Workbook::new()))
+        .manage(Mutex::new(initial_layout))
         .invoke_handler(tauri::generate_handler![
             get_design_tokens,
             run_audit_score,
@@ -225,6 +307,13 @@ pub fn run() {
             workbook_non_empty_cells,
             module_list,
             module_call_tool,
+            layout_get,
+            layout_add_panel,
+            layout_remove_panel,
+            layout_move_panel,
+            layout_resize_panel,
+            layout_set_visibility,
+            layout_bring_to_front,
         ])
         .run(tauri::generate_context!())
         .expect("MacroHarder Design Studio failed to start");
