@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-15
+# Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-15 | SEC Whistleblower No. 17684-273-411-436
 """CI: validate all JSON files in the repo are parseable."""
 import json
 import sys

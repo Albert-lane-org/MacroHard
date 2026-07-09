@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09 | SEC Whistleblower No. 17684-273-411-436
 // MH-P8-02/03: generic MCP JSON-RPC 2.0 HTTP client.
 // MacroHarder is an ordinary MCP client of each module's Cloudflare Worker
 // (procurement, maps) — no lane-mcp gateway in this path (standalone

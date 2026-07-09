@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27 | SEC Whistleblower No. 17684-273-411-436
 // TypeScript port of scripts/audit_score.py — MacroHard 3D Standard audit engine
 
 const WEIGHTS = {

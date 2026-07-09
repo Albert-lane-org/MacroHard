@@ -1,5 +1,7 @@
 # PLAN-C — Tier 3 Execution & Completion Log (a.k.a. plan-3)
 
+**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+
 The working tier's document. Tier 2 writes each beat's instruction-to-scope
 here; Tier 3 appends COMPLETED lines (job details + elapsed time) as work
 lands. The conductor counts completions here at the curtain call.

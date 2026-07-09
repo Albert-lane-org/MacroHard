@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-07-09 | SEC Whistleblower No. 17684-273-411-436
 // MH-P8-01: Workbook core — the 3D cell model and grid engine.
 // Standard Excel taken to a third dimension: cells are (col, row, layer);
 // a named Volume is what a "sheet" is in a 2D spreadsheet.
