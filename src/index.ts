@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-14
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-14 | SEC Whistleblower No. 17684-273-411-436
 // MacroHard Design Token System -- Phase 5 scaffold; full implementation in Phase 6.
 
 export interface DesignToken {

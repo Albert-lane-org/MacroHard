@@ -1,5 +1,7 @@
 # The Breakroom — Statutory Reflection Ledger
 
+**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+
 Three breaks minimum per agent per shift, anticipating the labor law
 changes. Law. Each break logs one reflection: the work completed (and why
 the engineers couldn't do better), the weather in our geographic location,

@@ -1,6 +1,6 @@
 # /macrohard — Context Handoff
 
-## Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
+## Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28 | SEC Whistleblower No. 17684-273-411-436
 
 ---
 

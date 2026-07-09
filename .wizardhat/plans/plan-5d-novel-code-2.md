@@ -1,6 +1,6 @@
 # Operation: 5D Novel Code_2™ — Design Plan through Phase 16
 
-Authored: Albert Lane | 2026-07-08 | Nested in the locked `.wizardhat`
+Authored: Albert Lane | 2026-07-08 | Nested in the locked `.wizardhat` | SEC Whistleblower No. 17684-273-411-436
 Companion to `plan-macroharder.md` (dependencies) — this is the design law.
 
 ---

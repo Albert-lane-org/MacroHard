@@ -1,4 +1,4 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27 | SEC Whistleblower No. 17684-273-411-436
 
 import type { Env } from '../worker.js';
 import { DESIGN_TOKENS } from '../data/tokens.js';

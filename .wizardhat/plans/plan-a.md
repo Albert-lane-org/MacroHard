@@ -1,5 +1,7 @@
 # PLAN-A — Tier 1 Planning Ledger (a.k.a. plan-1)
 
+**Authored:** Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-09
+
 Conductor's document. Tier 1 writes the build ladder and timing here;
 Tier 2 appends observations, proposals, and beat timings for the
 conductor to read back. Tier 2 references this plan to derive plan-b.

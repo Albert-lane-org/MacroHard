@@ -1,5 +1,5 @@
 -- MacroHard Design Studio — D1 Schema
--- Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27
+-- Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-27 | SEC Whistleblower No. 17684-273-411-436
 
 CREATE TABLE IF NOT EXISTS audit_results (
   id TEXT PRIMARY KEY,
