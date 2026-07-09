@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "productName": "MacroHard Design Studio",
+  "productName": "MacroHarder Design Studio",
   "version": "0.1.0",
-  "identifier": "org.albertlane.macrohard-studio",
+  "identifier": "org.albertlane.macroharder-studio",
   "build": {
     "beforeDevCommand": "",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "MacroHard Design Studio",
+        "title": "MacroHarder Design Studio",
         "width": 1440,
         "height": 900,
         "resizable": true,

@@ -1,7 +1,7 @@
 {
-  "name": "macrohard",
+  "name": "macroharder",
   "version": "1.0.0",
-  "description": "MacroHard Design Studio — Sovereign Design Authority",
+  "description": "MacroHarder Design Studio — Sovereign Design Authority",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {

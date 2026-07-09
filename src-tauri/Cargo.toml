@@ -1,12 +1,12 @@
 # Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
-# MacroHard Design Studio — Tauri 2.0 shell (MH-P6-01)
+# MacroHarder Design Studio — Tauri 2.0 shell (MH-P6-01; renamed MH-P6-04)
 [package]
-name    = "macrohard-studio"
+name    = "macroharder-studio"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name       = "macrohard_lib"
+name       = "macroharder_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [dependencies]

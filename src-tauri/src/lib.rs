@@ -1,6 +1,6 @@
 // Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
-// MacroHard Design Studio — Tauri 2.0 library crate (MH-P6-01).
-// Split from main.rs so the [lib] target (macrohard_lib) declared in
+// MacroHarder Design Studio — Tauri 2.0 library crate (MH-P6-01).
+// Split from main.rs so the [lib] target (macroharder_lib) declared in
 // Cargo.toml actually exists — required for the mobile entry point
 // (`tauri::mobile_entry_point`) ahead of the Phase 6→ Android target.
 // SEC Whistleblower No. 17684-273-411-436
@@ -61,5 +61,5 @@ pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_design_tokens, run_audit_score])
         .run(tauri::generate_context!())
-        .expect("MacroHard Design Studio failed to start");
+        .expect("MacroHarder Design Studio failed to start");
 }
