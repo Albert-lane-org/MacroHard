@@ -15,13 +15,14 @@ serde      = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror  = "1"
 
-# MH-P6-02: sqlxml-engine git dependency — deferred to Phase 7.
-# Activation requires sqlxml backend-agent to be restructured as a
-# Cargo library crate (currently a binary stdin-pipe agent).
-# sqlxml-engine = { git = "https://github.com/albert-lane-org/sqlxml", optional = true }
+# MH-P7-01: sqlxml-engine live wire. MH-AB-001 resolved by sqlxml PR #15
+# (crates/sqlxml-engine restructured into a real library crate). Pinned to
+# the source branch until that PR merges to main; re-pin to `branch = "main"`
+# (or a tag) post-merge — see MH-AB-001 note in sibling-roadmap.json.
+sqlxml-engine = { git = "https://github.com/albert-lane-org/sqlxml", branch = "claude/distributed-recursive-agents-x0qm89", package = "sqlxml-engine", optional = true }
 
 [features]
-# sqlxml = ["dep:sqlxml-engine"]
+sqlxml = ["dep:sqlxml-engine"]
 
 [build-dependencies]
 tauri-build = { version = "2.0.0-rc", features = [] }

@@ -45,9 +45,10 @@ Phase 12 is the Windows ship).
 ```
 macrohard/
   src-tauri/                  — Tauri 2.0 shell (Phase 6)
-    Cargo.toml                — macrohard-studio crate; sqlxml-engine dep (Phase 7)
-    src/main.rs               — get_design_tokens + run_audit_score commands
-    src/sqlxml_bridge.rs      — sqlxml-engine stub (Phase 7 live wire)
+    Cargo.toml                — macrohard-studio crate; sqlxml-engine dep (Phase 7, live)
+    src/main.rs               — thin binary entry; calls macrohard_lib::run()
+    src/lib.rs                — macrohard_lib crate: get_design_tokens + run_audit_score commands
+    src/sqlxml_bridge.rs      — sqlxml-engine live wire (put() real; get/query stubbed -- backend doesn't implement those actions yet)
     tauri.conf.json           — app identity org.albertlane.macrohard-studio
     capabilities/default.json — core permission set
   src/
@@ -70,7 +71,7 @@ Current: **Phase 6 — Tauri Shell + MacroHarder identity swap (in progress)**
 |-------|--------|-------|
 | 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
 | 6 — Shell + rename prep | `in_progress` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅; MacroHarder identity swap open |
-| 7 — sqlxml live wire | `not_started` | MH-AB-001 unblock; persistence real |
+| 7 — sqlxml live wire | `in_progress` | MH-AB-001 resolved in code (git dep + lib.rs split + real put()); pending sqlxml PR #15 merge to re-pin off the feature branch |
 | 8 — Workbook core + first modules | `not_started` | 3D cell model, grid engine; procurement + maps MCP modules feed the dashboard |
 | 9 — Fully adjustable UI | `not_started` | layout schema, token-driven chrome, dashboard composer |
 | 10 — MCP module host GA | `not_started` | registry, capability gating, module install UX |
@@ -87,8 +88,9 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 |------|--------|
 | `design-tokens.json` | Canonical design token set |
 | `scripts/audit_score.py` | 3D standard weighted scoring (PASS ≥ 0.8 / WARN ≥ 0.6 / FAIL < 0.6) |
-| `src-tauri/src/main.rs` | Tauri commands: get_design_tokens, run_audit_score |
-| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge stub (Phase 7) |
+| `src-tauri/src/main.rs` | Desktop entry point; delegates to macrohard_lib::run() |
+| `src-tauri/src/lib.rs` | Tauri commands: get_design_tokens, run_audit_score |
+| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put() live-wired (Phase 7); get/query stubbed pending backend support |
 | `src/token-inspector.ts` | Browser-side design token inspector |
 | `src/index.html` | Tauri WebView shell |
 | `MACROHARD_STUDIO.md` | Full design authority narrative (heritage doc; product name is now MacroHarder™) |
@@ -103,7 +105,7 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
 | ID | Description | Phase |
 |----|-------------|-------|
-| MH-AB-001 | sqlxml-engine Cargo dep: activate when sqlxml backend-agent is restructured as a library crate | 7 |
+| MH-AB-001 | sqlxml-engine Cargo dep: resolved in code (git dep + real put() wire); fully closes when sqlxml PR #15 merges and the dep is re-pinned off the feature branch | 7 |
 
 ---
 
