@@ -15,6 +15,11 @@ serde      = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror  = "1"
 
+# MH-P8-02/03: MCP HTTP client for procurement/maps module Workers.
+# rustls (not native-tls) so this doesn't pull in an OpenSSL/pkg-config
+# system dependency on top of Tauri's existing GTK/WebKit requirement.
+reqwest    = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
 # MH-P7-03: sqlxml-engine live wire. MH-AB-001 fully resolved -- sqlxml
 # PR #15 (crates/sqlxml-engine restructured into a real library crate)
 # merged to main 2026-07-09. Re-pinned off the feature branch.

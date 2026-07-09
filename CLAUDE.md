@@ -40,15 +40,19 @@ Phase 12 is the Windows ship).
 
 ---
 
-## Architecture (Phase 6)
+## Architecture (Phase 8)
 
 ```
 macrohard/
   src-tauri/                  — Tauri 2.0 shell (Phase 6)
-    Cargo.toml                — macroharder-studio crate; sqlxml-engine dep (Phase 7, live)
+    Cargo.toml                — macroharder-studio crate; sqlxml-engine dep (live) + reqwest
     src/main.rs               — thin binary entry; calls macroharder_lib::run()
-    src/lib.rs                — macroharder_lib crate: get_design_tokens + run_audit_score commands
+    src/lib.rs                — macroharder_lib crate: design tokens, audit score,
+                                 workbook, and module commands; owns Mutex<Workbook> state
+    src/workbook.rs            — MH-P8-01: 3D cell model (CellAddress, CellValue, Volume, Workbook)
+    src/mcp_client.rs          — MH-P8-02/03: generic MCP JSON-RPC HTTP client
     src/sqlxml_bridge.rs      — sqlxml-engine live wire (put() real; get/query stubbed -- backend doesn't implement those actions yet)
+    config/modules.json        — module registry: procurement, maps (endpoints, tools, panels)
     tauri.conf.json           — app identity org.albertlane.macroharder-studio
     capabilities/default.json — core permission set
   src/
@@ -65,14 +69,14 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 7 — sqlxml live wire (in progress)**
+Current: **Phase 8 — Workbook core + first modules (in progress)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
 | 5 — Bootstrap | `completed` | design-tokens.json, audit_score.py, CI |
 | 6 — Shell + rename prep | `completed` | src-tauri/ shell ✅; sqlxml-engine dep stub ✅; token inspector UI ✅; MacroHarder identity swap ✅ (Cargo package/lib renamed, tauri.conf.json, package.json, UI strings) |
-| 7 — sqlxml live wire | `in_progress` | MH-AB-001 resolved in code (git dep + lib.rs split + real put()); sqlxml PR #15 merged 2026-07-09, dep re-pinned off the feature branch to main |
-| 8 — Workbook core + first modules | `not_started` | 3D cell model, grid engine; procurement + maps MCP modules feed the dashboard |
+| 7 — sqlxml live wire | `completed` | MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned off the feature branch to main |
+| 8 — Workbook core + first modules | `in_progress` | Workbook core (workbook.rs, 9 tests passing) ✅; MCP client + module registry ✅; live procurement/maps calls blocked on those repos' own Phase 7 Worker deploys |
 | 9 — Fully adjustable UI | `not_started` | layout schema, token-driven chrome, dashboard composer |
 | 10 — MCP module host GA | `not_started` | registry, capability gating, module install UX |
 | 11 — AER integration | `not_started` | unchanged from RoadMaps Phase 11 |
@@ -89,7 +93,10 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 | `design-tokens.json` | Canonical design token set |
 | `scripts/audit_score.py` | 3D standard weighted scoring (PASS ≥ 0.8 / WARN ≥ 0.6 / FAIL < 0.6) |
 | `src-tauri/src/main.rs` | Desktop entry point; delegates to macroharder_lib::run() |
-| `src-tauri/src/lib.rs` | Tauri commands: get_design_tokens, run_audit_score |
+| `src-tauri/src/lib.rs` | Tauri commands: design tokens, audit score, workbook (7 commands), module registry/call (2 commands) |
+| `src-tauri/src/workbook.rs` | 3D cell model + grid engine: CellAddress(col,row,layer), CellValue, Volume, Workbook |
+| `src-tauri/src/mcp_client.rs` | Generic MCP JSON-RPC HTTP client (initialize/tools list/call/resources read) |
+| `src-tauri/config/modules.json` | Module registry: procurement + maps endpoints, tools, dashboard panels |
 | `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put() live-wired (Phase 7); get/query stubbed pending backend support |
 | `src/token-inspector.ts` | Browser-side design token inspector |
 | `src/index.html` | Tauri WebView shell |
