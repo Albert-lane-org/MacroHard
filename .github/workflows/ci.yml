@@ -65,23 +65,17 @@ jobs:
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
       - name: Configure git credentials for private Cargo deps
         # sqlxml-engine is a private git dep (albert-lane-org/sqlxml).
-        # actions/checkout injects GITHUB_TOKEN as http.extraheader which
-        # takes precedence over credential helpers and cannot access other
-        # private repos. Unset it, then register a helper that emits
-        # _ROADMAPS (org-scoped PAT) so Cargo can fetch the dep.
-        # printf is used instead of heredoc to avoid YAML-indentation issues.
+        # _ROADMAPS PAT contains URL-special chars (#, &, !, %, *) that
+        # break direct URL embedding and credential helper pipe parsing.
+        # URL-encode the token with Python (on every GH Actions runner)
+        # then inject via insteadOf so Cargo's git CLI uses it directly.
+        # CARGO_NET_GIT_FETCH_WITH_CLI=true forces Cargo to use git CLI
+        # instead of libgit2, so the insteadOf rewrite actually applies.
         env:
           ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
         run: |
-          git config --local --unset-all "http.https://github.com/.extraheader" || true
-          printf '%s\n' \
-            '#!/bin/sh' \
-            'echo "username=x-access-token"' \
-            'printf "password=%s\n" "${GIT_CREDENTIAL_TOKEN}"' \
-            > /tmp/git-cred-helper.sh
-          chmod +x /tmp/git-cred-helper.sh
-          git config --global credential.helper '/tmp/git-cred-helper.sh'
-          printf 'GIT_CREDENTIAL_TOKEN=%s\n' "${ROADMAPS_TOKEN}" >> "$GITHUB_ENV"
+          ENCODED_TOKEN=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['ROADMAPS_TOKEN'], safe=''))")
+          git config --global url."https://x-access-token:${ENCODED_TOKEN}@github.com/".insteadOf "https://github.com/"
           echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
       - name: Install Tauri system deps
         run: |
