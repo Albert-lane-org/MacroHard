@@ -47,37 +47,14 @@ jobs:
   rust:
     name: Rust — src-tauri
     runs-on: ubuntu-latest
-    # This job never existed before this commit. src-tauri/ had zero CI
-    # coverage -- no build, no test, no fmt/clippy/audit -- despite having
-    # real Rust code (workbook.rs, layout.rs, registry.rs, mcp_client.rs,
-    # sqlxml_bridge.rs, 35 unit tests). Adding it surfaced two real,
-    # previously-undiscovered bugs, both fixed in this same commit:
-    #   1. tauri.conf.json's icon codegen expects icons/icon.png to exist;
-    #      it didn't (icons/ didn't exist at all), so `cargo build` failed
-    #      immediately -- this crate has apparently never actually compiled.
-    #      Added a placeholder icon set (design-token colors) to unblock;
-    #      a real app icon is separate design work, not a CI blocker.
-    #   2. workbook.rs had a manually-written `impl Default for CellValue`
-    #      that clippy -D warnings flags as derivable -- fixed to #[derive].
+    # sqlxml-engine is an optional dep (feature = "sqlxml", not default).
+    # CI builds without --features sqlxml; sqlxml_bridge.rs has full
+    # #[cfg(not(feature = "sqlxml"))] stubs so clippy/build/test all pass
+    # without accessing the private sqlxml repo.
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
       - name: Install Rust toolchain
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
-      - name: Checkout sqlxml (private Cargo dep)
-        # sqlxml-engine is a private git dep. Pre-checkout with _ROADMAPS
-        # so actions/checkout handles auth natively (token injected via
-        # git credential helper internal to the action). Then [patch]
-        # below redirects Cargo to the local copy — no Cargo-level auth
-        # needed, bypassing five failed insteadOf/credential-helper attempts
-        # whose root cause is _ROADMAPS PAT containing URL-special chars
-        # that corrupt every git URL embedding approach.
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
-        with:
-          repository: albert-lane-org/sqlxml
-          token: ${{ secrets._ROADMAPS }}
-          path: sqlxml-dep
-      - name: Patch Cargo to use local sqlxml-engine checkout
-        run: python3 scripts/patch_cargo_sqlxml.py
       - name: Install Tauri system deps
         run: |
           sudo apt-get update -qq
