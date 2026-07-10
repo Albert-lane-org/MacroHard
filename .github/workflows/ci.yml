@@ -63,6 +63,13 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
       - name: Install Rust toolchain
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
+      - name: Configure git credentials for private Cargo deps
+        # sqlxml-engine is a private git dep (albert-lane-org/sqlxml). CI
+        # needs org-scoped auth to fetch it. GITHUB_TOKEN is auto-provisioned
+        # by Actions and has read access to all org repos.
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
       - name: Install Tauri system deps
         run: |
           sudo apt-get update -qq
