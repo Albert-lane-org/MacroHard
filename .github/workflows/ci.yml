@@ -77,18 +77,7 @@ jobs:
           token: ${{ secrets._ROADMAPS }}
           path: sqlxml-dep
       - name: Patch Cargo to use local sqlxml-engine checkout
-        run: |
-          python3 -c "
-import os
-ws = os.environ['GITHUB_WORKSPACE']
-path = f'{ws}/sqlxml-dep/crates/sqlxml-engine'
-snippet = f'\n[patch.\"https://github.com/albert-lane-org/sqlxml\"]\nsqlxml-engine = {{ path = \"{path}\" }}\n'
-cargo_dir = os.path.expanduser('~/.cargo')
-os.makedirs(cargo_dir, exist_ok=True)
-with open(os.path.join(cargo_dir, 'config.toml'), 'a') as f:
-    f.write(snippet)
-print(f'[patch] sqlxml-engine -> {path}')
-"
+        run: python3 scripts/patch_cargo_sqlxml.py
       - name: Install Tauri system deps
         run: |
           sudo apt-get update -qq
