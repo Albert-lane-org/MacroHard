@@ -28,10 +28,8 @@ fn get_design_tokens() -> Result<Value, String> {
     ];
     for p in &candidates {
         if p.exists() {
-            let raw = std::fs::read_to_string(p)
-                .map_err(|e| format!("Read error ({p:?}): {e}"))?;
-            return serde_json::from_str(&raw)
-                .map_err(|e| format!("Parse error: {e}"));
+            let raw = std::fs::read_to_string(p).map_err(|e| format!("Read error ({p:?}): {e}"))?;
+            return serde_json::from_str(&raw).map_err(|e| format!("Parse error: {e}"));
         }
     }
     Err("design-tokens.json not found in workspace root".into())
@@ -58,11 +56,12 @@ fn run_audit_score() -> Result<Value, String> {
     let stdout = String::from_utf8_lossy(&output.stdout);
     if stdout.trim().is_empty() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("audit_score.py produced no output. stderr: {stderr}"));
+        return Err(format!(
+            "audit_score.py produced no output. stderr: {stderr}"
+        ));
     }
 
-    serde_json::from_str(stdout.trim())
-        .map_err(|e| format!("Parse error: {e} — raw: {stdout}"))
+    serde_json::from_str(stdout.trim()).map_err(|e| format!("Parse error: {e} — raw: {stdout}"))
 }
 
 // ---------------------------------------------------------------------------
@@ -174,7 +173,9 @@ fn layout_get(state: tauri::State<LayoutState>) -> Result<DashboardLayout, Strin
 }
 
 fn persist_layout(layout: &DashboardLayout) -> Result<(), String> {
-    layout.save_to_path(&layout_path()).map_err(|e| e.to_string())
+    layout
+        .save_to_path(&layout_path())
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -199,7 +200,9 @@ fn layout_move_panel(
     row: u32,
 ) -> Result<(), String> {
     let mut layout = state.lock().map_err(|e| e.to_string())?;
-    layout.move_panel(&id, col, row).map_err(|e| e.to_string())?;
+    layout
+        .move_panel(&id, col, row)
+        .map_err(|e| e.to_string())?;
     persist_layout(&layout)
 }
 
@@ -211,7 +214,9 @@ fn layout_resize_panel(
     height: u32,
 ) -> Result<(), String> {
     let mut layout = state.lock().map_err(|e| e.to_string())?;
-    layout.resize_panel(&id, width, height).map_err(|e| e.to_string())?;
+    layout
+        .resize_panel(&id, width, height)
+        .map_err(|e| e.to_string())?;
     persist_layout(&layout)
 }
 
@@ -222,7 +227,9 @@ fn layout_set_visibility(
     visible: bool,
 ) -> Result<(), String> {
     let mut layout = state.lock().map_err(|e| e.to_string())?;
-    layout.set_visibility(&id, visible).map_err(|e| e.to_string())?;
+    layout
+        .set_visibility(&id, visible)
+        .map_err(|e| e.to_string())?;
     persist_layout(&layout)
 }
 
@@ -286,7 +293,11 @@ async fn module_call_tool(
         .authorize_tool_call(&module, &tool)
         .map_err(|e| e.to_string())?;
 
-    let endpoint = if use_dev { &entry.endpoint_dev } else { &entry.endpoint };
+    let endpoint = if use_dev {
+        &entry.endpoint_dev
+    } else {
+        &entry.endpoint
+    };
     if endpoint.is_empty() {
         return Err(format!(
             "module '{module}' has no {} endpoint",

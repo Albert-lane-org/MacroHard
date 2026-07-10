@@ -82,8 +82,9 @@ impl McpClient {
             });
         }
 
-        body.result
-            .ok_or_else(|| McpClientError::Malformed("response had neither result nor error".into()))
+        body.result.ok_or_else(|| {
+            McpClientError::Malformed("response had neither result nor error".into())
+        })
     }
 
     /// MCP `initialize` — returns serverInfo/capabilities.

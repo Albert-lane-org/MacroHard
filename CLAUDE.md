@@ -124,6 +124,21 @@ None currently open. MH-AB-001 (sqlxml-engine Cargo dep) resolved
 2026-07-09 -- see `superseded.MH-AB-001_sqlxml_engine_dep` in
 `sibling-roadmap.json`.
 
+MH-AB-002 (resolved 2026-07-10): `src-tauri/` had zero CI coverage --
+no build, no test, no fmt/clippy/audit job existed at all. Adding one
+surfaced two real, previously-unknown bugs: `cargo build` failed
+outright (tauri.conf.json's icon codegen requires `icons/icon.png`,
+which didn't exist -- this crate had apparently never actually
+compiled in any environment with the real GTK/WebKit system libs
+present), and `workbook.rs` had a manual `impl Default` clippy flags
+as derivable under `-D warnings`. Both fixed; build/test/clippy/fmt/
+audit all now genuinely verified green (35/35 tests, 0 vulnerabilities
+across 17 documented non-applicable upstream GTK3/unic-* advisories --
+see ci.yml). Placeholder icon set added (design-token colors); a real
+app icon is separate design work, not a CI blocker. Runtime app launch
+(actual GUI) still not verified -- that needs a real display, not just
+the build-time system libs this CI job installs.
+
 ---
 
 ## Attribution

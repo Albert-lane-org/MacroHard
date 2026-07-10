@@ -78,7 +78,16 @@ pub enum RegistryError {
 /// Tool names containing any of these look like mutations. Heuristic, not
 /// authoritative — the module's own `capability` field is the real gate;
 /// this catches the case where a read_only module's manifest is wrong.
-const WRITE_LIKE: &[&str] = &["submit", "create", "update", "delete", "write", "publish", "subscribe", "revoke"];
+const WRITE_LIKE: &[&str] = &[
+    "submit",
+    "create",
+    "update",
+    "delete",
+    "write",
+    "publish",
+    "subscribe",
+    "revoke",
+];
 
 fn looks_like_write(tool: &str) -> bool {
     let lower = tool.to_lowercase();
@@ -92,7 +101,8 @@ impl ModuleRegistry {
     }
 
     pub fn save_to_path(&self, path: &Path) -> Result<(), RegistryError> {
-        let json = serde_json::to_string_pretty(self).map_err(|e| RegistryError::Serde(e.to_string()))?;
+        let json =
+            serde_json::to_string_pretty(self).map_err(|e| RegistryError::Serde(e.to_string()))?;
         std::fs::write(path, json).map_err(|e| RegistryError::Io(e.to_string()))
     }
 
@@ -137,7 +147,11 @@ impl ModuleRegistry {
 
     /// Capability gate: may `module` be dispatched a call to `tool`?
     /// Returns the manifest (so the caller can read its endpoint) on success.
-    pub fn authorize_tool_call(&self, module: &str, tool: &str) -> Result<&ModuleManifest, RegistryError> {
+    pub fn authorize_tool_call(
+        &self,
+        module: &str,
+        tool: &str,
+    ) -> Result<&ModuleManifest, RegistryError> {
         let entry = self.get(module)?;
         if !entry.tools.iter().any(|t| t == tool) {
             return Err(RegistryError::ToolNotDeclared {
@@ -178,7 +192,11 @@ mod tests {
     fn install_valid_manifest_succeeds() {
         let mut reg = ModuleRegistry::default();
         assert!(reg
-            .install(manifest("procurement", ModuleCapability::ReadOnly, &["procurement_query"]))
+            .install(manifest(
+                "procurement",
+                ModuleCapability::ReadOnly,
+                &["procurement_query"]
+            ))
             .is_ok());
         assert_eq!(reg.modules.len(), 1);
     }
@@ -204,7 +222,8 @@ mod tests {
     #[test]
     fn install_duplicate_name_fails() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("m", ModuleCapability::ReadOnly, &["a"])).unwrap();
+        reg.install(manifest("m", ModuleCapability::ReadOnly, &["a"]))
+            .unwrap();
         let err = reg
             .install(manifest("m", ModuleCapability::ReadOnly, &["b"]))
             .unwrap_err();
@@ -214,7 +233,8 @@ mod tests {
     #[test]
     fn uninstall_removes_module() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("m", ModuleCapability::ReadOnly, &["a"])).unwrap();
+        reg.install(manifest("m", ModuleCapability::ReadOnly, &["a"]))
+            .unwrap();
         reg.uninstall("m").unwrap();
         assert!(reg.modules.is_empty());
     }
@@ -229,17 +249,29 @@ mod tests {
     #[test]
     fn authorize_declared_read_tool_succeeds() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("procurement", ModuleCapability::ReadOnly, &["procurement_query"]))
-            .unwrap();
-        assert!(reg.authorize_tool_call("procurement", "procurement_query").is_ok());
+        reg.install(manifest(
+            "procurement",
+            ModuleCapability::ReadOnly,
+            &["procurement_query"],
+        ))
+        .unwrap();
+        assert!(reg
+            .authorize_tool_call("procurement", "procurement_query")
+            .is_ok());
     }
 
     #[test]
     fn authorize_undeclared_tool_fails() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("procurement", ModuleCapability::ReadOnly, &["procurement_query"]))
-            .unwrap();
-        let err = reg.authorize_tool_call("procurement", "procurement_delete_all").unwrap_err();
+        reg.install(manifest(
+            "procurement",
+            ModuleCapability::ReadOnly,
+            &["procurement_query"],
+        ))
+        .unwrap();
+        let err = reg
+            .authorize_tool_call("procurement", "procurement_delete_all")
+            .unwrap_err();
         assert!(matches!(err, RegistryError::ToolNotDeclared { .. }));
     }
 
@@ -247,18 +279,30 @@ mod tests {
     fn authorize_write_like_tool_on_read_only_module_fails() {
         let mut reg = ModuleRegistry::default();
         // Manifest claims read_only but (incorrectly) declares a write-shaped tool.
-        reg.install(manifest("procurement", ModuleCapability::ReadOnly, &["procurement_submit_permit"]))
-            .unwrap();
-        let err = reg.authorize_tool_call("procurement", "procurement_submit_permit").unwrap_err();
+        reg.install(manifest(
+            "procurement",
+            ModuleCapability::ReadOnly,
+            &["procurement_submit_permit"],
+        ))
+        .unwrap();
+        let err = reg
+            .authorize_tool_call("procurement", "procurement_submit_permit")
+            .unwrap_err();
         assert!(matches!(err, RegistryError::WriteNotPermitted { .. }));
     }
 
     #[test]
     fn authorize_write_like_tool_on_read_write_module_succeeds() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("civic", ModuleCapability::ReadWrite, &["civic_submit_filing"]))
-            .unwrap();
-        assert!(reg.authorize_tool_call("civic", "civic_submit_filing").is_ok());
+        reg.install(manifest(
+            "civic",
+            ModuleCapability::ReadWrite,
+            &["civic_submit_filing"],
+        ))
+        .unwrap();
+        assert!(reg
+            .authorize_tool_call("civic", "civic_submit_filing")
+            .is_ok());
     }
 
     #[test]
@@ -271,9 +315,14 @@ mod tests {
     #[test]
     fn save_and_load_roundtrip() {
         let mut reg = ModuleRegistry::default();
-        reg.install(manifest("maps", ModuleCapability::ReadOnly, &["maps_query", "maps_tile"]))
-            .unwrap();
-        let tmp = std::env::temp_dir().join(format!("mh-registry-test-{}.json", std::process::id()));
+        reg.install(manifest(
+            "maps",
+            ModuleCapability::ReadOnly,
+            &["maps_query", "maps_tile"],
+        ))
+        .unwrap();
+        let tmp =
+            std::env::temp_dir().join(format!("mh-registry-test-{}.json", std::process::id()));
         reg.save_to_path(&tmp).unwrap();
         let loaded = ModuleRegistry::load_from_path(&tmp).unwrap();
         std::fs::remove_file(&tmp).ok();
