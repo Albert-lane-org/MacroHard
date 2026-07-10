@@ -65,10 +65,20 @@ jobs:
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
       - name: Configure git credentials for private Cargo deps
         # sqlxml-engine is a private git dep (albert-lane-org/sqlxml).
-        # GITHUB_TOKEN is repo-scoped and cannot read other private repos;
-        # _ROADMAPS is an org-scoped PAT with cross-repo read access.
+        # _ROADMAPS is an org-scoped PAT. insteadOf URL substitution breaks
+        # when the token contains URL-special chars (#, &, %). Use a
+        # credential helper that emits username/password separately instead.
+        env:
+          ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
         run: |
-          git config --global url."https://x-access-token:${{ secrets._ROADMAPS }}@github.com/".insteadOf "https://github.com/"
+          cat > /tmp/git-cred-helper.sh << 'HELPER_EOF'
+          #!/bin/sh
+          echo "username=x-access-token"
+          printf 'password=%s\n' "${GIT_CREDENTIAL_TOKEN}"
+          HELPER_EOF
+          chmod +x /tmp/git-cred-helper.sh
+          git config --global credential.helper '/tmp/git-cred-helper.sh'
+          printf 'GIT_CREDENTIAL_TOKEN=%s\n' "${ROADMAPS_TOKEN}" >> "$GITHUB_ENV"
           echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
       - name: Install Tauri system deps
         run: |
