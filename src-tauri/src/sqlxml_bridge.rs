@@ -37,7 +37,9 @@ pub async fn put(
     payload_xml: &str,
 ) -> Result<String, SqlxmlBridgeError> {
     let engine = connect().await?;
-    let result = engine.put(source_domain, jurisdiction, business_type, payload_xml).await;
+    let result = engine
+        .put(source_domain, jurisdiction, business_type, payload_xml)
+        .await;
     if result.success {
         Ok(result.message)
     } else {

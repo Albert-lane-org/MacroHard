@@ -46,7 +46,11 @@ pub enum LayoutError {
     #[error("panel id '{0}' already exists")]
     DuplicateId(String),
     #[error("placement out of bounds: col {col} + width {width} exceeds grid_cols {grid_cols}")]
-    OutOfBounds { col: u32, width: u32, grid_cols: u32 },
+    OutOfBounds {
+        col: u32,
+        width: u32,
+        grid_cols: u32,
+    },
     #[error("io error: {0}")]
     Io(String),
     #[error("serde error: {0}")]
@@ -127,7 +131,8 @@ impl DashboardLayout {
     }
 
     pub fn save_to_path(&self, path: &Path) -> Result<(), LayoutError> {
-        let json = serde_json::to_string_pretty(self).map_err(|e| LayoutError::Serde(e.to_string()))?;
+        let json =
+            serde_json::to_string_pretty(self).map_err(|e| LayoutError::Serde(e.to_string()))?;
         std::fs::write(path, json).map_err(|e| LayoutError::Io(e.to_string()))
     }
 
@@ -274,7 +279,8 @@ mod tests {
 
     #[test]
     fn load_or_default_returns_default_when_missing() {
-        let tmp = std::env::temp_dir().join(format!("mh-layout-missing-{}.json", std::process::id()));
+        let tmp =
+            std::env::temp_dir().join(format!("mh-layout-missing-{}.json", std::process::id()));
         std::fs::remove_file(&tmp).ok();
         let layout = DashboardLayout::load_or_default(&tmp, 12);
         assert_eq!(layout.grid_cols, 12);

@@ -19,19 +19,14 @@ impl CellAddress {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[serde(tag = "type", content = "value")]
 pub enum CellValue {
+    #[default]
     Empty,
     Number(f64),
     Text(String),
     Bool(bool),
-}
-
-impl Default for CellValue {
-    fn default() -> Self {
-        CellValue::Empty
-    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -93,10 +88,7 @@ impl Volume {
     }
 
     pub fn non_empty(&self) -> Vec<(CellAddress, CellValue)> {
-        self.cells
-            .iter()
-            .map(|(a, v)| (*a, v.clone()))
-            .collect()
+        self.cells.iter().map(|(a, v)| (*a, v.clone())).collect()
     }
 }
 
@@ -113,7 +105,8 @@ const DEFAULT_VOLUME: &str = "Sheet1";
 impl Workbook {
     pub fn new() -> Self {
         let mut wb = Self::default();
-        wb.volumes.insert(DEFAULT_VOLUME.to_string(), Volume::default());
+        wb.volumes
+            .insert(DEFAULT_VOLUME.to_string(), Volume::default());
         wb
     }
 
@@ -197,8 +190,12 @@ mod tests {
     fn set_and_get_cell_roundtrips() {
         let mut wb = Workbook::new();
         let addr = CellAddress::new(2, 3, 0);
-        wb.set_cell(DEFAULT_VOLUME, addr, CellValue::Number(42.0)).unwrap();
-        assert_eq!(wb.get_cell(DEFAULT_VOLUME, addr).unwrap(), CellValue::Number(42.0));
+        wb.set_cell(DEFAULT_VOLUME, addr, CellValue::Number(42.0))
+            .unwrap();
+        assert_eq!(
+            wb.get_cell(DEFAULT_VOLUME, addr).unwrap(),
+            CellValue::Number(42.0)
+        );
     }
 
     #[test]
@@ -212,7 +209,8 @@ mod tests {
     fn setting_empty_clears_the_cell() {
         let mut wb = Workbook::new();
         let addr = CellAddress::new(1, 1, 1);
-        wb.set_cell(DEFAULT_VOLUME, addr, CellValue::Text("x".into())).unwrap();
+        wb.set_cell(DEFAULT_VOLUME, addr, CellValue::Text("x".into()))
+            .unwrap();
         wb.set_cell(DEFAULT_VOLUME, addr, CellValue::Empty).unwrap();
         assert_eq!(wb.non_empty_cells(DEFAULT_VOLUME).unwrap().len(), 0);
     }
@@ -222,9 +220,13 @@ mod tests {
         let mut wb = Workbook::new();
         wb.create_volume("Terrain").unwrap();
         let addr = CellAddress::new(0, 0, 0);
-        wb.set_cell("Terrain", addr, CellValue::Number(1.0)).unwrap();
+        wb.set_cell("Terrain", addr, CellValue::Number(1.0))
+            .unwrap();
         assert_eq!(wb.get_cell(DEFAULT_VOLUME, addr).unwrap(), CellValue::Empty);
-        assert_eq!(wb.get_cell("Terrain", addr).unwrap(), CellValue::Number(1.0));
+        assert_eq!(
+            wb.get_cell("Terrain", addr).unwrap(),
+            CellValue::Number(1.0)
+        );
     }
 
     #[test]
@@ -237,15 +239,27 @@ mod tests {
     #[test]
     fn missing_volume_errors() {
         let wb = Workbook::new();
-        let err = wb.get_cell("NoSuchVolume", CellAddress::new(0, 0, 0)).unwrap_err();
+        let err = wb
+            .get_cell("NoSuchVolume", CellAddress::new(0, 0, 0))
+            .unwrap_err();
         assert!(matches!(err, WorkbookError::VolumeNotFound(_)));
     }
 
     #[test]
     fn bounds_track_the_3d_extent() {
         let mut wb = Workbook::new();
-        wb.set_cell(DEFAULT_VOLUME, CellAddress::new(1, 5, 0), CellValue::Number(1.0)).unwrap();
-        wb.set_cell(DEFAULT_VOLUME, CellAddress::new(4, 2, 3), CellValue::Number(2.0)).unwrap();
+        wb.set_cell(
+            DEFAULT_VOLUME,
+            CellAddress::new(1, 5, 0),
+            CellValue::Number(1.0),
+        )
+        .unwrap();
+        wb.set_cell(
+            DEFAULT_VOLUME,
+            CellAddress::new(4, 2, 3),
+            CellValue::Number(2.0),
+        )
+        .unwrap();
         let (min, max) = wb.volume_bounds(DEFAULT_VOLUME).unwrap().unwrap();
         assert_eq!(min, CellAddress::new(1, 2, 0));
         assert_eq!(max, CellAddress::new(4, 5, 3));
