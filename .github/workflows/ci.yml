@@ -63,20 +63,32 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
       - name: Install Rust toolchain
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
-      - name: Configure git credentials for private Cargo deps
-        # sqlxml-engine is a private git dep (albert-lane-org/sqlxml).
-        # _ROADMAPS PAT contains URL-special chars (#, &, !, %, *) that
-        # break direct URL embedding and credential helper pipe parsing.
-        # URL-encode the token with Python (on every GH Actions runner)
-        # then inject via insteadOf so Cargo's git CLI uses it directly.
-        # CARGO_NET_GIT_FETCH_WITH_CLI=true forces Cargo to use git CLI
-        # instead of libgit2, so the insteadOf rewrite actually applies.
-        env:
-          ROADMAPS_TOKEN: ${{ secrets._ROADMAPS }}
+      - name: Checkout sqlxml (private Cargo dep)
+        # sqlxml-engine is a private git dep. Pre-checkout with _ROADMAPS
+        # so actions/checkout handles auth natively (token injected via
+        # git credential helper internal to the action). Then [patch]
+        # below redirects Cargo to the local copy — no Cargo-level auth
+        # needed, bypassing five failed insteadOf/credential-helper attempts
+        # whose root cause is _ROADMAPS PAT containing URL-special chars
+        # that corrupt every git URL embedding approach.
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          repository: albert-lane-org/sqlxml
+          token: ${{ secrets._ROADMAPS }}
+          path: sqlxml-dep
+      - name: Patch Cargo to use local sqlxml-engine checkout
         run: |
-          ENCODED_TOKEN=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['ROADMAPS_TOKEN'], safe=''))")
-          git config --global url."https://x-access-token:${ENCODED_TOKEN}@github.com/".insteadOf "https://github.com/"
-          echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+          python3 -c "
+import os
+ws = os.environ['GITHUB_WORKSPACE']
+path = f'{ws}/sqlxml-dep/crates/sqlxml-engine'
+snippet = f'\n[patch.\"https://github.com/albert-lane-org/sqlxml\"]\nsqlxml-engine = {{ path = \"{path}\" }}\n'
+cargo_dir = os.path.expanduser('~/.cargo')
+os.makedirs(cargo_dir, exist_ok=True)
+with open(os.path.join(cargo_dir, 'config.toml'), 'a') as f:
+    f.write(snippet)
+print(f'[patch] sqlxml-engine -> {path}')
+"
       - name: Install Tauri system deps
         run: |
           sudo apt-get update -qq
