@@ -111,6 +111,7 @@ pub fn load_manifest(path: &Path) -> io::Result<Manifest> {
 mod tests {
     use super::*;
     use std::io::Write as _;
+    use std::path::PathBuf;
 
     fn tmp_dir(tag: &str) -> PathBuf {
         let pid = std::process::id();
