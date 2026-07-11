@@ -49,7 +49,7 @@ fn walk(root: &Path, dir: &Path, entries: &mut HashMap<String, String>) -> io::R
         } else if path.is_file() {
             let rel = path
                 .strip_prefix(root)
-                .map_err(|e| io::Error::other(e))?
+                .map_err(io::Error::other)?
                 .to_string_lossy()
                 .into_owned();
             entries.insert(rel, hash_file(&path)?);
@@ -98,13 +98,13 @@ pub fn verify(root: &Path, manifest: &Manifest) -> io::Result<VerifyResult> {
 }
 
 pub fn save_manifest(manifest: &Manifest, path: &Path) -> io::Result<()> {
-    let json = serde_json::to_string_pretty(manifest).map_err(|e| io::Error::other(e))?;
+    let json = serde_json::to_string_pretty(manifest).map_err(io::Error::other)?;
     std::fs::write(path, json)
 }
 
 pub fn load_manifest(path: &Path) -> io::Result<Manifest> {
     let raw = std::fs::read_to_string(path)?;
-    serde_json::from_str(&raw).map_err(|e| io::Error::other(e))
+    serde_json::from_str(&raw).map_err(io::Error::other)
 }
 
 #[cfg(test)]
