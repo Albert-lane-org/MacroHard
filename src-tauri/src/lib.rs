@@ -14,7 +14,7 @@ pub mod registry;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
-use integrity::{IntegrityManifest, VerifyResult};
+use integrity::{Manifest as IntegrityManifest, VerifyResult};
 use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
 use registry::{ModuleManifest, ModuleRegistry};
@@ -354,24 +354,28 @@ fn integrity_manifest_path() -> std::path::PathBuf {
 /// Generate (or re-baseline) the BLAKE3 content-hash manifest for tracked files.
 #[tauri::command]
 fn generate_integrity_manifest() -> Result<IntegrityManifest, String> {
-    integrity::generate(&integrity_manifest_path()).map_err(|e| e.to_string())
+    let root = std::path::Path::new(".");
+    let manifest = integrity::generate(root).map_err(|e| e.to_string())?;
+    let path = integrity_manifest_path();
+    integrity::save_manifest(&manifest, &path).map_err(|e| e.to_string())?;
+    Ok(manifest)
 }
 
 /// Verify the tracked files against the stored manifest; returns a VerifyResult
-/// with ok=true/false + a list of violations. Never panics — verification
-/// failures are surfaced, not fatal.
+/// with passed/failed/missing counts. Never panics — verification failures are
+/// surfaced, not fatal.
 #[tauri::command]
 fn verify_integrity() -> Result<VerifyResult, String> {
     let path = integrity_manifest_path();
+    let root = std::path::Path::new(".");
     if !path.exists() {
-        // No manifest yet — generate one on first boot then verify (clean).
-        return match integrity::generate(&path) {
-            Ok(m) => Ok(integrity::verify(&m)),
-            Err(e) => Err(e.to_string()),
-        };
+        // No manifest yet — generate one then verify (always clean on first run).
+        let manifest = integrity::generate(root).map_err(|e| e.to_string())?;
+        integrity::save_manifest(&manifest, &path).map_err(|e| e.to_string())?;
+        return integrity::verify(root, &manifest).map_err(|e| e.to_string());
     }
-    let manifest = integrity::load(&path).map_err(|e| e.to_string())?;
-    Ok(integrity::verify(&manifest))
+    let manifest = integrity::load_manifest(&path).map_err(|e| e.to_string())?;
+    integrity::verify(root, &manifest).map_err(|e| e.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -381,14 +385,17 @@ pub fn run() {
     // MH-P12-01: non-fatal boot integrity check.
     let integrity_path = integrity_manifest_path();
     if integrity_path.exists() {
-        if let Ok(manifest) = integrity::load(&integrity_path) {
-            let result = integrity::verify(&manifest);
-            if !result.ok {
-                eprintln!(
-                    "[MacroHarder] integrity warning: {} violation(s) — {:?}",
-                    result.violations.len(),
-                    result.violations
-                );
+        let root = std::path::Path::new(".");
+        if let Ok(manifest) = integrity::load_manifest(&integrity_path) {
+            if let Ok(result) = integrity::verify(root, &manifest) {
+                if !result.passed {
+                    eprintln!(
+                        "[MacroHarder] integrity warning: {} failure(s), {} missing — {:?}",
+                        result.failed.len(),
+                        result.missing.len(),
+                        result.failed
+                    );
+                }
             }
         }
     }
