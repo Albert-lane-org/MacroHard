@@ -9,7 +9,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 /// A content-hash manifest: relative path → BLAKE3 hex digest.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -49,7 +49,7 @@ fn walk(root: &Path, dir: &Path, entries: &mut HashMap<String, String>) -> io::R
         } else if path.is_file() {
             let rel = path
                 .strip_prefix(root)
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?
+                .map_err(|e| io::Error::other(e))?
                 .to_string_lossy()
                 .into_owned();
             entries.insert(rel, hash_file(&path)?);
@@ -99,13 +99,13 @@ pub fn verify(root: &Path, manifest: &Manifest) -> io::Result<VerifyResult> {
 
 pub fn save_manifest(manifest: &Manifest, path: &Path) -> io::Result<()> {
     let json = serde_json::to_string_pretty(manifest)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        .map_err(|e| io::Error::other(e))?;
     std::fs::write(path, json)
 }
 
 pub fn load_manifest(path: &Path) -> io::Result<Manifest> {
     let raw = std::fs::read_to_string(path)?;
-    serde_json::from_str(&raw).map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+    serde_json::from_str(&raw).map_err(|e| io::Error::other(e))
 }
 
 #[cfg(test)]
