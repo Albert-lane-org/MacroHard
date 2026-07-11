@@ -98,8 +98,7 @@ pub fn verify(root: &Path, manifest: &Manifest) -> io::Result<VerifyResult> {
 }
 
 pub fn save_manifest(manifest: &Manifest, path: &Path) -> io::Result<()> {
-    let json = serde_json::to_string_pretty(manifest)
-        .map_err(|e| io::Error::other(e))?;
+    let json = serde_json::to_string_pretty(manifest).map_err(|e| io::Error::other(e))?;
     std::fs::write(path, json)
 }
 
