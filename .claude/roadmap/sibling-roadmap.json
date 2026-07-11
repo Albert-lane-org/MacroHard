@@ -5,7 +5,7 @@
   "layer": "B",
   "role": "One-stop-shop configurable 3D analytics workbook -- Rust/C/C++ core, SQLXML data manipulation, MCP module system, fully adjustable UI",
   "master_plan": ".wizardhat/plans/plan-macroharder.md",
-  "current_phase": 10,
+  "current_phase": 12,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
     "2": { "status": "completed", "label": "Core Services" },
@@ -16,9 +16,9 @@
     "7": { "status": "completed", "label": "sqlxml-engine live wire (MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned to main)" },
     "8": { "status": "completed", "label": "Workbook core (3D cell model, grid engine) done; procurement + maps MCP client wiring code-complete; D1/R2 provisioned for both modules 2026-07-09; live data blocked only on those repos' own wrangler deploy (CLOUDFLARE_API_TOKEN)" },
     "9": { "status": "completed", "label": "Fully adjustable UI -- layout.rs schema (14 tests) + layout_* Tauri commands + chrome.ts (token-driven CSS custom properties) + dashboard-composer.ts (grid render, add/remove/move/resize/hide) done; not runtime-tested (no GTK/WebKit in this sandbox)" },
-    "10": { "status": "in_progress", "label": "MCP module host GA -- registry.rs (ModuleRegistry, 12 tests) replaces ad-hoc modules.json reads; authorize_tool_call() capability gating (declared-tools check + read_only write-shape rejection); module_install/module_uninstall commands + validation; composer install-module UX; not runtime-tested" },
-    "11": { "status": "not_started", "label": "AER integration (unchanged from RoadMaps Phase 11)" },
-    "12": { "status": "not_started", "label": "Windows ship -- NSIS self-extracting .exe + BLAKE3 integrity manifest (replaces cancelled Firestick HD)" }
+    "10": { "status": "completed", "label": "MCP module host GA -- registry.rs (ModuleRegistry, 12 tests) replaces ad-hoc modules.json reads; authorize_tool_call() capability gating (declared-tools check + read_only write-shape rejection); module_install/module_uninstall commands + validation; composer install-module UX; not runtime-tested" },
+    "11": { "status": "not_started", "label": "AER integration (blocked on lane-mcp AER-002/003, RoadMaps Phase 11)" },
+    "12": { "status": "in_progress", "label": "Windows ship -- MH-P12-01: integrity.rs BLAKE3 manifest (generate/verify, 6 tests, boot check in run(), 2 Tauri commands) done. MH-P12-02: tauri.conf.json NSIS bundle config (installMode=currentUser, icon array fixed) + windows-build.yml (build-check on windows-latest, package job on dispatch/tags) done. Not runtime-tested." }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
@@ -26,19 +26,19 @@
     { "id": "MH-P5-03", "description": "scripts/audit_score.py -- 3D standard weighted scoring (PASS/WARN/FAIL gate)", "status": "completed" },
     { "id": "MH-P6-01", "description": "src-tauri/ Tauri 2.0 shell init -- Cargo.toml, build.rs, main.rs, tauri.conf.json, capabilities/", "status": "completed" },
     { "id": "MH-P6-02", "description": "sqlxml-engine Cargo dependency -- stub wired, Phase 7 live activation", "status": "completed" },
-    { "id": "MH-P7-03", "description": "sqlxml-engine live wire: real git dep (re-pinned to sqlxml main post-merge of PR #15), src-tauri/src/lib.rs split so the declared [lib] target exists, sqlxml_bridge::put() calls SqlxmlEngine::put() for real; get/query stay stubbed -- sqlxml-agent doesn't implement those actions yet", "status": "completed" },
+    { "id": "MH-P7-03", "description": "sqlxml-engine live wire: real git dep (re-pinned to sqlxml main post-merge of PR #15), src-tauri/src/lib.rs split so the declared [lib] target exists, sqlxml_bridge::put/get/query all live (get/query backed by GET/QUERY actions from sqlxml#19)", "status": "completed" },
     { "id": "MH-P6-03", "description": "TypeScript design token inspector UI -- mountInspector() + src/index.html", "status": "completed" },
     { "id": "MH-P6-04", "description": "MacroHarder identity swap -- tauri.conf.json product name + org.albertlane.macroharder-studio bundle id, package.json, doc headers, Rust crate rename (macrohard-studio -> macroharder-studio, macrohard_lib -> macroharder_lib)", "status": "completed" },
-    { "id": "MH-P12-02", "description": "Windows NSIS self-extracting .exe build workflow (MSI optional secondary) -- renumbered from MH-P7-01: packaging lands at Phase 12 per the re-scored ladder", "status": "not_started" },
-    { "id": "MH-P8-01", "description": "Workbook core -- src-tauri/src/workbook.rs: CellAddress(col,row,layer) + CellValue + Volume (sparse grid) + Workbook (named volumes), 9 unit tests passing; 7 Tauri commands (workbook_create_volume/list_volumes/set_cell/get_cell/clear_cell/volume_bounds/non_empty_cells). SQLXML persistence is write-only via sqlxml_bridge::put() (Phase 7) -- no read-back until sqlxml adds a GET action server-side", "status": "completed" },
-    { "id": "MH-P8-02", "description": "Wire procurement MCP module as dashboard data source #1 -- src-tauri/src/mcp_client.rs (generic MCP JSON-RPC HTTP client) + config/modules.json registry + module_list/module_call_tool Tauri commands done. procurement-db D1 + document-archive R2 provisioned and migrated 2026-07-09 (PRO-P7-01 unblocked); code path is complete and will return live data once procurement's own wrangler deploy runs", "status": "completed" },
-    { "id": "MH-P8-03", "description": "Wire maps MCP module as dashboard data source #2 (3D terrain showcase) -- same mcp_client.rs + modules.json path as MH-P8-02. maps-cache D1 + map-tiles R2 provisioned and migrated 2026-07-09 (MAP-P7-01 unblocked); code path is complete and will return live data once maps' own wrangler deploy runs", "status": "completed" },
-    { "id": "MH-P9-01", "description": "src-tauri/src/layout.rs -- DashboardLayout/PanelPlacement grid schema: add/remove/move/resize/visibility/z-order, JSON persistence (load_or_default/save_to_path), 14 unit tests passing in isolation (GTK/WebKit unavailable in this sandbox so the full Tauri crate can't link, but the layout logic has zero Tauri dependencies and was verified standalone)", "status": "completed" },
-    { "id": "MH-P9-02", "description": "src/chrome.ts -- applies design-tokens.json onto chrome CSS custom properties (--bg/--surface/--accent/etc. + spacing + font-size scales) at runtime instead of the values being hardcoded literals in index.html's :root block (which now serves only as pre-token-load fallback)", "status": "completed" },
-    { "id": "MH-P9-03", "description": "src/dashboard-composer.ts -- renders DashboardLayout as a CSS grid of module panels; add-panel control (module + panel-type pickers from the registry), pointer-event drag-to-move, resize/hide/remove/bring-to-front controls, all wired to the 7 layout_* Tauri commands. New tsconfig.frontend.json (DOM lib) split from the Worker-side tsconfig.json so this actually typechecks in CI. Not runtime-tested -- no GTK/WebKit in this sandbox to launch the Tauri WebView", "status": "completed" },
-    { "id": "MH-P10-01", "description": "MCP module host -- src-tauri/src/registry.rs: ModuleRegistry (install/uninstall + validation), authorize_tool_call() capability gate (rejects undeclared tools; rejects write-shaped tool names on read_only modules), 12 unit tests passing. module_list/module_call_tool rewritten on top of it (was ad-hoc file reads with zero tool-name validation before). module_install/module_uninstall Tauri commands + composer 'Install module...' UX. config/modules.json gained capability/source fields on both built-in modules", "status": "completed" },
+    { "id": "MH-P12-02", "description": "Windows NSIS self-extracting .exe build workflow -- tauri.conf.json NSIS bundle config (installMode=currentUser, icon array populated) + .github/workflows/windows-build.yml (build-check on windows-latest every push; package job on workflow_dispatch/v* tags producing NSIS .exe artifact)", "status": "completed" },
+    { "id": "MH-P8-01", "description": "Workbook core -- src-tauri/src/workbook.rs: CellAddress(col,row,layer) + CellValue + Volume (sparse grid) + Workbook (named volumes), 9 unit tests passing; 7 Tauri commands (workbook_create_volume/list_volumes/set_cell/get_cell/clear_cell/volume_bounds/non_empty_cells). SQLXML persistence via sqlxml_bridge (Phase 7)", "status": "completed" },
+    { "id": "MH-P8-02", "description": "Wire procurement MCP module as dashboard data source #1 -- src-tauri/src/mcp_client.rs (generic MCP JSON-RPC HTTP client) + config/modules.json registry + module_list/module_call_tool Tauri commands done. procurement-db D1 + document-archive R2 provisioned and migrated 2026-07-09; live data once procurement's own wrangler deploy runs", "status": "completed" },
+    { "id": "MH-P8-03", "description": "Wire maps MCP module as dashboard data source #2 (3D terrain showcase) -- same mcp_client.rs + modules.json path as MH-P8-02. maps-cache D1 + map-tiles R2 provisioned and migrated 2026-07-09; live data once maps' own wrangler deploy runs", "status": "completed" },
+    { "id": "MH-P9-01", "description": "src-tauri/src/layout.rs -- DashboardLayout/PanelPlacement grid schema: add/remove/move/resize/visibility/z-order, JSON persistence (load_or_default/save_to_path), 14 unit tests passing", "status": "completed" },
+    { "id": "MH-P9-02", "description": "src/chrome.ts -- applies design-tokens.json onto chrome CSS custom properties at runtime instead of hardcoded literals in index.html", "status": "completed" },
+    { "id": "MH-P9-03", "description": "src/dashboard-composer.ts -- renders DashboardLayout as a CSS grid of module panels; add-panel control, pointer-event drag-to-move, resize/hide/remove/bring-to-front controls, all wired to the 7 layout_* Tauri commands. tsconfig.frontend.json split from tsconfig.json. Not runtime-tested.", "status": "completed" },
+    { "id": "MH-P10-01", "description": "MCP module host -- src-tauri/src/registry.rs: ModuleRegistry (install/uninstall + validation), authorize_tool_call() capability gate (rejects undeclared tools; rejects write-shaped tool names on read_only modules), 12 unit tests passing. module_list/module_call_tool rewritten on top of it. module_install/module_uninstall Tauri commands + composer 'Install module...' UX. config/modules.json gained capability/source fields on both built-in modules", "status": "completed" },
     { "id": "MH-P10-02", "description": "Module install UX: signature/provenance verification for user-installed manifests, sandboxed capability review before first tool call, module marketplace/discovery surface", "status": "not_started" },
-    { "id": "MH-P12-01", "description": "Filesystem integrity -- BLAKE3 content-hash manifest verified on boot", "status": "not_started" }
+    { "id": "MH-P12-01", "description": "Filesystem integrity -- src-tauri/src/integrity.rs: BLAKE3 content-hash manifest generate()/verify()/save_manifest()/load_manifest(); 6 unit tests; non-fatal boot check in run(); verify_integrity + generate_integrity_manifest Tauri commands. blake3 = '1' added to Cargo.toml.", "status": "completed" }
   ],
   "open_absences": [
     {
@@ -64,5 +64,5 @@
     "gemini_references": 0,
     "unauthenticated_endpoints": 0
   },
-  "updated": "2026-07-09"
+  "updated": "2026-07-11"
 }

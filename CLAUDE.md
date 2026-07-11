@@ -75,7 +75,7 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 10 — MCP module host GA (in progress)**
+Current: **Phase 12 — Windows ship (in progress)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -84,9 +84,9 @@ Current: **Phase 10 — MCP module host GA (in progress)**
 | 7 — sqlxml live wire | `completed` | MH-AB-001 fully resolved -- sqlxml PR #15 merged 2026-07-09, dep re-pinned off the feature branch to main |
 | 8 — Workbook core + first modules | `completed` | Workbook core (workbook.rs, 9 tests passing) ✅; MCP client + module registry ✅; code-complete `module_call_tool` path for procurement/maps ✅. procurement-db/maps-cache D1 + document-archive/map-tiles R2 provisioned and migrated 2026-07-09 -- `modules.json` still correctly reports `code_ready_deploy_blocked` since `wrangler deploy` itself needs a CLOUDFLARE_API_TOKEN this session doesn't have; calls will start returning real data the moment those two Workers go live, no MacroHarder-side code changes needed |
 | 9 — Fully adjustable UI | `completed` | `layout.rs`: DashboardLayout/PanelPlacement grid schema + add/remove/move/resize/visibility/z-order, JSON-persisted, 14/14 unit tests passing ✅. 7 `layout_*` Tauri commands ✅. `chrome.ts`: chrome CSS custom properties now read live from design-tokens.json instead of being hardcoded in index.html ✅. `dashboard-composer.ts`: renders the layout as a CSS grid, add-panel control, drag-to-move (pointer events), resize/hide/remove/bring-to-front controls ✅. Split `tsconfig.json` (Worker, no DOM) from `tsconfig.frontend.json` (WebView, DOM lib) so the frontend actually typechecks in CI -- both pass clean. **Not runtime-tested**: no GTK/WebKit system libs in this sandbox, so the Tauri app cannot actually launch here |
-| 10 — MCP module host GA | `in_progress` | `registry.rs`: ModuleRegistry replaces the ad-hoc file-read in `module_list`/`module_call_tool` -- `authorize_tool_call()` rejects any tool a module doesn't declare in its manifest, and rejects write-shaped tool names on `read_only` modules (name-heuristic defense in depth; the module's own `capability` field is the primary gate), 12/12 unit tests passing ✅. `module_install`/`module_uninstall` commands + validation (non-empty name/endpoint/tools, no duplicate name) ✅. `config/modules.json` gained `capability`/`source` fields on both built-in modules ✅. Composer UI: "Install module…" control (paste-manifest flow) ✅. **Not runtime-tested** — same GTK/WebKit limitation as Phase 9 |
-| 11 — AER integration | `not_started` | unchanged from RoadMaps Phase 11 |
-| 12 — Windows ship | `not_started` | NSIS self-extracting .exe + integrity manifest (replaces Firestick HD — cancelled) |
+| 10 — MCP module host GA | `completed` | `registry.rs`: ModuleRegistry replaces the ad-hoc file-read in `module_list`/`module_call_tool` -- `authorize_tool_call()` rejects any tool a module doesn't declare in its manifest, and rejects write-shaped tool names on `read_only` modules (name-heuristic defense in depth; the module's own `capability` field is the primary gate), 12/12 unit tests passing ✅. `module_install`/`module_uninstall` commands + validation (non-empty name/endpoint/tools, no duplicate name) ✅. `config/modules.json` gained `capability`/`source` fields on both built-in modules ✅. Composer UI: "Install module…" control (paste-manifest flow) ✅. **Not runtime-tested** — same GTK/WebKit limitation as Phase 9 |
+| 11 — AER integration | `not_started` | Blocked on lane-mcp AER tools (AER-002/003, Phase 11 in RoadMaps) |
+| 12 — Windows ship | `in_progress` | MH-P12-01: `src-tauri/src/integrity.rs` — BLAKE3 content-hash manifest (generate + verify, 6 unit tests passing), non-fatal boot check in `run()`, `verify_integrity`/`generate_integrity_manifest` Tauri commands ✅. MH-P12-02: `tauri.conf.json` NSIS bundle config (installMode=currentUser, icon array fixed) + `.github/workflows/windows-build.yml` (build-check on windows-latest, package job on dispatch/tags producing NSIS .exe artifact) ✅. **Not runtime-tested** — Windows runner and display required |
 
 Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
@@ -105,7 +105,8 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 | `src-tauri/src/mcp_client.rs` | Generic MCP JSON-RPC HTTP client (initialize/tools list/call/resources read) |
 | `src-tauri/src/registry.rs` | ModuleRegistry: install/uninstall, `authorize_tool_call()` capability gating |
 | `src-tauri/config/modules.json` | Module registry: procurement + maps endpoints, tools, dashboard panels, capability |
-| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put() live-wired (Phase 7); get/query stubbed pending backend support |
+| `src-tauri/src/integrity.rs` | BLAKE3 content-hash manifest: generate(), verify(), save/load; 6 unit tests; boot check in run() |
+| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put/get/query all live-wired (Phase 7 + sqlxml#19); get/query backed by GET/QUERY actions added in sqlxml#19 |
 | `src/chrome.ts` | Applies design-tokens.json onto chrome CSS custom properties at runtime |
 | `src/dashboard-composer.ts` | Layout-driven panel grid: add/remove/move/resize/hide panels, install modules |
 | `src/token-inspector.ts` | Browser-side design token inspector |

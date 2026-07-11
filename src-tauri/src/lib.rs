@@ -5,6 +5,7 @@
 // (`tauri::mobile_entry_point`) ahead of the Phase 6→ Android target.
 // SEC Whistleblower No. 17684-273-411-436
 
+pub mod integrity;
 pub mod layout;
 pub mod mcp_client;
 pub mod registry;
@@ -329,8 +330,74 @@ fn module_uninstall(name: String) -> Result<(), String> {
     persist_registry(&registry)
 }
 
+// ---------------------------------------------------------------------------
+// MH-P12-01: Filesystem integrity — BLAKE3 content-hash manifest.
+// generate_integrity_manifest() is a dev/installer tool; verify_integrity()
+// is exposed to the WebView so the UI can surface tamper warnings.
+// The boot-time check in run() is non-fatal — a missing manifest (first run)
+// is silently skipped; a failed verify emits a warning to stderr.
+// ---------------------------------------------------------------------------
+
+fn integrity_manifest_path() -> std::path::PathBuf {
+    std::path::PathBuf::from("integrity.blake3.json")
+}
+
+/// Generate a BLAKE3 manifest for all files under `root` (default: ".") and
+/// write it to `integrity.blake3.json` in that directory.
+#[tauri::command]
+fn generate_integrity_manifest(root: Option<String>) -> Result<integrity::Manifest, String> {
+    let root_path = root
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let manifest = integrity::generate(&root_path).map_err(|e| e.to_string())?;
+    let out = root_path.join("integrity.blake3.json");
+    integrity::save_manifest(&manifest, &out).map_err(|e| e.to_string())?;
+    Ok(manifest)
+}
+
+/// Verify files under `root` against the stored `integrity.blake3.json`.
+/// Returns an error string if the manifest file is absent.
+#[tauri::command]
+fn verify_integrity(root: Option<String>) -> Result<integrity::VerifyResult, String> {
+    let root_path = root
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let manifest_path = root_path.join("integrity.blake3.json");
+    if !manifest_path.exists() {
+        return Err(
+            "integrity.blake3.json not found — run generate_integrity_manifest first".into(),
+        );
+    }
+    let manifest = integrity::load_manifest(&manifest_path).map_err(|e| e.to_string())?;
+    integrity::verify(&root_path, &manifest).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // MH-P12-01: Non-fatal integrity check at boot.
+    // A missing manifest (first install) is skipped silently.
+    // A failed verify emits a warning; it does not block startup.
+    let manifest_path = integrity_manifest_path();
+    if manifest_path.exists() {
+        match integrity::load_manifest(&manifest_path) {
+            Ok(manifest) => {
+                let root = std::path::PathBuf::from(".");
+                match integrity::verify(&root, &manifest) {
+                    Ok(result) if !result.passed => {
+                        eprintln!(
+                            "[MacroHarder] INTEGRITY WARNING — {} file(s) changed, {} missing",
+                            result.failed.len(),
+                            result.missing.len()
+                        );
+                    }
+                    Ok(_) => {}
+                    Err(e) => eprintln!("[MacroHarder] integrity check error: {e}"),
+                }
+            }
+            Err(e) => eprintln!("[MacroHarder] integrity manifest load error: {e}"),
+        }
+    }
+
     let initial_layout = DashboardLayout::load_or_default(&layout_path(), 12);
 
     tauri::Builder::default()
@@ -357,6 +424,8 @@ pub fn run() {
             layout_resize_panel,
             layout_set_visibility,
             layout_bring_to_front,
+            generate_integrity_manifest,
+            verify_integrity,
         ])
         .run(tauri::generate_context!())
         .expect("MacroHarder Design Studio failed to start");
