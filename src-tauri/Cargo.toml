@@ -24,6 +24,9 @@ blake3     = "1"
 # behaviour ("rustls-tls" was documented as rustls + webpki-roots in 0.12).
 reqwest    = { version = "0.13", default-features = false, features = ["json", "rustls", "webpki-roots"] }
 
+# MH-P12-01: BLAKE3 content-hash manifest verified on boot.
+blake3     = "1"
+
 # MH-P7-03: sqlxml-engine live wire. MH-AB-001 fully resolved -- sqlxml
 # PR #15 (crates/sqlxml-engine restructured into a real library crate)
 # merged to main 2026-07-09. Re-pinned off the feature branch.

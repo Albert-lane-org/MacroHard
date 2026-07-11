@@ -33,12 +33,15 @@
       "icons/128x128@2x.png",
       "icons/icon.png"
     ],
-    "nsis": {
-      "installMode": "currentUser",
-      "displayLanguageSelector": false,
-      "languages": ["English"],
-      "allowDowngrades": false,
-      "shortcutName": "MacroHarder Design Studio"
-    }
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false,
+        "compression": "lzma"
+      }
+    },
+    "copyright": "Copyright 2026 Albert Lane. SEC Whistleblower No. 17684-273-411-436",
+    "homepage": "https://albertlane.org",
+    "shortDescription": "MacroHarder — the excellent 3D analytics workbook"
   }
 }

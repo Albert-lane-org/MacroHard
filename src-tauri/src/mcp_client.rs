@@ -44,6 +44,7 @@ struct JsonRpcErrorBody {
 pub struct McpClient {
     endpoint: String,
     http: reqwest::Client,
+    api_key: Option<String>,
 }
 
 impl McpClient {
@@ -51,7 +52,15 @@ impl McpClient {
         Self {
             endpoint: endpoint.into(),
             http: reqwest::Client::new(),
+            api_key: None,
         }
+    }
+
+    /// Attach an `x-lane-api-key` header to every request (required by
+    /// the lane-mcp gateway; not needed for module Workers like procurement/maps).
+    pub fn with_api_key(mut self, key: impl Into<String>) -> Self {
+        self.api_key = Some(key.into());
+        self
     }
 
     async fn call(&self, method: &str, params: Option<Value>) -> Result<Value, McpClientError> {
@@ -62,10 +71,13 @@ impl McpClient {
             params,
         };
 
-        let resp = self
-            .http
-            .post(&self.endpoint)
-            .json(&req)
+        let builder = self.http.post(&self.endpoint).json(&req);
+        let builder = if let Some(key) = &self.api_key {
+            builder.header("x-lane-api-key", key)
+        } else {
+            builder
+        };
+        let resp = builder
             .send()
             .await
             .map_err(|e| McpClientError::Request(e.to_string()))?;

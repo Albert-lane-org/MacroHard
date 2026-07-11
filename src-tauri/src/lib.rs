@@ -1,10 +1,12 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28 | SEC Whistleblower No. 17684-273-411-436 | This header must be preserved in any copy, fork, or derivative use
 // MacroHarder Design Studio — Tauri 2.0 library crate (MH-P6-01).
 // Split from main.rs so the [lib] target (macroharder_lib) declared in
 // Cargo.toml actually exists — required for the mobile entry point
 // (`tauri::mobile_entry_point`) ahead of the Phase 6→ Android target.
-// SEC Whistleblower No. 17684-273-411-436
+// Phase 11: AER integration (aer.rs) — MacroHarder as MCP client of lane-mcp gateway.
+// Phase 12: Filesystem integrity (integrity.rs) — BLAKE3 content-hash manifest.
 
+pub mod aer;
 pub mod integrity;
 pub mod layout;
 pub mod mcp_client;
@@ -12,6 +14,7 @@ pub mod registry;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
+use integrity::{IntegrityManifest, VerifyResult};
 use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
 use registry::{ModuleManifest, ModuleRegistry};
@@ -331,74 +334,64 @@ fn module_uninstall(name: String) -> Result<(), String> {
 }
 
 // ---------------------------------------------------------------------------
+// MH-P11-01: AER integration — proxy to lane-mcp gateway's lane_aer_write /
+// lane_aer_read tools via MCP JSON-RPC 2.0. Auth via x-lane-api-key header
+// from LANE_MCP_API_KEY env var. Endpoint from LANE_MCP_ENDPOINT env var
+// (default: https://mcp.albertlane.org/rpc).
+//
+// These are re-exported from aer.rs as top-level Tauri commands.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 // MH-P12-01: Filesystem integrity — BLAKE3 content-hash manifest.
-// generate_integrity_manifest() is a dev/installer tool; verify_integrity()
-// is exposed to the WebView so the UI can surface tamper warnings.
-// The boot-time check in run() is non-fatal — a missing manifest (first run)
-// is silently skipped; a failed verify emits a warning to stderr.
+// Non-fatal boot check; commands to generate/verify from the WebView.
 // ---------------------------------------------------------------------------
 
 fn integrity_manifest_path() -> std::path::PathBuf {
-    std::path::PathBuf::from("integrity.blake3.json")
+    std::path::PathBuf::from("integrity-manifest.json")
 }
 
-/// Generate a BLAKE3 manifest for all files under `root` (default: ".") and
-/// write it to `integrity.blake3.json` in that directory.
+/// Generate (or re-baseline) the BLAKE3 content-hash manifest for tracked files.
 #[tauri::command]
-fn generate_integrity_manifest(root: Option<String>) -> Result<integrity::Manifest, String> {
-    let root_path = root
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| std::path::PathBuf::from("."));
-    let manifest = integrity::generate(&root_path).map_err(|e| e.to_string())?;
-    let out = root_path.join("integrity.blake3.json");
-    integrity::save_manifest(&manifest, &out).map_err(|e| e.to_string())?;
-    Ok(manifest)
+fn generate_integrity_manifest() -> Result<IntegrityManifest, String> {
+    integrity::generate(&integrity_manifest_path()).map_err(|e| e.to_string())
 }
 
-/// Verify files under `root` against the stored `integrity.blake3.json`.
-/// Returns an error string if the manifest file is absent.
+/// Verify the tracked files against the stored manifest; returns a VerifyResult
+/// with ok=true/false + a list of violations. Never panics — verification
+/// failures are surfaced, not fatal.
 #[tauri::command]
-fn verify_integrity(root: Option<String>) -> Result<integrity::VerifyResult, String> {
-    let root_path = root
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| std::path::PathBuf::from("."));
-    let manifest_path = root_path.join("integrity.blake3.json");
-    if !manifest_path.exists() {
-        return Err(
-            "integrity.blake3.json not found — run generate_integrity_manifest first".into(),
-        );
+fn verify_integrity() -> Result<VerifyResult, String> {
+    let path = integrity_manifest_path();
+    if !path.exists() {
+        // No manifest yet — generate one on first boot then verify (clean).
+        return match integrity::generate(&path) {
+            Ok(m) => Ok(integrity::verify(&m)),
+            Err(e) => Err(e.to_string()),
+        };
     }
-    let manifest = integrity::load_manifest(&manifest_path).map_err(|e| e.to_string())?;
-    integrity::verify(&root_path, &manifest).map_err(|e| e.to_string())
+    let manifest = integrity::load(&path).map_err(|e| e.to_string())?;
+    Ok(integrity::verify(&manifest))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // MH-P12-01: Non-fatal integrity check at boot.
-    // A missing manifest (first install) is skipped silently.
-    // A failed verify emits a warning; it does not block startup.
-    let manifest_path = integrity_manifest_path();
-    if manifest_path.exists() {
-        match integrity::load_manifest(&manifest_path) {
-            Ok(manifest) => {
-                let root = std::path::PathBuf::from(".");
-                match integrity::verify(&root, &manifest) {
-                    Ok(result) if !result.passed => {
-                        eprintln!(
-                            "[MacroHarder] INTEGRITY WARNING — {} file(s) changed, {} missing",
-                            result.failed.len(),
-                            result.missing.len()
-                        );
-                    }
-                    Ok(_) => {}
-                    Err(e) => eprintln!("[MacroHarder] integrity check error: {e}"),
-                }
+    let initial_layout = DashboardLayout::load_or_default(&layout_path(), 12);
+
+    // MH-P12-01: non-fatal boot integrity check.
+    let integrity_path = integrity_manifest_path();
+    if integrity_path.exists() {
+        if let Ok(manifest) = integrity::load(&integrity_path) {
+            let result = integrity::verify(&manifest);
+            if !result.ok {
+                eprintln!(
+                    "[MacroHarder] integrity warning: {} violation(s) — {:?}",
+                    result.violations.len(),
+                    result.violations
+                );
             }
-            Err(e) => eprintln!("[MacroHarder] integrity manifest load error: {e}"),
         }
     }
-
-    let initial_layout = DashboardLayout::load_or_default(&layout_path(), 12);
 
     tauri::Builder::default()
         .manage(Mutex::new(Workbook::new()))
@@ -424,6 +417,8 @@ pub fn run() {
             layout_resize_panel,
             layout_set_visibility,
             layout_bring_to_front,
+            aer::aer_write,
+            aer::aer_read,
             generate_integrity_manifest,
             verify_integrity,
         ])
