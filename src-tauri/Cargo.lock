@@ -3653,17 +3653,6 @@ dependencies = [
 [[package]]
 name = "sqlxml-engine"
 version = "0.1.0"
-source = "git+https://github.com/albert-lane-org/sqlxml?branch=main#df837b404155a31a900b34c278883ccfbf882f55"
-dependencies = [
- "chrono",
- "quick-xml",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
-]
 
 [[package]]
 name = "stable_deref_trait"

@@ -31,6 +31,15 @@ sqlxml-engine = { git = "https://github.com/albert-lane-org/sqlxml", branch = "m
 [features]
 sqlxml = ["dep:sqlxml-engine"]
 
+# CI shim: redirect the private git dep to a local stub so Cargo never
+# needs to authenticate with albert-lane-org/sqlxml to resolve the lockfile.
+# The sqlxml feature is not enabled in CI (no --features sqlxml), so this
+# stub is resolution-only — its code is never compiled during CI.
+# Remove this [patch] for production builds with --features sqlxml and
+# real network auth to albert-lane-org/sqlxml.
+[patch."https://github.com/albert-lane-org/sqlxml"]
+sqlxml-engine = { path = "crates/sqlxml-engine-stub" }
+
 [build-dependencies]
 tauri-build = { version = "2.6.3", features = [] }
 

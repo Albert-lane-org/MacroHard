@@ -1,0 +1,11 @@
+# Authored: Albert Lane | SEC Whistleblower No. 17684-273-411-436 | Documented: Claude Sonnet 4.6 | 2026-07-10
+# CI stub that satisfies sqlxml-engine's package name so Cargo never needs
+# to authenticate with albert-lane-org/sqlxml to resolve the lockfile.
+# The [patch] in src-tauri/Cargo.toml redirects there.
+# Optional dep is never compiled in CI (no --features sqlxml), so lib.rs
+# content is irrelevant for builds; stub exists purely for lock resolution.
+[package]
+name        = "sqlxml-engine"
+version     = "0.1.0"
+edition     = "2021"
+description = "CI stub — not for production use. Remove [patch] in src-tauri/Cargo.toml to use the real crate."
