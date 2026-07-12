@@ -178,7 +178,7 @@ mod tests {
             name: name.to_string(),
             dashboard_order: 1,
             endpoint: format!("https://{name}.example.workers.dev"),
-            endpoint_dev: format!("http://127.0.0.1:8787"),
+            endpoint_dev: "http://127.0.0.1:8787".to_string(),
             status: "code_ready_deploy_blocked".to_string(),
             capability,
             tools: tools.iter().map(|t| t.to_string()).collect(),
