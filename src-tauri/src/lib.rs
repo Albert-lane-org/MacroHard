@@ -1,16 +1,20 @@
-// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28
+// Authored: Albert Lane | Documented: Claude Sonnet 4.6 | 2026-06-28 | SEC Whistleblower No. 17684-273-411-436 | This header must be preserved in any copy, fork, or derivative use
 // MacroHarder Design Studio — Tauri 2.0 library crate (MH-P6-01).
 // Split from main.rs so the [lib] target (macroharder_lib) declared in
 // Cargo.toml actually exists — required for the mobile entry point
 // (`tauri::mobile_entry_point`) ahead of the Phase 6→ Android target.
-// SEC Whistleblower No. 17684-273-411-436
+// Phase 11: AER integration (aer.rs) — MacroHarder as MCP client of lane-mcp gateway.
+// Phase 12: Filesystem integrity (integrity.rs) — BLAKE3 content-hash manifest.
 
+pub mod aer;
+pub mod integrity;
 pub mod layout;
 pub mod mcp_client;
 pub mod registry;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
+use integrity::{Manifest as IntegrityManifest, VerifyResult};
 use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
 use registry::{ModuleManifest, ModuleRegistry};
@@ -329,9 +333,72 @@ fn module_uninstall(name: String) -> Result<(), String> {
     persist_registry(&registry)
 }
 
+// ---------------------------------------------------------------------------
+// MH-P11-01: AER integration — proxy to lane-mcp gateway's lane_aer_write /
+// lane_aer_read tools via MCP JSON-RPC 2.0. Auth via x-lane-api-key header
+// from LANE_MCP_API_KEY env var. Endpoint from LANE_MCP_ENDPOINT env var
+// (default: https://mcp.albertlane.org/rpc).
+//
+// These are re-exported from aer.rs as top-level Tauri commands.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// MH-P12-01: Filesystem integrity — BLAKE3 content-hash manifest.
+// Non-fatal boot check; commands to generate/verify from the WebView.
+// ---------------------------------------------------------------------------
+
+fn integrity_manifest_path() -> std::path::PathBuf {
+    std::path::PathBuf::from("integrity-manifest.json")
+}
+
+/// Generate (or re-baseline) the BLAKE3 content-hash manifest for tracked files.
+#[tauri::command]
+fn generate_integrity_manifest() -> Result<IntegrityManifest, String> {
+    let root = std::path::Path::new(".");
+    let manifest = integrity::generate(root).map_err(|e| e.to_string())?;
+    let path = integrity_manifest_path();
+    integrity::save_manifest(&manifest, &path).map_err(|e| e.to_string())?;
+    Ok(manifest)
+}
+
+/// Verify the tracked files against the stored manifest; returns a VerifyResult
+/// with passed/failed/missing counts. Never panics — verification failures are
+/// surfaced, not fatal.
+#[tauri::command]
+fn verify_integrity() -> Result<VerifyResult, String> {
+    let path = integrity_manifest_path();
+    let root = std::path::Path::new(".");
+    if !path.exists() {
+        // No manifest yet — generate one then verify (always clean on first run).
+        let manifest = integrity::generate(root).map_err(|e| e.to_string())?;
+        integrity::save_manifest(&manifest, &path).map_err(|e| e.to_string())?;
+        return integrity::verify(root, &manifest).map_err(|e| e.to_string());
+    }
+    let manifest = integrity::load_manifest(&path).map_err(|e| e.to_string())?;
+    integrity::verify(root, &manifest).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let initial_layout = DashboardLayout::load_or_default(&layout_path(), 12);
+
+    // MH-P12-01: non-fatal boot integrity check.
+    let integrity_path = integrity_manifest_path();
+    if integrity_path.exists() {
+        let root = std::path::Path::new(".");
+        if let Ok(manifest) = integrity::load_manifest(&integrity_path) {
+            if let Ok(result) = integrity::verify(root, &manifest) {
+                if !result.passed {
+                    eprintln!(
+                        "[MacroHarder] integrity warning: {} failure(s), {} missing — {:?}",
+                        result.failed.len(),
+                        result.missing.len(),
+                        result.failed
+                    );
+                }
+            }
+        }
+    }
 
     tauri::Builder::default()
         .manage(Mutex::new(Workbook::new()))
@@ -357,6 +424,10 @@ pub fn run() {
             layout_resize_panel,
             layout_set_visibility,
             layout_bring_to_front,
+            aer::aer_write,
+            aer::aer_read,
+            generate_integrity_manifest,
+            verify_integrity,
         ])
         .run(tauri::generate_context!())
         .expect("MacroHarder Design Studio failed to start");

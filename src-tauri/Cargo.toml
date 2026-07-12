@@ -14,7 +14,6 @@ tauri      = { version = "2.11.5", features = ["devtools"] }
 serde      = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror  = "2"
-
 # MH-P8-02/03: MCP HTTP client for procurement/maps module Workers.
 # rustls (not native-tls) so this doesn't pull in an OpenSSL/pkg-config
 # system dependency on top of Tauri's existing GTK/WebKit requirement.
@@ -22,6 +21,9 @@ thiserror  = "2"
 # explicit root-store choice; "webpki-roots" preserves the old bundled-CA
 # behaviour ("rustls-tls" was documented as rustls + webpki-roots in 0.12).
 reqwest    = { version = "0.13", default-features = false, features = ["json", "rustls", "webpki-roots"] }
+
+# MH-P12-01: BLAKE3 content-hash manifest verified on boot.
+blake3     = "1"
 
 # MH-P7-03: sqlxml-engine live wire. MH-AB-001 fully resolved -- sqlxml
 # PR #15 (crates/sqlxml-engine restructured into a real library crate)
