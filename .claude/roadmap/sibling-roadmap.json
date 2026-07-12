@@ -5,7 +5,7 @@
   "layer": "B",
   "role": "One-stop-shop configurable 3D analytics workbook -- Rust/C/C++ core, SQLXML data manipulation, MCP module system, fully adjustable UI",
   "master_plan": ".wizardhat/plans/plan-macroharder.md",
-  "current_phase": 12,
+  "current_phase": 13,
   "phases": {
     "1": { "status": "completed", "label": "Foundation" },
     "2": { "status": "completed", "label": "Core Services" },
@@ -18,7 +18,7 @@
     "9": { "status": "completed", "label": "Fully adjustable UI -- layout.rs schema (14 tests) + layout_* Tauri commands + chrome.ts (token-driven CSS custom properties) + dashboard-composer.ts (grid render, add/remove/move/resize/hide) done; not runtime-tested (no GTK/WebKit in this sandbox)" },
     "10": { "status": "completed", "label": "MCP module host GA -- registry.rs (ModuleRegistry, 12 tests) replaces ad-hoc modules.json reads; authorize_tool_call() capability gating (declared-tools check + read_only write-shape rejection); module_install/module_uninstall commands + validation; composer install-module UX; not runtime-tested" },
     "11": { "status": "completed", "label": "AER integration -- aer.rs: AerWriteResponse/AerReadResponse, aer_write/aer_read Tauri commands via lane-mcp gateway (lane_aer_write/lane_aer_read tools, x-lane-api-key header, graceful not_deployed degradation); mcp_client.rs with_api_key() builder; 6/6 unit tests; AER-002/003 unblocked 2026-07-11; not runtime-tested (gateway requires DNS + CLOUDFLARE_API_TOKEN)" },
-    "12": { "status": "in_progress", "label": "Windows ship -- MH-P12-01: integrity.rs BLAKE3 content-hash manifest (6 tests, non-fatal boot check, verify_integrity + generate_integrity_manifest commands) done 2026-07-11. MH-P12-02: tauri.conf.json NSIS bundle config (installMode=currentUser, copyright) + .github/workflows/windows-build.yml (build-check on windows-latest + package job on dispatch/tags) done 2026-07-11. 47/47 tests passing. Not runtime-tested (Windows runner required)" }
+    "12": { "status": "completed", "label": "Windows ship -- MH-P12-01: integrity.rs BLAKE3 content-hash manifest (6 tests, non-fatal boot check, verify_integrity + generate_integrity_manifest commands) done 2026-07-11. MH-P12-02: tauri.conf.json NSIS bundle config (installMode=currentUser, copyright) + .github/workflows/windows-build.yml (build-check on windows-latest + package job on dispatch/tags) done 2026-07-11. 47/47 tests passing. Not runtime-tested (Windows runner required). PR #25 merged 2026-07-12." }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
