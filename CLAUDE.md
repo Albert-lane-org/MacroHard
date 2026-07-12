@@ -45,10 +45,14 @@ Phase 12 is the Windows ship).
 ```
 macrohard/
   src-tauri/                  — Tauri 2.0 shell (Phase 6)
-    Cargo.toml                — macroharder-studio crate; sqlxml-engine dep (live) + reqwest
+    Cargo.toml                — macroharder-studio crate; sqlxml-engine dep (live) + reqwest + cc (build-dep)
+    kernels/
+      matrix3d.c             — MH-P13-02: 4x4 matrix multiply/transform/identity, dot/cross product
+      kriging.c              — MH-P13-03: ordinary kriging (spherical variogram, Gaussian elimination)
     src/main.rs               — thin binary entry; calls macroharder_lib::run()
     src/lib.rs                — macroharder_lib crate: design tokens, audit score,
                                  workbook, layout, and module commands; owns Mutex state
+    src/compute.rs             — MH-P13-05: safe Rust FFI wrappers over C kernels (mat4/vec3/kriging)
     src/workbook.rs            — MH-P8-01: 3D cell model (CellAddress, CellValue, Volume, Workbook)
     src/layout.rs              — MH-P9-01: DashboardLayout/PanelPlacement grid schema, JSON-persisted
     src/mcp_client.rs          — MH-P8-02/03: generic MCP JSON-RPC HTTP client
@@ -75,7 +79,7 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 12 — Windows ship (completed)**
+Current: **Phase 13 — C/C++ Compute Kernels FFI (completed)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -87,6 +91,7 @@ Current: **Phase 12 — Windows ship (completed)**
 | 10 — MCP module host GA | `completed` | `registry.rs`: ModuleRegistry replaces the ad-hoc file-read in `module_list`/`module_call_tool` -- `authorize_tool_call()` rejects any tool a module doesn't declare in its manifest, and rejects write-shaped tool names on `read_only` modules (name-heuristic defense in depth; the module's own `capability` field is the primary gate), 12/12 unit tests passing ✅. `module_install`/`module_uninstall` commands + validation (non-empty name/endpoint/tools, no duplicate name) ✅. `config/modules.json` gained `capability`/`source` fields on both built-in modules ✅. Composer UI: "Install module…" control (paste-manifest flow) ✅. **Not runtime-tested** — same GTK/WebKit limitation as Phase 9 |
 | 11 — AER integration | `completed` | MH-P11-01: `src-tauri/src/aer.rs` — `AerClient` wraps `McpClient` pointed at the lane-mcp gateway (`mcp.albertlane.org/rpc`), `aer_write`/`aer_read` Tauri commands (1-read-2-writes AER invariant, typed `AerWriteResponse`/`AerReadResponse`, graceful `not_deployed` degradation). `mcp_client.rs` gained optional `x-lane-api-key` auth header via `with_api_key()`. Endpoint + key from `LANE_MCP_ENDPOINT`/`LANE_MCP_API_KEY` env vars. 6/6 unit tests passing ✅. **Not runtime-tested** — requires live lane-mcp gateway (CLOUDFLARE_API_TOKEN + DNS, Phase 7) |
 | 12 — Windows ship | `completed` | MH-P12-01: `src-tauri/src/integrity.rs` — BLAKE3 content-hash manifest (generate + verify, 6 unit tests passing), non-fatal boot check in `run()`, `verify_integrity`/`generate_integrity_manifest` Tauri commands ✅. blake3 crate added to Cargo.toml. MH-P12-02: `tauri.conf.json` NSIS bundle config (installMode=currentUser, icon array, copyright) + `.github/workflows/windows-build.yml` (build-check on windows-latest, package job on dispatch/tags producing NSIS .exe artifact) ✅. **Not runtime-tested** — Windows runner and display required. 47/47 tests passing ✅ |
+| 13 — C/C++ Compute Kernels FFI | `completed` | MH-P13-01: cc crate in build-deps ✅. MH-P13-02: `kernels/matrix3d.c` (multiply/transform/identity/dot/cross) ✅. MH-P13-03: `kernels/kriging.c` (ordinary kriging, spherical variogram, Gaussian elimination) ✅. MH-P13-04: `build.rs` compiles kernels with -O2 ✅. MH-P13-05: `src/compute.rs` safe Rust FFI wrappers + 10 unit tests ✅. 58/58 tests passing ✅ |
 
 Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
@@ -106,6 +111,7 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 | `src-tauri/src/registry.rs` | ModuleRegistry: install/uninstall, `authorize_tool_call()` capability gating |
 | `src-tauri/config/modules.json` | Module registry: procurement + maps endpoints, tools, dashboard panels, capability |
 | `src-tauri/src/aer.rs` | AER integration — `aer_write`/`aer_read` Tauri commands, proxy to lane-mcp gateway's `lane_aer_write`/`lane_aer_read` tools |
+| `src-tauri/src/compute.rs` | Safe Rust FFI wrappers over C kernels: mat4_multiply/transform/identity, vec3_dot/cross, kriging_interp; 10 unit tests |
 | `src-tauri/src/integrity.rs` | BLAKE3 content-hash manifest: generate(), verify(), save/load; 6 unit tests; non-fatal boot check in run() |
 | `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put() live-wired (Phase 7); get/query stubbed pending backend support |
 | `src/chrome.ts` | Applies design-tokens.json onto chrome CSS custom properties at runtime |

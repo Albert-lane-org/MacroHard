@@ -44,6 +44,8 @@ sqlxml-engine = { path = "crates/sqlxml-engine-stub" }
 
 [build-dependencies]
 tauri-build = { version = "2.6.3", features = [] }
+# MH-P13-01: C/C++ compute kernels FFI — matrix3d.c + kriging.c
+cc = "1"
 
 [profile.release]
 lto           = true
