@@ -7,6 +7,7 @@
 // Phase 12: Filesystem integrity (integrity.rs) — BLAKE3 content-hash manifest.
 
 pub mod aer;
+pub mod compute;
 pub mod integrity;
 pub mod layout;
 pub mod mcp_client;

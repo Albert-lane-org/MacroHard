@@ -18,7 +18,8 @@
     "9": { "status": "completed", "label": "Fully adjustable UI -- layout.rs schema (14 tests) + layout_* Tauri commands + chrome.ts (token-driven CSS custom properties) + dashboard-composer.ts (grid render, add/remove/move/resize/hide) done; not runtime-tested (no GTK/WebKit in this sandbox)" },
     "10": { "status": "completed", "label": "MCP module host GA -- registry.rs (ModuleRegistry, 12 tests) replaces ad-hoc modules.json reads; authorize_tool_call() capability gating (declared-tools check + read_only write-shape rejection); module_install/module_uninstall commands + validation; composer install-module UX; not runtime-tested" },
     "11": { "status": "completed", "label": "AER integration -- aer.rs: AerWriteResponse/AerReadResponse, aer_write/aer_read Tauri commands via lane-mcp gateway (lane_aer_write/lane_aer_read tools, x-lane-api-key header, graceful not_deployed degradation); mcp_client.rs with_api_key() builder; 6/6 unit tests; AER-002/003 unblocked 2026-07-11; not runtime-tested (gateway requires DNS + CLOUDFLARE_API_TOKEN)" },
-    "12": { "status": "completed", "label": "Windows ship -- MH-P12-01: integrity.rs BLAKE3 content-hash manifest (6 tests, non-fatal boot check, verify_integrity + generate_integrity_manifest commands) done 2026-07-11. MH-P12-02: tauri.conf.json NSIS bundle config (installMode=currentUser, copyright) + .github/workflows/windows-build.yml (build-check on windows-latest + package job on dispatch/tags) done 2026-07-11. 47/47 tests passing. Not runtime-tested (Windows runner required). PR #25 merged 2026-07-12." }
+    "12": { "status": "completed", "label": "Windows ship -- MH-P12-01: integrity.rs BLAKE3 content-hash manifest (6 tests, non-fatal boot check, verify_integrity + generate_integrity_manifest commands) done 2026-07-11. MH-P12-02: tauri.conf.json NSIS bundle config (installMode=currentUser, copyright) + .github/workflows/windows-build.yml (build-check on windows-latest + package job on dispatch/tags) done 2026-07-11. 47/47 tests passing. Not runtime-tested (Windows runner required). PR #25 merged 2026-07-12." },
+    "13": { "status": "completed", "label": "C/C++ Compute Kernels FFI -- MH-P13-01: cc crate in [build-dependencies]. MH-P13-02: kernels/matrix3d.c (4x4 matrix multiply/transform/identity, dot/cross product). MH-P13-03: kernels/kriging.c (ordinary kriging, spherical variogram, Gaussian elimination). MH-P13-04: build.rs compiles both kernels with -O2 via cc crate. MH-P13-05: src/compute.rs safe Rust FFI wrappers (mat4_multiply/transform/identity, vec3_dot/cross, kriging_interp) + 10 unit tests. 58/58 tests passing 2026-07-12." }
   },
   "tasks": [
     { "id": "MH-P5-01", "description": "CLAUDE.md + sibling-roadmap.json + CI", "status": "completed" },
@@ -39,7 +40,12 @@
     { "id": "MH-P11-01", "description": "AER integration -- src-tauri/src/aer.rs: AerWriteResponse + AerReadResponse typed structs, aer_write/aer_read async Tauri commands calling lane_aer_write/lane_aer_read on lane-mcp gateway via McpClient. mcp_client.rs gained with_api_key() builder (x-lane-api-key header for lane-mcp auth). Endpoint from LANE_MCP_ENDPOINT env var (default: https://mcp.albertlane.org/rpc); key from LANE_MCP_API_KEY. Graceful not_deployed degradation (non-fatal). 6/6 unit tests passing 2026-07-11", "status": "completed" },
     { "id": "MH-P12-01", "description": "Filesystem integrity -- src-tauri/src/integrity.rs: BLAKE3 content-hash manifest (generate/load/verify), tracks design-tokens.json + config/modules.json + tauri.conf.json, non-fatal boot check in run() (eprintln! on mismatch, app continues), verify_integrity + generate_integrity_manifest Tauri commands. blake3 crate added to Cargo.toml. 6/6 unit tests passing 2026-07-11", "status": "completed" },
     { "id": "MH-P12-02", "description": "Windows NSIS build -- tauri.conf.json updated with NSIS bundle config (installMode=currentUser, compression=lzma, copyright + homepage + shortDescription). .github/workflows/windows-build.yml: build-check on windows-latest (cargo build + test on every push/PR); package job on workflow_dispatch or semver tags producing NSIS .exe artifact uploaded to Actions. Not runtime-tested (Windows runner + display required)", "status": "completed" },
-    { "id": "MH-P10-02", "description": "Module install UX: signature/provenance verification for user-installed manifests, sandboxed capability review before first tool call, module marketplace/discovery surface", "status": "not_started" }
+    { "id": "MH-P10-02", "description": "Module install UX: signature/provenance verification for user-installed manifests, sandboxed capability review before first tool call, module marketplace/discovery surface", "status": "not_started" },
+    { "id": "MH-P13-01", "description": "cc = '1' added to [build-dependencies] in Cargo.toml", "status": "completed" },
+    { "id": "MH-P13-02", "description": "kernels/matrix3d.c: matrix3d_multiply (4x4 column-major), vector3d_transform, matrix3d_identity, vector3d_dot, vector3d_cross", "status": "completed" },
+    { "id": "MH-P13-03", "description": "kernels/kriging.c: ordinary kriging with spherical semivariogram, partial-pivot Gaussian elimination, heap-allocated kriging system", "status": "completed" },
+    { "id": "MH-P13-04", "description": "build.rs: cc::Build compiles kernels/matrix3d.c + kernels/kriging.c into macroharder_kernels static lib with -O2; rerun-if-changed directives", "status": "completed" },
+    { "id": "MH-P13-05", "description": "src/compute.rs: safe Rust FFI wrappers (mat4_multiply, mat4_transform_vec4, mat4_identity, vec3_dot, vec3_cross, kriging_interp) + 10 unit tests covering identity, multiply, transform, dot/cross, kriging; 58/58 total tests passing 2026-07-12", "status": "completed" }
   ],
   "open_absences": [
     {
@@ -65,5 +71,5 @@
     "gemini_references": 0,
     "unauthenticated_endpoints": 0
   },
-  "updated": "2026-07-11"
+  "updated": "2026-07-12"
 }
