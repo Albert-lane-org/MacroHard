@@ -5,11 +5,13 @@ fn main() {
     cc::Build::new()
         .file("kernels/matrix3d.c")
         .file("kernels/kriging.c")
+        .file("kernels/kriging5d.c")
         .flag_if_supported("-O2")
         .compile("macroharder_kernels");
 
     println!("cargo:rerun-if-changed=kernels/matrix3d.c");
     println!("cargo:rerun-if-changed=kernels/kriging.c");
+    println!("cargo:rerun-if-changed=kernels/kriging5d.c");
 
     tauri_build::build()
 }

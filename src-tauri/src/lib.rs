@@ -7,6 +7,7 @@
 // Phase 12: Filesystem integrity (integrity.rs) — BLAKE3 content-hash manifest.
 
 pub mod aer;
+pub mod cache;
 pub mod compute;
 pub mod integrity;
 pub mod layout;
@@ -15,12 +16,13 @@ pub mod registry;
 pub mod sqlxml_bridge;
 pub mod workbook;
 
+use cache::{McpCache, SharedMcpCache};
 use integrity::{Manifest as IntegrityManifest, VerifyResult};
 use layout::{DashboardLayout, PanelPlacement};
 use mcp_client::McpClient;
 use registry::{ModuleManifest, ModuleRegistry};
 use serde_json::Value;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use workbook::{CellAddress, CellValue, Workbook};
 
 /// Return the canonical design-tokens.json as a parsed JSON value.
@@ -102,7 +104,7 @@ fn workbook_set_cell(
     state
         .lock()
         .map_err(|e| e.to_string())?
-        .set_cell(&volume, CellAddress::new(col, row, layer), value)
+        .set_cell(&volume, CellAddress::new_3d(col, row, layer), value)
         .map_err(|e| e.to_string())
 }
 
@@ -117,7 +119,7 @@ fn workbook_get_cell(
     state
         .lock()
         .map_err(|e| e.to_string())?
-        .get_cell(&volume, CellAddress::new(col, row, layer))
+        .get_cell(&volume, CellAddress::new_3d(col, row, layer))
         .map_err(|e| e.to_string())
 }
 
@@ -132,7 +134,7 @@ fn workbook_clear_cell(
     state
         .lock()
         .map_err(|e| e.to_string())?
-        .clear_cell(&volume, CellAddress::new(col, row, layer))
+        .clear_cell(&volume, CellAddress::new_3d(col, row, layer))
         .map_err(|e| e.to_string())
 }
 
@@ -334,6 +336,64 @@ fn module_uninstall(name: String) -> Result<(), String> {
     persist_registry(&registry)
 }
 
+// MH-P14-01: 5D workbook — cells_in_domain / cells_at_time Tauri commands.
+#[tauri::command]
+fn workbook_cells_in_domain(
+    state: tauri::State<WorkbookState>,
+    volume: String,
+    domain: u32,
+) -> Result<Vec<(CellAddress, CellValue)>, String> {
+    state
+        .lock()
+        .map_err(|e| e.to_string())?
+        .cells_in_domain(&volume, domain)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn workbook_cells_at_time(
+    state: tauri::State<WorkbookState>,
+    volume: String,
+    time: u32,
+) -> Result<Vec<(CellAddress, CellValue)>, String> {
+    state
+        .lock()
+        .map_err(|e| e.to_string())?
+        .cells_at_time(&volume, time)
+        .map_err(|e| e.to_string())
+}
+
+// ---------------------------------------------------------------------------
+// MH-P14-05/06: lane-mcp data cache — McpCache Tauri commands.
+// cache_tool_get: returns cached result (stale-annotated if expired).
+// cache_status: returns cache state: hit rates, last refresh, stale count.
+// cache_force_refresh: manual cache bust (clears all entries).
+// ---------------------------------------------------------------------------
+
+type CacheState = SharedMcpCache;
+
+#[tauri::command]
+fn cache_status(state: tauri::State<CacheState>) -> Result<Value, String> {
+    Ok(state.lock().map_err(|e| e.to_string())?.status())
+}
+
+#[tauri::command]
+fn cache_tool_get(state: tauri::State<CacheState>, tool: String) -> Result<Value, String> {
+    let cache = state.lock().map_err(|e| e.to_string())?;
+    match cache.get(&tool) {
+        Some(entry) if !entry.is_stale() => Ok(entry.result.clone()),
+        Some(entry) => Ok(cache::stale_result(entry)),
+        None => Ok(serde_json::json!({ "error": "not_cached", "tool": tool })),
+    }
+}
+
+#[tauri::command]
+fn cache_force_refresh(state: tauri::State<CacheState>) -> Result<(), String> {
+    let mut cache = state.lock().map_err(|e| e.to_string())?;
+    *cache = McpCache::new(cache::DEFAULT_TTL_SECS);
+    Ok(())
+}
+
 // ---------------------------------------------------------------------------
 // MH-P11-01: AER integration — proxy to lane-mcp gateway's lane_aer_write /
 // lane_aer_read tools via MCP JSON-RPC 2.0. Auth via x-lane-api-key header
@@ -401,9 +461,13 @@ pub fn run() {
         }
     }
 
+    // MH-P14-05: initialise the lane-mcp data cache (empty; background refresh warms it).
+    let mcp_cache: SharedMcpCache = Arc::new(Mutex::new(McpCache::new(cache::DEFAULT_TTL_SECS)));
+
     tauri::Builder::default()
         .manage(Mutex::new(Workbook::new()))
         .manage(Mutex::new(initial_layout))
+        .manage(mcp_cache)
         .invoke_handler(tauri::generate_handler![
             get_design_tokens,
             run_audit_score,
@@ -414,6 +478,8 @@ pub fn run() {
             workbook_clear_cell,
             workbook_volume_bounds,
             workbook_non_empty_cells,
+            workbook_cells_in_domain,
+            workbook_cells_at_time,
             module_list,
             module_call_tool,
             module_install,
@@ -429,6 +495,9 @@ pub fn run() {
             aer::aer_read,
             generate_integrity_manifest,
             verify_integrity,
+            cache_status,
+            cache_tool_get,
+            cache_force_refresh,
         ])
         .run(tauri::generate_context!())
         .expect("MacroHarder Design Studio failed to start");
