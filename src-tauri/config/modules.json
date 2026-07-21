@@ -24,6 +24,34 @@
       "tools": ["maps_query", "maps_tile", "maps_elevation_grid"],
       "resources": ["maps://models"],
       "panels": ["terrain_volume_layer", "derived_properties_inspector", "svg_tile_gallery"]
+    },
+    {
+      "name": "government",
+      "dashboard_order": 3,
+      "endpoint": "https://government-worker.albertlane.workers.dev",
+      "endpoint_dev": "http://127.0.0.1:8789",
+      "status": "not_deployed",
+      "capability": "read_only",
+      "source": "built_in",
+      "module_type": "civic_intelligence",
+      "source_repo": "albert-lane-org/government",
+      "tools": ["lane_gov_entity_screen"],
+      "resources": ["government://risk-profile-schema", "government://registries"],
+      "panels": ["entity_screening_panel", "risk_profile_inspector"]
+    },
+    {
+      "name": "procurement_engine",
+      "dashboard_order": 4,
+      "endpoint": "https://procurement.albertlane.org/mcp",
+      "endpoint_dev": "http://127.0.0.1:8790",
+      "status": "not_deployed",
+      "capability": "read_only",
+      "source": "built_in",
+      "module_type": "hub_client",
+      "hub_repo": "albert-lane-org/procurement",
+      "tools": ["lane_procurement_pull", "lane_procurement_sources_list"],
+      "resources": ["procurement://deliverables"],
+      "panels": ["deliverables_manifest_panel", "procurement_sources_panel"]
     }
   ]
 }

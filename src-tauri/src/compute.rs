@@ -18,6 +18,16 @@ extern "C" {
         sill: f64,
         nugget: f64,
     ) -> f64;
+    // MH-P14-02: 5D kriging kernel
+    fn kriging5d_interpolate(
+        coords5d: *const f64,
+        values: *const f64,
+        n_points: i32,
+        target5d: *const f64,
+        range: f64,
+        sill: f64,
+        nugget: f64,
+    ) -> f64;
 }
 
 /// Multiply two 4x4 column-major matrices. Returns result matrix (16 f64).
@@ -87,6 +97,36 @@ pub fn kriging_interp(
     } else {
         Some(result)
     }
+}
+
+/// MH-P14-02: 5D ordinary kriging interpolation.
+/// Each element of `points` is a 5D coordinate `[col, row, layer, time, domain]`.
+/// `values` must have the same length as `points`.
+/// Returns `None` if `points` is empty or lengths mismatch.
+pub fn kriging5d_interp(
+    points: &[[f64; 5]],
+    values: &[f64],
+    target: &[f64; 5],
+    range: f64,
+    sill: f64,
+    nugget: f64,
+) -> Option<f64> {
+    if points.is_empty() || points.len() != values.len() {
+        return None;
+    }
+    let flat: Vec<f64> = points.iter().flat_map(|p| p.iter().copied()).collect();
+    let result = unsafe {
+        kriging5d_interpolate(
+            flat.as_ptr(),
+            values.as_ptr(),
+            points.len() as i32,
+            target.as_ptr(),
+            range,
+            sill,
+            nugget,
+        )
+    };
+    if result.is_nan() { None } else { Some(result) }
 }
 
 #[cfg(test)]
@@ -194,5 +234,75 @@ mod tests {
         let out = mat4_transform_vec4(&scale, &v);
         assert!((out[0] - 6.0).abs() < 1e-10); // 2 * 3 = 6
         assert!((out[1] - 1.0).abs() < 1e-10);
+    }
+
+    // ── MH-P14-02: 5D kriging tests ───────────────────────────────────────
+
+    #[test]
+    fn kriging5d_empty_returns_none() {
+        let result = kriging5d_interp(&[], &[], &[0.0; 5], 1.0, 1.0, 0.0);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn kriging5d_mismatched_lengths_returns_none() {
+        let points = [[1.0f64; 5]];
+        let result = kriging5d_interp(&points, &[], &[0.0; 5], 1.0, 1.0, 0.0);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn kriging5d_single_point_returns_its_value() {
+        let points = [[0.0, 0.0, 0.0, 0.0, 0.0f64]];
+        let values = [77.0f64];
+        let target = [1.0, 1.0, 1.0, 1.0, 1.0f64];
+        let result = kriging5d_interp(&points, &values, &target, 2.0, 1.0, 0.0);
+        assert!(result.is_some());
+        assert!((result.unwrap() - 77.0).abs() < 1.0);
+    }
+
+    #[test]
+    fn kriging5d_at_known_point_approximates_value() {
+        // Three 5D points; target is exactly the first one
+        let points = [
+            [0.0, 0.0, 0.0, 0.0, 0.0f64],
+            [1.0, 0.0, 0.0, 0.0, 0.0f64],
+            [0.0, 1.0, 0.0, 0.0, 0.0f64],
+        ];
+        let values = [100.0, 50.0, 50.0f64];
+        let target = [0.0, 0.0, 0.0, 0.0, 0.0f64];
+        let result = kriging5d_interp(&points, &values, &target, 2.0, 1.0, 0.0);
+        assert!(result.is_some());
+        let v = result.unwrap();
+        assert!((v - 100.0).abs() < 30.0, "expected ~100, got {v}");
+    }
+
+    #[test]
+    fn kriging5d_symmetric_points_give_midpoint_value() {
+        // Two symmetric points around origin; midpoint should interpolate between them
+        let points = [
+            [-1.0, 0.0, 0.0, 0.0, 0.0f64],
+            [ 1.0, 0.0, 0.0, 0.0, 0.0f64],
+        ];
+        let values = [10.0, 20.0f64];
+        let target = [0.0, 0.0, 0.0, 0.0, 0.0f64]; // midpoint
+        let result = kriging5d_interp(&points, &values, &target, 3.0, 1.0, 0.0);
+        assert!(result.is_some());
+        let v = result.unwrap();
+        assert!(v > 10.0 && v < 20.0, "expected between 10 and 20, got {v}");
+    }
+
+    #[test]
+    fn kriging5d_result_is_finite() {
+        let points = [
+            [0.0, 0.0, 0.0, 0.0, 0.0f64],
+            [2.0, 1.0, 3.0, 0.5, 1.0f64],
+            [1.0, 3.0, 1.0, 2.0, 0.0f64],
+        ];
+        let values = [1.0, 2.0, 3.0f64];
+        let target = [1.0, 1.0, 1.0, 1.0, 0.5f64];
+        let result = kriging5d_interp(&points, &values, &target, 5.0, 1.0, 0.1);
+        assert!(result.is_some());
+        assert!(result.unwrap().is_finite());
     }
 }

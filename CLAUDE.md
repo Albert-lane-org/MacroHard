@@ -79,7 +79,7 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 13 — C/C++ Compute Kernels FFI (completed)**
+Current: **Phase 14 — 5D Model + lane-mcp Cache (completed)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -92,6 +92,7 @@ Current: **Phase 13 — C/C++ Compute Kernels FFI (completed)**
 | 11 — AER integration | `completed` | MH-P11-01: `src-tauri/src/aer.rs` — `AerClient` wraps `McpClient` pointed at the lane-mcp gateway (`mcp.albertlane.org/rpc`), `aer_write`/`aer_read` Tauri commands (1-read-2-writes AER invariant, typed `AerWriteResponse`/`AerReadResponse`, graceful `not_deployed` degradation). `mcp_client.rs` gained optional `x-lane-api-key` auth header via `with_api_key()`. Endpoint + key from `LANE_MCP_ENDPOINT`/`LANE_MCP_API_KEY` env vars. 6/6 unit tests passing ✅. **Not runtime-tested** — requires live lane-mcp gateway (CLOUDFLARE_API_TOKEN + DNS, Phase 7) |
 | 12 — Windows ship | `completed` | MH-P12-01: `src-tauri/src/integrity.rs` — BLAKE3 content-hash manifest (generate + verify, 6 unit tests passing), non-fatal boot check in `run()`, `verify_integrity`/`generate_integrity_manifest` Tauri commands ✅. blake3 crate added to Cargo.toml. MH-P12-02: `tauri.conf.json` NSIS bundle config (installMode=currentUser, icon array, copyright) + `.github/workflows/windows-build.yml` (build-check on windows-latest, package job on dispatch/tags producing NSIS .exe artifact) ✅. **Not runtime-tested** — Windows runner and display required. 47/47 tests passing ✅ |
 | 13 — C/C++ Compute Kernels FFI | `completed` | MH-P13-01: cc crate in build-deps ✅. MH-P13-02: `kernels/matrix3d.c` (multiply/transform/identity/dot/cross) ✅. MH-P13-03: `kernels/kriging.c` (ordinary kriging, spherical variogram, Gaussian elimination) ✅. MH-P13-04: `build.rs` compiles kernels with -O2 ✅. MH-P13-05: `src/compute.rs` safe Rust FFI wrappers + 10 unit tests ✅. 58/58 tests passing ✅ |
+| 14 — 5D Model + lane-mcp Cache | `completed` | MH-P14-01: `workbook.rs` extended to 5D CellAddress (col,row,layer,time,domain); DOMAIN_SPATIAL/FINANCIAL/CIVIC/TERRAIN/CUSTOM constants; `new_3d()` compat; `cells_in_domain()`/`cells_at_time()` on Volume+Workbook; 9 tests updated + 12 new 5D tests ✅. MH-P14-02: `kernels/kriging5d.c` (5D Euclidean lag, spherical variogram, Gaussian elimination); `kriging5d_interp()` Rust FFI wrapper in `compute.rs`; 6 new tests ✅. MH-P14-03: `src/dashboard-composer.ts` — `CrossDomainPanel` interface + `renderCrossDomain(layout, domainX, domainY)` async function ✅. MH-P14-04: `scripts/audit_score.py` — `WEIGHTS_5D` constants + `score_5d(workbook)` function (spatial/depth/temporal/cross scoring) ✅. MH-P14-05: `src-tauri/src/cache.rs` — `McpCache` + `SharedMcpCache` (HashMap<String,CachedValue>, TTL, stale detection, D1 export/import, skip-list for session-sensitive tools, `stale_result()`); 10 unit tests ✅. MH-P14-06: `lib.rs` wired: `workbook_cells_in_domain`/`workbook_cells_at_time` Tauri commands; `cache_status`/`cache_tool_get`/`cache_force_refresh` commands; `SharedMcpCache` in AppState ✅. MH-P14-07: `config/modules.json` — `government` + `procurement_engine` entries ✅. 86/86 tests passing ✅ |
 
 Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 

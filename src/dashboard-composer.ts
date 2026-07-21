@@ -61,6 +61,67 @@ interface ModuleRegistry {
   modules: ModuleEntry[];
 }
 
+// MH-P14-03: Cross-domain panel type for the 5D workbook.
+// domain values: 0=spatial, 1=financial, 2=civic, 3=terrain, 4=custom (mirrors DOMAIN_* in workbook.rs).
+interface CrossDomainPanel {
+  domain_x: number;
+  domain_y: number;
+}
+
+/** Render a cross-domain slice of the 5D workbook as an HTML panel.
+ *  Fetches cells in domain_x and domain_y, then side-by-side in a grid. */
+export async function renderCrossDomain(
+  layout: DashboardLayout,
+  domainX: number,
+  domainY: number
+): Promise<HTMLElement> {
+  const wrapper = el("div", "cross-domain-panel");
+  wrapper.dataset.domainX = String(domainX);
+  wrapper.dataset.domainY = String(domainY);
+
+  // Fetch cells for each domain from the default volume via Tauri
+  let cellsX: Array<{ addr: { col: number; row: number; layer: number; time: number; domain: number }; value: unknown }> = [];
+  let cellsY: Array<{ addr: { col: number; row: number; layer: number; time: number; domain: number }; value: unknown }> = [];
+  try {
+    cellsX = (await invoke<unknown[]>("workbook_cells_in_domain", { volume: "Sheet1", domain: domainX })) as typeof cellsX;
+    cellsY = (await invoke<unknown[]>("workbook_cells_in_domain", { volume: "Sheet1", domain: domainY })) as typeof cellsY;
+  } catch {
+    // Not running inside Tauri — render empty placeholder
+  }
+
+  const header = el("div", "cross-domain-header");
+  const domainNames = ["spatial", "financial", "civic", "terrain", "custom"];
+  header.textContent = `${domainNames[domainX] ?? `d${domainX}`} × ${domainNames[domainY] ?? `d${domainY}`} — ${layout.panels.length} panels`;
+  wrapper.appendChild(header);
+
+  const grid = el("div", "cross-domain-grid");
+
+  const colX = el("div", "cross-domain-col");
+  colX.dataset.domain = String(domainX);
+  const colXLabel = el("strong", undefined, `Domain ${domainX} (${cellsX.length} cells)`);
+  colX.appendChild(colXLabel);
+  for (const cell of cellsX) {
+    const row = el("div", "cross-domain-cell");
+    row.textContent = JSON.stringify(cell);
+    colX.appendChild(row);
+  }
+
+  const colY = el("div", "cross-domain-col");
+  colY.dataset.domain = String(domainY);
+  const colYLabel = el("strong", undefined, `Domain ${domainY} (${cellsY.length} cells)`);
+  colY.appendChild(colYLabel);
+  for (const cell of cellsY) {
+    const row = el("div", "cross-domain-cell");
+    row.textContent = JSON.stringify(cell);
+    colY.appendChild(row);
+  }
+
+  grid.appendChild(colX);
+  grid.appendChild(colY);
+  wrapper.appendChild(grid);
+  return wrapper;
+}
+
 const CELL_PX = 64; // one grid unit, in pixels
 
 function el<K extends keyof HTMLElementTagNameMap>(
