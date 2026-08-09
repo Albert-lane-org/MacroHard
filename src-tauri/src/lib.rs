@@ -10,6 +10,7 @@ pub mod aer;
 pub mod cache;
 pub mod compute;
 pub mod integrity;
+pub mod ipi;
 pub mod layout;
 pub mod mcp_client;
 pub mod registry;
@@ -498,6 +499,7 @@ pub fn run() {
             cache_status,
             cache_tool_get,
             cache_force_refresh,
+            ipi::ipi_valuation_modifier,
         ])
         .run(tauri::generate_context!())
         .expect("MacroHarder Design Studio failed to start");
