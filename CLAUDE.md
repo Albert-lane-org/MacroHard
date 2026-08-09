@@ -38,6 +38,15 @@ customizable analytics dashboard.
 full dependency tree, re-scored Phase 6→12 ladder (Firestick is out;
 Phase 12 is the Windows ship).
 
+**Planned future module: Grokllama Studio Presents** (owner decision,
+2026-08-09) — a standalone AI app-builder platform (Android client, Rust
+backend, Grok/Llama model gateway, Lane-VM sandboxed builder engine,
+ephemeral deployment runtime) designated as a future MacroHarder MCP
+module, same pattern as procurement/maps/government. Not built — the
+source material provided so far is a document-title manifest only, no
+actual code. See plan-macroharder.md §6a for the honest accounting of
+what exists vs. what's planned (reserved as phase **GRK-P1**).
+
 ---
 
 ## Architecture (Phase 8)
@@ -79,7 +88,7 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 14 — 5D Model + lane-mcp Cache (completed)**
+Current: **Phase 16 — IPI Modifier Calculator (completed)**
 
 | Phase | Status | Notes |
 |-------|--------|-------|

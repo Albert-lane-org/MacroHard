@@ -121,6 +121,54 @@ MacroHarder desktop (Tauri 2.0 shell — src-tauri/, exists today)
 | **12** | **Windows ship** | NSIS self-extracting .exe, integrity manifest on boot, signed release — *replaces Firestick HD* |
 | 13+ | Android, then macOS | Tauri 2 mobile; notarized mac bundle |
 
+## 6a. Grokllama Studio Presents — planned dashboard module (owner decision, 2026-08-09)
+
+Owner instruction 2026-08-09: **Grokllama Studio Presents** is designated
+a future **MacroHarder interface** — i.e. it plugs into the workbook as an
+MCP module, the same pattern as `procurement`, `maps`, `government`, and
+`procurement_engine` (§4, "Modules via MCP").
+
+**What the uploaded material actually is, stated plainly:** the "Grokllama
+Studio Presents" packages (Phase 1–10 "canonical zip" manifests) are
+*document title indexes* — each phase lists filenames like "Model Gateway
+Service Source Tree v1.0" or "Builder Engine Service Source Tree v1.0" as
+table entries. None of the zips, source trees, scripts, or workers they
+name are included or accessible in this session — there is no code to
+import, port, or wire up yet. Recording it here as a real, working
+MacroHarder module today would misrepresent a table of contents as a
+delivered integration. This section instead records what Grokllama Studio
+*is* (per its own manifest) and how it maps onto MacroHarder's existing
+module architecture once it exists as real, buildable source.
+
+**What Grokllama Studio Presents describes itself as:** a standalone AI
+app-builder platform — Android client + Rust backend, a Model Gateway
+routing between hosted Grok and local Llama/vLLM inference, a Builder
+Engine that generates and previews applications from a spec (including a
+Lane-VM/pybind11 sandboxed execution path — the same LaneVM ISA lineage
+lane-mcp's Phase 15 `lanevm` module already implements natively in
+TypeScript, see lane-mcp's `packages/modules/lanevm/`), a Deployment
+Runtime that provisions ephemeral preview containers, and billing/
+entitlement/security-compliance layers. It is its own product, not part of
+this estate's existing repos.
+
+**Planned integration shape (future phase, not started):**
+
+| MacroHarder side | Grokllama Studio side | Notes |
+|---|---|---|
+| New `config/modules.json` entry: `"grokllama_studio"` | Model Gateway's `/v1/*` REST/WebSocket API | Same `ModuleRegistry`/`authorize_tool_call()` capability-gating pattern already live (§10, `registry.rs`) — no new trust model needed |
+| Dashboard panel: AI build/inference activity | Run Logging & Telemetry Ingestion Engine (Phase 8 of the Grokllama manifest) | Feeds the workbook's analytics dashboard the same way procurement/maps panels do today |
+| `cache.rs` (`McpCache`, Phase 14) | Model Gateway tool-call results | Same TTL/stale-serving pattern already built for the other modules |
+
+**What this is not:** this is not a claim that MacroHarder now talks to
+Grokllama Studio, that a `grokllama_studio` module exists in
+`config/modules.json` yet, or that any of the Lane-VM/pybind11/Android/
+billing source described in the manifest has been built, ported, or
+verified in this estate. A real integration is a separate, substantial
+build (a whole second product's backend, standing up its own
+infrastructure) gated on that source actually existing and being provided
+to a session that can read and test it — tracked here as a named future
+phase (**GRK-P1**, reserved) rather than left undocumented.
+
 ## 6. Reconciliation Record (2026-07-08)
 
 - **Branch sweep (MacroHard, lane-mcp, Procurement, maps):** every branch

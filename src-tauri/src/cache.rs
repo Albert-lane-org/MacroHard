@@ -76,7 +76,7 @@ impl McpCache {
 
     /// Returns true if the key is not present or its TTL has expired.
     pub fn needs_refresh(&self, key: &str) -> bool {
-        self.entries.get(key).map_or(true, |e| e.is_stale())
+        self.entries.get(key).is_none_or(|e| e.is_stale())
     }
 
     pub fn entry_count(&self) -> usize {
