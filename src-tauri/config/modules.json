@@ -21,7 +21,7 @@
       "status": "code_ready_deploy_blocked",
       "capability": "read_only",
       "source": "built_in",
-      "tools": ["maps_query", "maps_tile", "maps_elevation_grid"],
+      "tools": ["lane_maps_query", "lane_maps_tile", "lane_maps_elevation_grid"],
       "resources": ["maps://models"],
       "panels": ["terrain_volume_layer", "derived_properties_inspector", "svg_tile_gallery"]
     },
