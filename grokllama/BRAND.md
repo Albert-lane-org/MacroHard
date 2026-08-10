@@ -33,6 +33,39 @@ the same relationship a music variety show has with its production
 company. That relationship is also where the visual direction below
 comes from.
 
+## 1a. Government as the workbook's audit engine
+
+Owner instruction, 2026-08-10: Government's screening pipeline should sit
+behind the MacroHarder deliverable — more precisely, baked into the
+corpus and workbook structure itself, as an audit engine. "A Workbook, I
+suppose, blowing existing Workbooks out of the water" — the framing is
+that a 3D/5D workbook whose cells can be audited for civic/forensic risk
+inline is not a feature bolted onto a spreadsheet, it's a different kind
+of object than "spreadsheet" describes.
+
+**What this means concretely, once built** (not built in this pass — see
+below): every cell in a MacroHarder `Workbook` that references an entity
+(a vendor, a procurement counterparty, a registered business from
+Procurement's `BUSINESS_REGISTRY_DB`/Government's `sos-digital-registry`
+cross-reference layer) becomes auditable against Government's `/screen`
+pipeline and the `VerificationTier` model from
+`Government/engine/sos-digital-registry/`. The `government` MCP module
+already registered in `config/modules.json` (Phase 8) is the existing
+wire this would run over — `lane_gov_entity_screen` called per-cell or
+per-volume, with results cached the same way `McpCache`
+(`src-tauri/src/cache.rs`, Phase 14) already caches every other module's
+tool results. Domain `DOMAIN_CIVIC` already exists in the 5D cell model
+(Phase 14) as exactly the slot this would populate.
+
+**Status: named, not built.** This section records the architectural
+slot and the reasoning for why it belongs here (Government is the
+audit-capable module; the workbook is the surface an audit result would
+render into) — it does not add a new Tauri command, cache entry, or UI
+panel. That is real, scoped engineering work for a future phase once
+Government's own `sos-digital-registry` crate has a live cross-reference
+client (see that crate's own design doc, §6, for what's still deferred
+on the Government side first).
+
 ## 2. Model roster
 
 - **Grok Build** (open source) and **Llama** (open source) — the two
