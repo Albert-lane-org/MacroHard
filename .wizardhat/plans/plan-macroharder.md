@@ -121,53 +121,85 @@ MacroHarder desktop (Tauri 2.0 shell — src-tauri/, exists today)
 | **12** | **Windows ship** | NSIS self-extracting .exe, integrity manifest on boot, signed release — *replaces Firestick HD* |
 | 13+ | Android, then macOS | Tauri 2 mobile; notarized mac bundle |
 
-## 6a. Grokllama Studio Presents — planned dashboard module (owner decision, 2026-08-09)
+## 6a. Grokllama Studios Presents MacroHarder™ — planned dual-system module (owner decision 2026-08-09, revised/renamed 2026-08-10)
 
-Owner instruction 2026-08-09: **Grokllama Studio Presents** is designated
-a future **MacroHarder interface** — i.e. it plugs into the workbook as an
-MCP module, the same pattern as `procurement`, `maps`, `government`, and
-`procurement_engine` (§4, "Modules via MCP").
+**Renamed 2026-08-10** from "Grokllama Studio Presents" to **"Grokllama
+Studios Presents MacroHarder™"** — owner instruction, explicit dual-system
+framing: **Grokllama Studios** is the front-of-house AI app-builder product
+(Android client, Model Gateway, Builder Engine — everything below); the
+name says out loud that it runs on **MacroHarder™** as its workbook/module
+backend, the same MCP-module pattern already live for `procurement`,
+`maps`, `government`, and `procurement_engine` (§4, "Modules via MCP").
+Full brand/design direction (naming rationale, model roster, "Coke
+Studio"-inspired visual language and why it's built trademark-safe, the
+"Sessions" content pillar, South Asian music-culture integration point) is
+in `grokllama/BRAND.md`; a first-pass token set implementing that
+direction is in `grokllama/design-tokens.json` (sibling theme to the
+canonical `/design-tokens.json` sovereign palette — MacroHarder's own
+chrome is unaffected). Read both before touching anything under
+`grokllama/`.
 
-**What the uploaded material actually is, stated plainly:** the "Grokllama
-Studio Presents" packages (Phase 1–10 "canonical zip" manifests) are
-*document title indexes* — each phase lists filenames like "Model Gateway
-Service Source Tree v1.0" or "Builder Engine Service Source Tree v1.0" as
-table entries. None of the zips, source trees, scripts, or workers they
-name are included or accessible in this session — there is no code to
-import, port, or wire up yet. Recording it here as a real, working
-MacroHarder module today would misrepresent a table of contents as a
-delivered integration. This section instead records what Grokllama Studio
-*is* (per its own manifest) and how it maps onto MacroHarder's existing
-module architecture once it exists as real, buildable source.
+**What the uploaded material actually is, stated plainly (unchanged
+finding, now against the actual page content instead of a paraphrase):**
+the manifest is 10 numbered "Steps," each a table of category → title
+lists — e.g. Step 1 lists "Rust Runtime Dependency Manifest v1.0," "Model
+Gateway Service Source Tree v1.0," "JWT Key Management Specification
+v1.0" as row entries, not attachments. Confirmed by reading all 10 pages
+directly (2026-08-10): every page follows the same shape — Dependencies /
+Security Files / Source Code / Supporting Docs / Scripts / Workers /
+Workflows, each a list of *titles*. None of the zips, source trees,
+scripts, or workers they name are included or accessible in this estate —
+there is no code to import, port, or wire up yet. This section records
+what the manifest describes and how it maps onto MacroHarder's existing
+module architecture once it exists as real, buildable source; it is not a
+claim that any of it has been built.
 
-**What Grokllama Studio Presents describes itself as:** a standalone AI
-app-builder platform — Android client + Rust backend, a Model Gateway
-routing between hosted Grok and local Llama/vLLM inference, a Builder
-Engine that generates and previews applications from a spec (including a
-Lane-VM/pybind11 sandboxed execution path — the same LaneVM ISA lineage
-lane-mcp's Phase 15 `lanevm` module already implements natively in
-TypeScript, see lane-mcp's `packages/modules/lanevm/`), a Deployment
-Runtime that provisions ephemeral preview containers, and billing/
-entitlement/security-compliance layers. It is its own product, not part of
-this estate's existing repos.
+**The 10 steps, mapped (source: the actual manifest pages, read in full
+2026-08-10):**
+
+| Step | Title | Covers |
+|---|---|---|
+| 1 | Code Posture & System Overview | Rust/Android/Node/vLLM/Grok/Postgres+Redis/observability dependency manifests; JWT/TLS/env/audit/canary/CRC-32 security docs; the 8 backend service source trees; Lane-VM host/guest source; proprietary license file |
+| 2 | System Architecture Overview | Service mesh + mTLS, cross-service RPC (protobuf), zero-trust gateway boundary, global architecture blueprint |
+| 3 | Android Application Structure | Jetpack/Compose + Coroutines, OkHttp SSE/WebSocket, Keystore/biometric auth, TLS pinning; app/core-network/core-design/playground/builder/projects/settings module source trees; Lane-VM Android protobuf client |
+| 4 | Backend API Surface | Axum/Actix-Web, OpenAPI 3.1, JWT verification + authz matrix; `/v1/auth`, `/v1/billing`, `/v1/projects`, `/v1/playground`, `/v1/builder`, `/v1/deploy`, `/v1/inspector` endpoint trees |
+| 5 | Model Gateway Specification | vLLM/Ollama local adapter + Grok Build API adapter, unified request/response schema mapper, token accounting/metering, streaming normalizer, **"Local Open-Source Model Priority & Filtering Policy"** (the natural slot DeepSeek drops into, GRK-P2) |
+| 6 | Builder Engine & Lane-VM Execution | Spec ingestion/schema parser, Grok+Llama code synthesis adapter, virtual file tree + patch/diff engine, local WebView preview sandbox, **Lane-VM host kernel (`host_main.cpp`) + Python guest (`guest_lib.py`) + `lane_compiler.py`** — the ISA lineage reconciled against lane-mcp's Phase 15 `lanevm` precedent, see BRAND.md §5 |
+| 7 | Deployment Runtime & Ephemeral Provisioning | Docker/OCI + Kubernetes/Helm, Nginx ingress + cert-manager, ephemeral preview subdomains, seccomp isolation, Prometheus/Vector telemetry |
+| 8 | Data, Logging, and Evaluation | Run logging/telemetry ingestion, autorater evaluation + rubric scoring, PII anonymization, project analytics — **this is the panel that feeds MacroHarder's dashboard, reframed as "Sessions" per BRAND.md §4** |
+| 9 | Billing and Subscription Integration | Google Play Billing + Stripe, entitlement enforcement middleware, per-user/per-project usage limits |
+| 10 | Security, Compliance, and IP Controls | Audit logging + chain-of-custody, canary tokens, key rotation, compliance evidence export, IP posture alignment doc |
+
+**Model roster:** Grok Build (open source) and Llama (open source) per the
+manifest's own Model Gateway (Step 5). **DeepSeek** — open-weight, not in
+the original manifest — is a planned addition into that same adapter
+pattern, tracked as **GRK-P2** below.
 
 **Planned integration shape (future phase, not started):**
 
-| MacroHarder side | Grokllama Studio side | Notes |
+| MacroHarder side | Grokllama Studios side | Notes |
 |---|---|---|
-| New `config/modules.json` entry: `"grokllama_studio"` | Model Gateway's `/v1/*` REST/WebSocket API | Same `ModuleRegistry`/`authorize_tool_call()` capability-gating pattern already live (§10, `registry.rs`) — no new trust model needed |
-| Dashboard panel: AI build/inference activity | Run Logging & Telemetry Ingestion Engine (Phase 8 of the Grokllama manifest) | Feeds the workbook's analytics dashboard the same way procurement/maps panels do today |
+| New `config/modules.json` entry: `"grokllama_studio"` | Model Gateway's `/v1/*` REST/WebSocket API (Step 4/5) | Same `ModuleRegistry`/`authorize_tool_call()` capability-gating pattern already live (§10, `registry.rs`) — no new trust model needed |
+| Dashboard panel: **Sessions** (not "Run History" — see BRAND.md §4) | Run Logging & Telemetry Ingestion Engine (Step 8) | Feeds the workbook's analytics dashboard the same way procurement/maps panels do today |
 | `cache.rs` (`McpCache`, Phase 14) | Model Gateway tool-call results | Same TTL/stale-serving pattern already built for the other modules |
+| `grokllama/design-tokens.json` (this session) | Android client + Builder Engine WebView preview chrome | Brand/visual layer only — no functional dependency; can be swapped without touching the integration above |
 
 **What this is not:** this is not a claim that MacroHarder now talks to
-Grokllama Studio, that a `grokllama_studio` module exists in
-`config/modules.json` yet, or that any of the Lane-VM/pybind11/Android/
+Grokllama Studios, that a `grokllama_studio` module exists in
+`config/modules.json` yet, that any of the Lane-VM/pybind11/Android/
 billing source described in the manifest has been built, ported, or
-verified in this estate. A real integration is a separate, substantial
-build (a whole second product's backend, standing up its own
-infrastructure) gated on that source actually existing and being provided
-to a session that can read and test it — tracked here as a named future
-phase (**GRK-P1**, reserved) rather than left undocumented.
+verified in this estate, or that the brand direction in `grokllama/` is
+more than a documented intention for whenever real source lands. A real
+integration is a separate, substantial build (a whole second product's
+backend, standing up its own infrastructure) gated on that source
+actually existing and being provided to a session that can read and test
+it — tracked as two named future phases:
+
+- **GRK-P1** (reserved) — the platform build-out itself, once real source
+  for any of the 10 steps above is provided.
+- **GRK-P2** (reserved) — DeepSeek added to the Model Gateway's adapter
+  roster alongside Grok Build and Llama, gated on GRK-P1's Model Gateway
+  (Step 5) existing first.
 
 ## 6. Reconciliation Record (2026-07-08)
 

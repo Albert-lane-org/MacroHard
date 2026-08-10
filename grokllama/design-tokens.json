@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "version": "0.1.0",
+    "authored": "Albert Lane",
+    "documented": "Claude Sonnet 4.6",
+    "date": "2026-08-10",
+    "standard": "Grokllama Studios Presents MacroHarder(TM) -- Sessions theme v1",
+    "status": "design direction, GRK-P1 reserved, not built -- see BRAND.md",
+    "sec_ref": "17684-273-411-436",
+    "trademark_note": "Original palette/wordmark direction inspired by Coke Studio / Americana soda-fountain energy per BRAND.md section 3. Deliberately does NOT reproduce any registered Coca-Cola or Coke Studio trademark, script wordmark, contour-bottle trade dress, or show-branding lockup -- see BRAND.md for the specific things this avoids and why. This is a sibling theme to the canonical /design-tokens.json 'sovereign' palette, not a replacement for it -- MacroHarder's own chrome keeps the sovereign dark theme; this theme is scoped to the future grokllama_studio module surface only."
+  },
+  "colors": {
+    "sessions": {
+      "primary":    "#D62828",
+      "primary-deep": "#A31E1E",
+      "secondary":  "#F2C94C",
+      "accent":     "#2B6CB0",
+      "warning":    "#F2994A",
+      "success":    "#27AE60",
+      "danger":     "#B3261E",
+      "surface":    "#FFF8EF",
+      "surface-2":  "#FFEFD6",
+      "text":       "#241412",
+      "text-dim":   "#6B4F4A",
+      "border":     "#E8D9C5",
+      "cream":      "#FFF8EF",
+      "gold":       "#F2C94C",
+      "ink":        "#241412"
+    },
+    "ribbon-standard": {
+      "ribbon-fold-light": "#F2C94C",
+      "ribbon-fold-shadow": "#A31E1E",
+      "banner-base":  "#D62828",
+      "banner-highlight": "#FF6B5B",
+      "shadow":    "#3D0F0F"
+    }
+  },
+  "typography": {
+    "font-family": {
+      "mono": "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
+      "sans": "'Inter', 'Segoe UI', system-ui, sans-serif",
+      "display": "'Fraunces', 'Clash Display', 'Space Grotesk', sans-serif"
+    },
+    "font-size": {
+      "xs":   "11px",
+      "sm":   "13px",
+      "base": "15px",
+      "md":   "17px",
+      "lg":   "22px",
+      "xl":   "28px",
+      "2xl":  "36px",
+      "3xl":  "48px"
+    },
+    "font-weight": {
+      "normal":   400,
+      "medium":   500,
+      "semibold": 600,
+      "bold":     800
+    },
+    "line-height": {
+      "tight":  1.15,
+      "normal": 1.5,
+      "loose":  1.75
+    }
+  },
+  "spacing": {
+    "0":  "0px",
+    "1":  "4px",
+    "2":  "8px",
+    "3":  "12px",
+    "4":  "16px",
+    "5":  "20px",
+    "6":  "24px",
+    "8":  "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px",
+    "20": "80px",
+    "24": "96px"
+  },
+  "border-radius": {
+    "none": "0px",
+    "sm":   "4px",
+    "md":   "10px",
+    "lg":   "20px",
+    "xl":   "32px",
+    "bottle-curve": "48px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "sm":  "0 1px 3px rgba(36,20,18,0.15)",
+    "md":  "0 6px 16px rgba(36,20,18,0.20)",
+    "lg":  "0 12px 32px rgba(36,20,18,0.28)",
+    "banner": "0 4px 0px #A31E1E, 0 8px 16px rgba(36,20,18,0.25)"
+  },
+  "3d-standard": {
+    "isometric-angle-x": 30,
+    "isometric-angle-y": 30,
+    "elevation-scale":   3,
+    "shadow-offset-x":   3,
+    "shadow-offset-y":   5,
+    "highlight-intensity": 0.9,
+    "ambient-intensity":   0.4
+  },
+  "sessions-motif": {
+    "_comment": "Content/UI pattern tokens, not raw CSS values -- see BRAND.md section 4 for the full 'Sessions' concept (a build run reframed as a music session: spec=song, models=lineup, output=recording).",
+    "unit-label": "Session",
+    "lineup-label": "Lineup",
+    "output-label": "Recording",
+    "card-shape": "bottle-curve",
+    "ornamental-accent-scope": "splash and empty-state illustration only -- never functional UI type",
+    "model-roster": ["grok-build", "llama", "deepseek"],
+    "model-roster_status": {
+      "grok-build": "in manifest (Model Gateway adapter, Phase 5)",
+      "llama": "in manifest (vLLM/Ollama local adapter, Phase 5)",
+      "deepseek": "planned addition, GRK-P2, not in original manifest"
+    }
+  }
+}

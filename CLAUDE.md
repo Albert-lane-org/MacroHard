@@ -38,14 +38,21 @@ customizable analytics dashboard.
 full dependency tree, re-scored Phase 6→12 ladder (Firestick is out;
 Phase 12 is the Windows ship).
 
-**Planned future module: Grokllama Studio Presents** (owner decision,
-2026-08-09) — a standalone AI app-builder platform (Android client, Rust
-backend, Grok/Llama model gateway, Lane-VM sandboxed builder engine,
-ephemeral deployment runtime) designated as a future MacroHarder MCP
-module, same pattern as procurement/maps/government. Not built — the
-source material provided so far is a document-title manifest only, no
-actual code. See plan-macroharder.md §6a for the honest accounting of
-what exists vs. what's planned (reserved as phase **GRK-P1**).
+**Planned future module: Grokllama Studios Presents MacroHarder™** (owner
+decision 2026-08-09, renamed/revised 2026-08-10) — a standalone AI
+app-builder platform (Android client, Rust backend, Grok Build + Llama
+model gateway — DeepSeek planned, GRK-P2 — Lane-VM sandboxed builder
+engine, ephemeral deployment runtime) designated as a future MacroHarder
+MCP module, same pattern as procurement/maps/government. Dual-system
+framing: Grokllama Studios is the front-of-house product; MacroHarder™ is
+its workbook/module backend. Brand direction — "Coke Studio"-inspired,
+built trademark-safe, "Sessions" content pillar with a South Asian
+music-culture integration point — lives in `grokllama/BRAND.md` +
+`grokllama/design-tokens.json`. Not built — the source material provided
+so far is a document-title manifest only, no actual code. See
+plan-macroharder.md §6a for the full 10-step manifest breakdown and the
+honest accounting of what exists vs. what's planned (reserved as phases
+**GRK-P1** platform build-out and **GRK-P2** DeepSeek addition).
 
 ---
 
