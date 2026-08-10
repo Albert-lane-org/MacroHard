@@ -95,7 +95,16 @@ macrohard/
 
 ## Phase Status
 
-Current: **Phase 16 — IPI Modifier Calculator (completed)**
+Current: **Phase 15 — IPI Modifier Calculator (completed)**
+
+**Corrected 2026-08-10** — this header said "Phase 16" while the module's
+own file header tags itself `MH-P15-01` and the phase table below had no
+row for either 15 or 16 at all (stopped at Phase 14) — the phase was
+merged (lane-mcp PR-equivalent, `ed2161c`/estate-merge-log `#23`) without
+ever getting a table row. `.claude/roadmap/sibling-roadmap.json` was
+separately stale at `current_phase: 13`, two behind reality. Both fixed
+here after confirming the module live: `cargo test --workspace` — 94/94
+passing (was already true, just never reflected in either doc).
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -109,6 +118,7 @@ Current: **Phase 16 — IPI Modifier Calculator (completed)**
 | 12 — Windows ship | `completed` | MH-P12-01: `src-tauri/src/integrity.rs` — BLAKE3 content-hash manifest (generate + verify, 6 unit tests passing), non-fatal boot check in `run()`, `verify_integrity`/`generate_integrity_manifest` Tauri commands ✅. blake3 crate added to Cargo.toml. MH-P12-02: `tauri.conf.json` NSIS bundle config (installMode=currentUser, icon array, copyright) + `.github/workflows/windows-build.yml` (build-check on windows-latest, package job on dispatch/tags producing NSIS .exe artifact) ✅. **Not runtime-tested** — Windows runner and display required. 47/47 tests passing ✅ |
 | 13 — C/C++ Compute Kernels FFI | `completed` | MH-P13-01: cc crate in build-deps ✅. MH-P13-02: `kernels/matrix3d.c` (multiply/transform/identity/dot/cross) ✅. MH-P13-03: `kernels/kriging.c` (ordinary kriging, spherical variogram, Gaussian elimination) ✅. MH-P13-04: `build.rs` compiles kernels with -O2 ✅. MH-P13-05: `src/compute.rs` safe Rust FFI wrappers + 10 unit tests ✅. 58/58 tests passing ✅ |
 | 14 — 5D Model + lane-mcp Cache | `completed` | MH-P14-01: `workbook.rs` extended to 5D CellAddress (col,row,layer,time,domain); DOMAIN_SPATIAL/FINANCIAL/CIVIC/TERRAIN/CUSTOM constants; `new_3d()` compat; `cells_in_domain()`/`cells_at_time()` on Volume+Workbook; 9 tests updated + 12 new 5D tests ✅. MH-P14-02: `kernels/kriging5d.c` (5D Euclidean lag, spherical variogram, Gaussian elimination); `kriging5d_interp()` Rust FFI wrapper in `compute.rs`; 6 new tests ✅. MH-P14-03: `src/dashboard-composer.ts` — `CrossDomainPanel` interface + `renderCrossDomain(layout, domainX, domainY)` async function ✅. MH-P14-04: `scripts/audit_score.py` — `WEIGHTS_5D` constants + `score_5d(workbook)` function (spatial/depth/temporal/cross scoring) ✅. MH-P14-05: `src-tauri/src/cache.rs` — `McpCache` + `SharedMcpCache` (HashMap<String,CachedValue>, TTL, stale detection, D1 export/import, skip-list for session-sensitive tools, `stale_result()`); 10 unit tests ✅. MH-P14-06: `lib.rs` wired: `workbook_cells_in_domain`/`workbook_cells_at_time` Tauri commands; `cache_status`/`cache_tool_get`/`cache_force_refresh` commands; `SharedMcpCache` in AppState ✅. MH-P14-07: `config/modules.json` — `government` + `procurement_engine` entries ✅. 86/86 tests passing ✅ |
+| 15 — IPI Modifier Calculator | `completed` | Undocumented until 2026-08-10 despite being real, merged, tested code. MH-P15-01: `src-tauri/src/ipi.rs` — `calculate_ipi_modifier(s_l, s_c, s_d)`, a direct Rust port of the published IPI framework's own reference calculator (`RoadMaps/docs/economic-policy/investor-priced-index.md`, CC BY 4.0): local-spend recirculation rate (α/β/γ = 0.520/0.136/0.038, the document's own illustrative coefficients, not empirically measured), Keynesian local multiplier, and a valuation-modifier ratio against the document's own 75/15/10 target benchmark. Exposed as Tauri command `ipi_valuation_modifier` (`lib.rs:502`), registered `pub mod ipi;` (`lib.rs:13`). **Deliberately narrow, per the module's own header comment**: this computes the framework's published math only — it does NOT implement Marked Local Currency, equity-index weighting, or any enforcement mechanism against real securities or banking systems (those would require regulatory authority this codebase doesn't have and isn't claiming to have). No other file in the estate references IPI, MLC, or Green Energy Bucks — this is the framework's sole code-level footprint, and it is not wired to Government, Procurement, or any "Civic Infrastructure" concept (that phase remains `planned`, unbuilt, in `RoadMaps/phases/phase-6-sovereign-civic.md`). 7/7 new unit tests, 94/94 total passing. **Not runtime-tested** — same GTK/WebKit limitation as Phases 9/10. |
 
 Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 
