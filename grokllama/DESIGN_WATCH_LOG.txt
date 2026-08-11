@@ -1,0 +1,4 @@
+
+=== 2026-08-11T14:14:09.417254+00:00 ===
+Baseline established at MacroHard@e0195dadfac8. No prior state to diff against.
+Design project link still unreachable from this session: HTTP 403
