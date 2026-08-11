@@ -8,4 +8,5 @@
 name        = "sqlxml-engine"
 version     = "0.1.0"
 edition     = "2021"
+publish     = false
 description = "CI stub — not for production use. Remove [patch] in src-tauri/Cargo.toml to use the real crate."
