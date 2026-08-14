@@ -1,0 +1,285 @@
+
+=== 2026-08-11T14:14:09.417254+00:00 ===
+Baseline established at MacroHard@e0195dadfac8. No prior state to diff against.
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T15:16:39.528710+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T16:19:50.684514+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T17:15:49.686024+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T18:17:28.227114+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T19:16:31.329372+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T20:18:13.343714+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T21:16:08.590707+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T22:19:27.882878+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-11T23:16:41.376129+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T00:19:03.288853+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T01:16:03.550902+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T02:17:05.823767+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T03:16:47.727933+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T04:16:44.090909+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T05:19:59.468049+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T06:19:10.684040+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T07:18:19.965965+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T08:20:13.003540+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T09:18:12.749833+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T10:21:47.324215+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T11:24:45.510130+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T12:20:49.078211+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T13:22:22.487516+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T14:26:24.509369+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T15:18:46.588021+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T22:17:09.095558+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-12T23:16:30.366515+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T00:20:00.602189+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T01:15:58.375127+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T02:16:45.191664+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T03:17:30.103157+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T04:17:29.382457+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T05:18:16.490217+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T06:20:14.281810+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T07:20:33.092027+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T08:19:36.179747+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T09:16:31.380314+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T10:20:24.076616+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T11:18:03.545450+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T12:23:57.059111+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T13:18:28.076077+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T14:21:31.881039+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T15:25:14.332294+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T16:28:53.146957+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T17:18:56.364765+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T18:25:37.884062+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T19:22:28.604666+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T20:23:35.017859+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T21:22:45.402230+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T22:25:14.128443+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-13T23:22:54.222050+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T00:27:19.050992+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T01:22:18.951944+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T02:19:54.046898+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T03:17:57.612354+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T04:25:00.226829+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T05:16:32.041652+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T05:19:01.851268+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T06:19:39.381498+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T07:19:26.127771+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T08:20:01.243268+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T09:21:40.429614+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T10:24:14.946009+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T11:19:20.159691+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T12:22:52.026613+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T13:29:15.465284+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T14:20:02.747696+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T15:17:18.532162+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T16:20:55.835447+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T17:27:07.747870+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T18:16:49.094389+00:00 ===
+Design project link still unreachable from this session: HTTP 403
+
+=== 2026-08-14T18:19:00.000000+00:00 *** ALERT ***
+Design system source received via owner-uploaded zip files (5 files).
+Claude Design URL (https://claude.ai/design/p/8e0b1b86-25d9-4f9c-a26e-ce84e3127b02) remains 403 from this session.
+Owner resolved delivery blocker by uploading zip archives directly.
+
+DESIGN SYSTEM INGESTED — MacroHarder Design System v6-v9
+============================================================
+Destination: grokllama/design-system/components/
+
+4 Component Groups, 11 Components, 20 Files:
+
+[core — v8]
+  Button.jsx / Button.d.ts
+    Variants: default (dark outline), accent (--mh-accent amber fill), danger (red hover),
+              ghost (borderless), sessions (--gl-primary red for Grokllama)
+    Props: children, variant, size (sm/md/lg), disabled, fullWidth, active (ribbon toggle), type, onClick
+  Badge.jsx / Badge.d.ts
+    Variants: default (--sv-border paper), accent (--sv-accent-dk cyan), category (teal fill),
+              warn (--sso-warn-amber), mh (dark workbook --mh-bg3)
+    Props: children, variant, dot (boolean indicator)
+  Input.jsx / Input.d.ts
+    Themes: mh (dark workbook, amber focus ring), sso (light sovereign chat, teal ring + shadow)
+    Props: value, onChange, placeholder, type, size, theme, disabled, label, hint
+
+[workbook — v7]
+  BrandBar.jsx / BrandBar.d.ts
+    52px height, amber 24px/900 wordmark, --mh-bg2, --mh-border
+    Props: title (default MACROHARD), subtitle, tagline, attribution, rightContent
+  RibbonButton.jsx / RibbonButton.d.ts
+    4 exports: RibbonButton (toggle, amber active state), RibbonLabel (caps), RibbonDivider (1px), RibbonGroup (flex container)
+    Props: children, active, onClick, label (on RibbonLabel)
+  StatusBar.jsx / StatusBar.d.ts
+    2 exports: StatusBar (22px height, --mh-bg2, --mh-border top), StatusItem (label + amber value pair)
+    Props: left, right (StatusBar); label, value (StatusItem)
+
+[panels — v9]
+  Panel.jsx / Panel.d.ts
+    Collapsible side panel, left-border accent, fixed 52px header
+    Variants: default (--sso-primary-mid), accent (--sso-accent), muted (--sso-rule), mh (--mh-accent)
+    Props: label, children, variant, collapsible, defaultOpen, count; PanelSection wrapper
+  InspectorRow.jsx / InspectorRow.d.ts
+    2 exports:
+      InspectorRow: key/value flex row, status coloring (ok=--sso-ok-green, warn=--sso-warn-amber), monospace caps label
+      MhInspectorRow: compact workbook-style row, --mh-bg3 value background
+    Props: label, value, status (InspectorRow); label, value (MhInspectorRow)
+
+[communication — v6]
+  MessageRow.jsx / MessageRow.d.ts
+    4-column grid: seq (#0001 padded), time, handle (<name>), body
+    Kinds: own (--sso-accent), ai (--sso-primary-mid), system/action (--sso-ink-muted)
+    Props: seq, time, handle, body, kind
+  SidebarRow.jsx / SidebarRow.d.ts
+    3 exports: SidebarRow (wrapper), RoomRow (# prefix, active teal bg, unread badge),
+               FriendRow (6px online dot, badge chip, opacity 0.7 offline)
+    Props: label, active, unread (RoomRow); name, online, badge (FriendRow)
+
+TOKEN SYSTEM (dual-theme, CSS custom properties):
+  --mh-*:  bg2, bg3, border, accent (amber), text, text2, text3, danger
+  --sso-*: surface, primary, primary-mid, primary-soft, accent (teal), accent-faint, rule, rule-soft,
+           ink, ink-soft, ink-muted, page-bg, surface-tint, warn-amber, ok-green
+  --sv-*:  border, ink, accent, accent-dk
+  --gl-primary (Grokllama red)
+  Shared:  --font-mono, --font-chat, --radius-sm, --radius-md, --radius-xl,
+           --shadow-sso-sm, --dur-fast, --transition-fast, --text-sm
+
+Provenance headers applied to all 20 files (SEC #17684-273-411-436).
+Committed to MacroHard branch: claude/beacon-llm-training-rr85mg

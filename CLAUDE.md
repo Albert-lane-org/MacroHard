@@ -73,7 +73,7 @@ macrohard/
     src/layout.rs              — MH-P9-01: DashboardLayout/PanelPlacement grid schema, JSON-persisted
     src/mcp_client.rs          — MH-P8-02/03: generic MCP JSON-RPC HTTP client
     src/registry.rs            — MH-P10-01: ModuleRegistry — install/uninstall + capability-gated tool dispatch
-    src/sqlxml_bridge.rs      — sqlxml-engine live wire (put() real; get/query stubbed -- backend doesn't implement those actions yet)
+    src/sqlxml_bridge.rs      — sqlxml-engine live wire; put()/get()/query() all real and live-wired to SqlxmlEngine (sqlxml#19 added GET/QUERY to the backend dispatch -- corrected 2026-08-11, this line previously said get/query were stubbed)
     config/modules.json        — module registry: procurement, maps (endpoints, tools, panels, capability)
     tauri.conf.json           — app identity org.albertlane.macroharder-studio
     capabilities/default.json — core permission set
@@ -140,7 +140,7 @@ Full ladder + dependencies: `.wizardhat/plans/plan-macroharder.md`
 | `src-tauri/src/aer.rs` | AER integration — `aer_write`/`aer_read` Tauri commands, proxy to lane-mcp gateway's `lane_aer_write`/`lane_aer_read` tools |
 | `src-tauri/src/compute.rs` | Safe Rust FFI wrappers over C kernels: mat4_multiply/transform/identity, vec3_dot/cross, kriging_interp; 10 unit tests |
 | `src-tauri/src/integrity.rs` | BLAKE3 content-hash manifest: generate(), verify(), save/load; 6 unit tests; non-fatal boot check in run() |
-| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put() live-wired (Phase 7); get/query stubbed pending backend support |
+| `src-tauri/src/sqlxml_bridge.rs` | SQLXML engine bridge — put()/get()/query() all live-wired to SqlxmlEngine (corrected 2026-08-11; get/query were never actually stubbed, this table just hadn't been updated after sqlxml#19 landed) |
 | `src/chrome.ts` | Applies design-tokens.json onto chrome CSS custom properties at runtime |
 | `src/dashboard-composer.ts` | Layout-driven panel grid: add/remove/move/resize/hide panels, install modules |
 | `src/token-inspector.ts` | Browser-side design token inspector |
