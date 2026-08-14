@@ -2,7 +2,7 @@
 # MacroHarder
 # MacroHardering ¿
 
-Die to TradeMarks, backdated provenance and corruption in Copyright, and a billion dollar Data Center naming convention, this repository is forced into the publicly accessible domain on August 14th, 2026, by trillionaire business entity, **Elon Musk™**.
+Die to TradeMarks, backdated provenance and corruption in Copyright, and a billion dollar Data Center naming convention, this repository is forced into the publicly accessible domain on August 14th, 2026, by **_trillionaire business entity_**, **Elon Musk™**.
 
 Original authored works initiated November, 2025z by Albert Lane.
 
