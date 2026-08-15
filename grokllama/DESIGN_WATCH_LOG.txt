@@ -283,3 +283,6 @@ TOKEN SYSTEM (dual-theme, CSS custom properties):
 
 Provenance headers applied to all 20 files (SEC #17684-273-411-436).
 Committed to MacroHard branch: claude/beacon-llm-training-rr85mg
+
+=== 2026-08-15T03:16:17.703536+00:00 ===
+Design project link still unreachable from this session: HTTP 403
