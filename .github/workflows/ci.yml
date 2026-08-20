@@ -18,7 +18,7 @@ jobs:
     name: TypeScript type-check (Worker)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - name: Node.js version check
         run: node --version && npm --version
       - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
     name: Design tokens — validate schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: '3.11'
@@ -43,7 +43,7 @@ jobs:
     name: JSON + state health
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - name: Validate all JSON
         run: python3 scripts/ci_json_health.py
 
@@ -55,7 +55,7 @@ jobs:
     # #[cfg(not(feature = "sqlxml"))] stubs so clippy/build/test all pass
     # without accessing the private sqlxml repo.
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - name: Install Rust toolchain
         run: rustup toolchain install stable --component clippy,rustfmt && rustup default stable
       - name: Install Tauri system deps
